@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" href="/icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repleno - Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-light: #F7F8FC;
+            --bg-card: #FFFFFF;
+            --border-color: #E2E8F0;
+            --accent-primary: #4338CA;
+            --accent-secondary: #7C3AED;
+            --text-dark: #1E293B;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
+        .card { background-color: var(--bg-card); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05); }
+        .btn-primary { background-color: var(--accent-primary); color: white; border: 1px solid var(--accent-primary); padding: 0.75rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .logo-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 2s ease-in-out forwards; }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        .screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 100;
+            transform: translateX(120%);
+            transition: transform 0.5s ease-in-out;
+        }
+        .notification.show { transform: translateX(0); }
+        .notification.error { background-color: #DC2626; }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <div id="notification-area"></div>
+
+    <div id="login-screen" class="screen">
+        <div class="card w-full max-w-sm text-center p-8 fade-in">
+             <div class="flex justify-center items-center gap-4 mb-4">
+                 <svg id="replenoLogoLogin" width="60" height="60" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path class="logo-path" d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="logo-path" style="animation-delay: 0.3s;" d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="logo-path" style="animation-delay: 0.6s;" d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                    <path class="logo-path" style="animation-delay: 0.8s;" d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                </svg>
+                 <h1 class="text-4xl font-extrabold text-slate-900">Repleno</h1>
+            </div>
+            <p class="text-slate-500 mb-6">Inicia sesión para continuar</p>
+            <div class="text-left space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-slate-600 mb-1">Usuario</label>
+                    <input type="text" id="username" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-600 mb-1">Contraseña</label>
+                    <input type="password" id="password" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <button id="loginBtn" class="btn-primary w-full mt-6">Iniciar Sesión</button>
+        </div>
+    </div>
+    
+    <div id="changePasswordModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="card w-full max-w-sm text-center p-8 fade-in">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Cambio de Contraseña Requerido</h3>
+            <p class="text-slate-500 mb-6">Por tu seguridad, debes establecer una nueva contraseña para tu cuenta.</p>
+            <div class="text-left space-y-4">
+                <div>
+                    <label for="newPassword" class="block text-sm font-medium text-slate-600 mb-1">Nueva Contraseña</label>
+                    <input type="password" id="newPassword" class="w-full bg-white border border-slate-300 rounded-lg p-3">
+                </div>
+                 <div>
+                    <label for="confirmNewPassword" class="block text-sm font-medium text-slate-600 mb-1">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="confirmNewPassword" class="w-full bg-white border border-slate-300 rounded-lg p-3">
+                </div>
+            </div>
+            <button id="updatePasswordBtn" class="btn-primary w-full mt-6">Actualizar Contraseña</button>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+ const firebaseConfig = {
+    apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
+    authDomain: "repleno-app.firebaseapp.com",
+    projectId: "repleno-app",
+    storageBucket: "repleno-app.firebasestorage.app",
+    messagingSenderId: "705634142025",
+    appId: "1:705634142025:web:206f1a905f41ad79143c98",
+    measurementId: "G-FLTS8BFB46"
+  };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loginScreen = document.getElementById('login-screen');
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const loginBtn = document.getElementById('loginBtn');
+        const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+        const notificationArea = document.getElementById('notification-area');
+
+        function showNotification(message, type = 'error') {
+            const notif = document.createElement('div');
+            notif.className = `notification ${type} show`;
+            notif.textContent = message;
+            notificationArea.appendChild(notif);
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.remove(), 500);
+            }, 3000);
+        }
+
+        async function handleLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            if (!username || !password) {
+                showNotification('Por favor, ingresa usuario y contraseña.');
+                return;
+            }
+
+            const q = query(collection(db, "users"), where("username", "==", username));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                showNotification('Usuario o contraseña incorrectos.');
+                return;
+            }
+
+            const userDoc = querySnapshot.docs[0];
+            const user = userDoc.data();
+
+            if (user.password === password) {
+                sessionStorage.setItem('loggedInUserId', userDoc.id);
+                if (user.role === 'admin') {
+                    window.location.href = './admin.html';
+                } else if (user.mustChangePassword) {
+                    changePasswordModal.classList.remove('hidden');
+                    changePasswordModal.classList.add('flex');
+                } else {
+                    window.location.href = './dashboard.html';
+                }
+            } else {
+                showNotification('Usuario o contraseña incorrectos.');
+            }
+        }
+        
+        async function handleUpdatePassword() {
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmNewPasswordInput.value;
+            const userId = sessionStorage.getItem('loggedInUserId');
+
+            if (newPassword.length < 6) {
+                showNotification('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showNotification('Las contraseñas no coinciden.');
+                return;
+            }
+
+            const userRef = doc(db, "users", userId);
+            await setDoc(userRef, { 
+                password: newPassword,
+                mustChangePassword: false 
+            }, { merge: true });
+            
+            window.location.href = './dashboard.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            sessionStorage.removeItem('loggedInUserId');
+        });
+
+        loginBtn.addEventListener('click', handleLogin);
+        updatePasswordBtn.addEventListener('click', handleUpdatePassword);
+    </script>
+</body>
+</html>
+
