@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de control para la gestión de inventario, análisis de ventas y optimización de stock para tu negocio.">
+    <meta name="keywords" content="inventario, stock, ventas, pyme, dashboard, repleno">
+    <title>REPLENO - Dashboard de Inventario</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00A3A3"/>
+                        <stop offset="100%" stop-color="#007A7A"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#logoGradient)" d="M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zM72.5 55c-1.4 0-2.5 1.1-2.5 2.5v10c0 1.4-1.1 2.5-2.5 2.5H32.5c-1.4 0-2.5-1.1-2.5-2.5v-10c0-1.4-1.1-2.5-2.5-2.5S25 56.1 25 57.5v10c0 4.1 3.4 7.5 7.5 7.5h35c4.1 0 7.5-3.4 7.5-7.5v-10c0-1.4-1.1-2.5-2.5-2.5zM50 20L30 35h12.5v20h15V35H70L50 20z"/>
+            </svg>
+            <span class="logo-text">REPLENO</span>
+        </div>
+        <div class="sidebar-menu">
+            <a class="menu-item active" data-page="dashboard"><i class='bx bxs-dashboard'></i><span>Dashboard</span></a>
+            <a class="menu-item" data-page="inventory"><i class='bx bxs-package'></i><span>Inventario</span></a>
+            <a class="menu-item" data-page="analysis"><i class='bx bxs-bar-chart-alt-2'></i><span>Análisis</span></a>
+        </div>
+        <div class="sidebar-footer"><a class="menu-item"><i class='bx bxs-log-out'></i><span>Cerrar Sesión</span></a></div>
+    </nav>
+    <div class="sidebar-overlay"></div>
+
+    <main class="main-content">
+        <header class="main-header">
+            <div class="header-left"><i class='bx bx-menu' id="menu-toggle"></i><div class="header-title"><h1 id="pageTitle">Bienvenido</h1><p id="pageDescription">Resumen de tu negocio.</p></div></div>
+            <div class="header-actions">
+                <button class="btn-primary" id="addProductBtn"><i class='bx bx-plus'></i> Agregar Productos</button>
+                <img src="/img/avatar.png" alt="Avatar" class="user-avatar" onerror="this.src='https://placehold.co/40x40/EFEFEF/333?text=A'">
+            </div>
+        </header>
+
+        <section id="dashboard-page" class="page active">
+            <section class="kpi-section">
+                <div class="kpi-card color-1"><div class="card-icon"><i class='bx bx-dollar-circle'></i></div><div class="card-info"><span class="kpi-title">Ingresos de Hoy</span><span class="kpi-value" id="daily-revenue">$0</span></div></div>
+                <div class="kpi-card color-2"><div class="card-icon"><i class='bx bx-trending-up'></i></div><div class="card-info"><span class="kpi-title">Ventas de Hoy</span><span class="kpi-value" id="daily-sales">0</span></div></div>
+                <div class="kpi-card color-3"><div class="card-icon"><i class='bx bx-money-withdraw'></i></div><div class="card-info"><span class="kpi-title">Ingresos Semanales</span><span class="kpi-value" id="weekly-revenue">$0</span></div></div>
+                <div class="kpi-card color-4"><div class="card-icon"><i class='bx bxs-wallet'></i></div><div class="card-info"><span class="kpi-title">Ingresos Mensuales</span><span class="kpi-value" id="monthly-revenue">$0</span></div></div>
+            </section>
+            <section class="content-grid">
+                <div class="page-container"><h2><i class='bx bxs-bot'></i> Asistente Virtual</h2><div class="assistant-messages" id="assistant-messages"></div></div>
+                <div class="page-container"><h2><i class='bx bxs-package'></i> Inventario Crítico</h2><div id="critical-inventory-list"></div></div>
+            </section>
+        </section>
+
+        <section id="inventory-page" class="page">
+            <div class="page-container">
+                <div class="inventory-header">
+                    <h2><i class='bx bxs-package'></i> Gestión de Inventario</h2>
+                    <div class="header-actions">
+                        <input type="text" id="searchInput" placeholder="Buscar producto...">
+                        <button class="btn-secondary" id="adjustStockBtn"><i class='bx bx-transfer-alt'></i> Ajustar Stock</button>
+                        <button class="btn-primary" id="sellBtn"><i class='bx bx-cart-add'></i> Vender</button>
+                    </div>
+                </div>
+                <div class="inventory-list-header"><span></span><span>Producto</span><span>Código de Barras</span><span>Precio</span><span>Stock</span><span>Acciones</span></div>
+                <div class="inventory-list" id="inventory-list"></div>
+            </div>
+        </section>
+
+        <section id="analysis-page" class="page"><div class="analysis-container"><div class="charts-grid"><div class="chart-container"><h3>Ingresos Últimos 7 Días</h3><canvas id="revenueChart"></canvas></div><div class="chart-container"><h3>Productos Más Vendidos</h3><canvas id="topProductsChart"></canvas></div></div></div></section>
+
+    </main>
+
+    <!-- Modales -->
+    <div class="modal-overlay" id="editProductModal">
+        <div class="modal-content"><h2 id="modalTitle">Editar Producto</h2><form id="productForm"><input type="hidden" id="productId"><div class="edit-modal-grid"><div id="image-upload-col"><img id="imagePreview" src="#" alt="Vista previa"/><input type="file" id="productImageFile" accept="image/*" style="display: none;"><button type="button" class="btn-secondary" id="changeImageBtn">Cambiar Imagen</button></div><div id="form-fields-col"><div class="form-group"><label>Nombre</label><div class="input-wrapper"><i class='bx bxs-package input-icon'></i><input type="text" id="productName" required></div></div><div class="form-group"><label>Precio (CLP)</label><div class="input-wrapper"><i class='bx bx-dollar input-icon'></i><input type="number" id="productPrice" min="1" required></div></div><div class="form-group"><label>Stock</label><div class="input-wrapper"><i class='bx bxs-bar-chart-alt-2 input-icon'></i><input type="number" id="productStock" min="0" required readonly></div><small style="font-size: 0.8rem; color: var(--text-light);">Para ajustar stock, usa el botón <b>Ajustar Stock</b> en Inventario.</small></div></div></div><div class="form-actions"><button type="button" class="btn-secondary" id="cancelEditBtn">Cancelar</button><button type="submit" class="btn-primary">Guardar Cambios</button></div></form></div>
+    </div>
+    <div class="modal-overlay" id="multi-add-modal">
+        <div class="modal-content"><h2>Agregar Nuevos Productos</h2><div class="table-container"><table id="multi-add-table"><thead><tr><th>Imagen</th><th>Nombre del Producto</th><th>Precio (CLP)</th><th>Stock Inicial</th><th></th></tr></thead><tbody></tbody></table></div><div class="form-actions"><button type="button" class="btn-secondary" id="add-row-btn"><i class='bx bx-plus'></i> Añadir Fila</button><div><button type="button" class="btn-secondary" id="cancelMultiAddBtn">Cancelar</button><button type="button" class="btn-primary" id="saveMultiAddBtn">Guardar Todo</button></div></div></div>
+    </div>
+    <div class="modal-overlay mass-operation-modal" id="massSellModal">
+        <div class="modal-content"><h2>Registrar Ventas</h2><p>Ingresa la cantidad vendida para cada producto. Deja en blanco o en 0 si no hubo ventas.</p><div class="list-container" id="mass-sell-list"></div><div class="form-actions"><button type="button" class="btn-secondary" id="cancelMassSellBtn">Cancelar</button><button type="button" class="btn-primary" id="applyMassSellBtn">Aplicar Ventas</button></div></div>
+    </div>
+    <div class="modal-overlay mass-operation-modal" id="massAdjustModal">
+        <div class="modal-content"><h2>Ajustar Stock</h2><p>Ingresa el ajuste para cada producto (ej: 5 para añadir, -2 para quitar).</p><div class="list-container" id="mass-adjust-list"></div><div class="form-actions"><button type="button" class="btn-secondary" id="cancelMassAdjustBtn">Cancelar</button><button type="button" class="btn-primary" id="applyMassAdjustBtn">Aplicar Ajustes</button></div></div>
+    </div>
+    <div class="modal-overlay" id="deleteConfirmModal"><div class="modal-content"><h2>Confirmar Eliminación</h2><p>¿Seguro que quieres eliminar "<strong id="deleteProductName"></strong>"?</p><div class="form-actions"><button type="button" class="btn-secondary" id="cancelDeleteBtn">Cancelar</button><button type="button" class="btn-danger" id="confirmDeleteBtn">Eliminar</button></div></div></div>
+<script src="/app.js"></script>
+</body>
+</html>
+
