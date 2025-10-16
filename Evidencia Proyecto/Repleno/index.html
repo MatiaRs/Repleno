@@ -73,6 +73,10 @@
                 </div>
             </div>
             <button id="loginBtn" class="btn-primary w-full mt-6">Iniciar Sesión</button>
+
+            <button id="open-register" class="btn-primary w-full mt-6">Registrarse</button>
+
+
         </div>
     </div>
     
@@ -196,6 +200,69 @@
         loginBtn.addEventListener('click', handleLogin);
         updatePasswordBtn.addEventListener('click', handleUpdatePassword);
     </script>
+    <!-- Modal de Registro -->
+<div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+    <h2 class="text-2xl font-bold mb-4 text-center">Registro de Usuario</h2>
+    <form id="register-form" class="space-y-3">
+      <input type="text" id="register-rut" placeholder="RUT" class="w-full p-2 border rounded" required>
+      <input type="text" id="register-nombre" placeholder="Nombre" class="w-full p-2 border rounded" required>
+      <input type="text" id="register-apellido" placeholder="Apellido" class="w-full p-2 border rounded" required>
+      <input type="email" id="register-email" placeholder="Correo electrónico" class="w-full p-2 border rounded" required>
+      <input type="tel" id="register-phone" placeholder="Número telefónico" class="w-full p-2 border rounded" required>
+      <input type="text" id="register-negocio" placeholder="Nombre del negocio" class="w-full p-2 border rounded" required>
+      <input type="password" id="register-password" placeholder="Contraseña" class="w-full p-2 border rounded" required>
+
+      <div class="flex items-start space-x-2 text-sm">
+        <input type="checkbox" id="accept-terms" required>
+        <label for="accept-terms">
+          He leído y acepto los 
+          <button type="button" id="open-terms" class="text-blue-600 underline hover:text-blue-800">Términos y Condiciones</button>
+        </label>
+      </div>
+
+      <button type="submit" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Registrarse</button>
+    </form>
+    <button id="close-register" class="absolute top-2 right-3 text-gray-600 hover:text-black">✖</button>
+  </div>
+</div>
+
+<!-- Modal de Términos y Condiciones -->
+<div id="terms-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-3xl relative max-h-[80vh] overflow-y-auto">
+    <h2 class="text-2xl font-bold mb-4 text-center">Términos y Condiciones</h2>
+    <div class="text-sm text-gray-700 whitespace-pre-line">
+      Aceptación de los Términos
+        1. Aceptación de los Términos Al registrarse, acceder o utilizar el servicio de suscripción (en adelante, el “Servicio”), usted (el “Cliente”) acepta plenamente estos Términos y Condiciones de Uso (los “T&C”), junto con la Política de Privacidad del proveedor (el “Proveedor”). Si no está de acuerdo con estos T&C, no debe utilizar el Servicio. El uso continuado del mismo constituirá su aceptación de los T&C vigentes, incluidas sus modificaciones. El Proveedor podrá modificar estos T&C en cualquier momento. Dichas modificaciones serán notificadas mediante correo electrónico registrado o a través de la plataforma con al menos 15 días de anticipación a su entrada en vigor.
+        2. Descripción del Servicio El Servicio consiste en una plataforma de software como servicio (SaaS) basada en inteligencia artificial y machine learning, diseñada para predecir la demanda futura de productos y optimizar la gestión de inventario y compras del cliente. El funcionamiento del sistema se basa en el análisis de datos históricos y operacionales proporcionados por el Cliente, incluyendo información de ventas, inventario y otras variables relevantes, los cuales pueden ser cargados mediante archivos CSV u otros formatos compatibles. El Cliente comprende y acepta que: Las predicciones entregadas por el sistema son recomendaciones probabilísticas, no garantías de resultados. El sistema puede sugerir o autorizar automáticamente órdenes de compra o venta, conforme a los umbrales de decisión configurados por el cliente. La decisión final de ejecución y las consecuencias comerciales o financieras derivadas del uso del Servicio son de exclusiva responsabilidad del Cliente. El desempeño del modelo depende de la calidad, integridad y consistencia de los datos suministrados.
+        3. Suscripción, Pago y Renovación Modalidad: El Servicio se ofrece bajo una suscripción periódica (mensual, trimestral o anual), con pago anticipado. Precios: Los valores vigentes de suscripción se indican en la página web del Servicio. El Proveedor podrá modificarlos previo aviso de 30 días conforme al artículo 28 de la Ley N° 19.496 sobre Protección de los Derechos de los Consumidores. Renovación: La suscripción se renovará automáticamente, salvo que el Cliente la cancele con al menos 7 días hábiles de anticipación al vencimiento del período contratado. Cancelación: El Cliente podrá cancelar su suscripción en cualquier momento desde su panel de usuario. La cancelación surtirá efecto al término del ciclo vigente. No se otorgarán reembolsos por períodos no utilizados, salvo disposición legal en contrario.
+        4. Obligaciones del Cliente Exactitud de los Datos: El Cliente es responsable de que los datos cargados (ventas, inventario, precios, etc.) sean veraces, completos y legalmente obtenidos. Derechos sobre la Información: El Cliente declara contar con todos los derechos necesarios sobre los datos que carga al sistema, manteniendo indemne al Proveedor ante cualquier reclamo de terceros. Uso Legítimo: El Cliente se compromete a utilizar el Servicio únicamente para fines comerciales legítimos, conforme a la legislación chilena aplicable. Confidencialidad de Acceso: El Cliente deberá resguardar sus credenciales de acceso y notificar de inmediato cualquier uso no autorizado.
+        5. Propiedad Intelectual Todo el software, algoritmos de predicción, modelos estadísticos, diseños, interfaces y documentación asociados al Servicio son propiedad exclusiva del Proveedor y están protegidos por la legislación chilena e internacional sobre propiedad intelectual e industrial. El Cliente conserva todos los derechos sobre los datos que carga y sobre los informes o resultados generados por el sistema. El Proveedor podrá utilizar dichos datos de manera anonimizada y agregada con fines estadísticos o de mejora del modelo, sin identificar al Cliente o su negocio. Durante la vigencia de la suscripción, el Cliente recibe una licencia de uso no exclusiva, intransferible y revocable del Servicio.
+        6. Limitación de Responsabilidad El Proveedor no garantiza la exactitud, disponibilidad o rendimiento absoluto de las predicciones generadas por el Servicio. En ningún caso será responsable por: Pérdidas económicas derivadas de decisiones basadas en las predicciones (desabastecimiento, exceso de stock, etc.). Interrupciones del Servicio por mantenimiento, actualizaciones o causas de fuerza mayor. Daños indirectos, incidentales o consecuentes. En conformidad con la legislación chilena, la responsabilidad máxima y acumulativa del Proveedor no excederá el monto efectivamente pagado por el Cliente durante los tres (3) meses anteriores al evento que dio origen al reclamo.
+        7. Tratamiento de Datos Personales De acuerdo con la Ley N° 19.628 sobre Protección de la Vida Privada, el Proveedor actuará: Como Encargado del Tratamiento respecto de los datos de inventario, ventas y demás información operativa del Cliente. Como Responsable del Tratamiento respecto de los datos personales de registro (nombre, correo, información de pago, etc.). El Cliente otorga su consentimiento expreso para el tratamiento de dichos datos con el fin de prestar, gestionar y mejorar el Servicio. El Proveedor implementará medidas técnicas y organizativas adecuadas para proteger los datos contra acceso, alteración o divulgación no autorizada. Al finalizar la suscripción, los datos del Cliente serán eliminados de forma segura dentro de un plazo máximo de 30 días, salvo obligación legal de conservación.
+        8. Suspensión y Terminación del Servicio El Proveedor podrá suspender o cancelar el acceso al Servicio en caso de: Incumplimiento de los presentes T&C. Uso indebido, fraudulento o contrario a la ley. Falta de pago dentro del plazo establecido. En dichos casos, el Proveedor podrá eliminar los datos del Cliente transcurridos 30 días desde la suspensión definitiva.
+        9. Ley Aplicable y Jurisdicción Estos T&C se rigen por las leyes de la República de Chile. Cualquier controversia será sometida a los tribunales ordinarios de justicia de la ciudad de Santiago, sin perjuicio de que las partes procuren previamente una solución mediante mecanismos de mediación o arbitraje voluntario.
+    
+    </div>
+    <button id="close-terms" class="absolute top-2 right-3 text-gray-600 hover:text-black">✖</button>
+  </div>
+</div>
+
+<!-- Script para abrir/cerrar modales -->
+<script>
+  const openRegister = document.getElementById('open-register');
+  const registerModal = document.getElementById('register-modal');
+  const closeRegister = document.getElementById('close-register');
+  const openTerms = document.getElementById('open-terms');
+  const termsModal = document.getElementById('terms-modal');
+  const closeTerms = document.getElementById('close-terms');
+
+  openRegister.addEventListener('click', () => registerModal.classList.remove('hidden'));
+  closeRegister.addEventListener('click', () => registerModal.classList.add('hidden'));
+  openTerms.addEventListener('click', () => termsModal.classList.remove('hidden'));
+  closeTerms.addEventListener('click', () => termsModal.classList.add('hidden'));
+</script>
+
 </body>
 </html>
 
