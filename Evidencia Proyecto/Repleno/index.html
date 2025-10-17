@@ -249,6 +249,20 @@
 </div>
 
 
+<script>
+  const openRegister = document.getElementById('open-register');
+  const registerModal = document.getElementById('register-modal');
+  const closeRegister = document.getElementById('close-register');
+  const openTerms = document.getElementById('open-terms');
+  const termsModal = document.getElementById('terms-modal');
+  const closeTerms = document.getElementById('close-terms');
+
+  openRegister.addEventListener('click', () => registerModal.classList.remove('hidden'));
+  closeRegister.addEventListener('click', () => registerModal.classList.add('hidden'));
+  openTerms.addEventListener('click', () => termsModal.classList.remove('hidden'));
+  closeTerms.addEventListener('click', () => termsModal.classList.add('hidden'));
+</script>
+
 </body>
 </html>
 
