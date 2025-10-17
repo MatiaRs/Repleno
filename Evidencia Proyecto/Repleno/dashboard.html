@@ -10,181 +10,132 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-light: #f7f8fa;
+            --bg-light: #F7F8FC;
             --bg-card: #FFFFFF;
-            --border-color: #eef2f6;
-            --accent-primary: #4f46e5;
-            --accent-secondary: #7c3aed;
-            --text-dark: #111827;
-            --text-muted: #6b7280;
+            --border-color: #E2E8F0;
+            --accent-primary: #4338CA;
+            --accent-secondary: #7C3AED;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-light); 
-            color: var(--text-dark); 
-        }
-
-        .bento-card {
-            background-color: var(--bg-card);
-            border-radius: 1.25rem; /* Bordes más redondeados */
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05);
-            animation: fadeIn 0.6s ease-out forwards;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .bento-card:hover { 
-            transform: translateY(-5px); 
-            border-color: var(--accent-primary);
-            box-shadow: 0 10px 20px -5px rgb(79 70 229 / 0.1);
-        }
-
-        .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
-        .table-compact th {
-             font-weight: 600;
-             font-size: 0.8rem;
-             text-transform: uppercase;
-             letter-spacing: 0.05em;
-             color: var(--text-muted);
-        }
+        @keyframes count-up { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .counting-up { animation: count-up 0.3s ease-out forwards; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
+        .card { background-color: var(--bg-card); border-radius: 0.75rem; padding: 1.5rem; border: 1px solid var(--border-color); transition: all 0.3s ease; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05); }
+        .card:hover { transform: translateY(-4px); border-color: var(--accent-primary); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07); }
+        .assistant-bubble { background-color: #F1F5F9; padding: 1rem; border-radius: 0 0.75rem 0.75rem 0.75rem; margin-bottom: 1rem; max-width: 90%; }
+        .assistant-bubble.user { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; border-radius: 0.75rem 0 0.75rem 0.75rem; align-self: flex-end; }
+        .action-btn, .btn-primary { background-color: var(--accent-primary); color: white; border: 1px solid var(--accent-primary); padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; margin-right: 0.5rem; margin-top: 0.5rem; transition: all 0.2s ease; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
+        .action-btn:hover, .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .btn-secondary { background-color: transparent; color: var(--text-muted); border-color: var(--border-color); }
+        .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .table-auto th { text-align: left; padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 500; }
+        .table-auto td { padding: 0.75rem 1rem; border-top: 1px solid var(--border-color); }
+        .table-auto tr:hover { background-color: #F8FAFC; }
     </style>
 </head>
 <body class="overflow-x-hidden">
     <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 fade-in">
              <div class="flex items-center gap-3">
                  <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                     <defs>
-                         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                             <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
-                             <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
-                         </linearGradient>
-                     </defs>
-                     <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                     <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                 </svg>
-                 <div>
-                     <h1 class="text-2xl font-bold text-slate-900">Repleno</h1>
-                     <p id="client-name" class="text-sm text-slate-500">Panel de Inteligencia de Negocios</p>
-                 </div>
-             </div>
-            <div class="flex items-center gap-3 mt-4 md:mt-0">
-                <div id="sync-status" class="bg-white rounded-full p-2 px-3 text-sm shadow-sm border"></div>
-                <button id="manualSyncBtn" class="text-slate-500 hover:text-indigo-600 p-2 rounded-full hover:bg-slate-100" title="Sincronizar ahora">
-                     <svg id="manualSyncIcon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-4.991-2.695v-2.121a3.375 3.375 0 00-3.375-3.375H8.25m11.664 0l-3.181-3.183A8.25 8.25 0 002.985 5.964l-3.181 3.183" /></svg>
-                 </button>
-                <button id="logoutBtnUser" class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
-                   <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                    <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Repleno</h1>
+                    <p id="client-name" class="text-sm text-slate-500">Panel de Inteligencia de Negocios</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-4 md:mt-0">
+                <div id="sync-status" class="card !p-3 text-sm"></div>
+                 <button id="manualSyncBtn" class="text-sm text-slate-500 hover:text-indigo-600 p-2 rounded-full hover:bg-slate-100" title="Sincronizar ahora">
+                    <svg id="manualSyncIcon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-4.991-2.695v-2.121a3.375 3.375 0 00-3.375-3.375H8.25m11.664 0l-3.181-3.183A8.25 8.25 0 002.985 5.964l-3.181 3.183" />
+                    </svg>
+                </button>
+                <button id="logoutBtnUser" class="text-sm text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
+                   <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                   </svg>
                 </button>
             </div>
         </header>
-
-        <main id="dashboard" class="grid grid-cols-1 md:grid-cols-6 gap-6">
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.1s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3>
-                    <div class="bg-indigo-100 p-2 rounded-lg">
-                        <svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+        <main id="dashboard">
+             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6 fade-in" style="animation-delay: 0.2s;">
+                <div class="card flex items-center gap-4">
+                    <div class="bg-indigo-100 p-3 rounded-full"><svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
+                    <div><h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3><p id="totalVentas" class="text-2xl font-bold mt-1">0</p></div>
+                </div>
+                <div class="card flex items-center gap-4">
+                    <div class="bg-purple-100 p-3 rounded-full"><svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                    <div><h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3><p id="productosUnicos" class="text-2xl font-bold mt-1">0</p></div>
+                </div>
+                <div class="card flex items-center gap-4">
+                    <div class="bg-amber-100 p-3 rounded-full"><svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                    <div><h3 class="text-slate-500 font-medium text-sm">Alertas Stock Bajo</h3><p id="alertasStock" class="text-2xl font-bold mt-1">0</p></div>
+                </div>
+                <div class="card flex items-center gap-4">
+                     <div class="bg-teal-100 p-3 rounded-full"><svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                    <div><h3 class="text-slate-500 font-medium text-sm">Top Ventas</h3><p id="topProducto" class="text-lg font-bold mt-1 truncate">-</p></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                 <section id="assistant" class="lg:col-span-1 card fade-in" style="animation-delay: 0.4s;">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-3">
+                         <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        Asistente Virtual
+                    </h2>
+                    <div id="assistant-output" class="h-96 overflow-y-auto p-2 bg-slate-50 rounded-lg flex flex-col space-y-4"></div>
+                    <div id="assistant-actions" class="mt-4 min-h-[40px] flex flex-wrap"></div>
+                </section>
+                <div class="lg:col-span-2 card fade-in" style="animation-delay: 0.6s;">
+                    <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
+                    <div class="overflow-y-auto h-[27rem]">
+                        <table class="w-full table-auto text-sm">
+                            <thead><tr class="border-b bg-white sticky top-0"><th>Producto</th><th>Stock Actual</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead>
+                            <tbody id="product-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
-                <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
             </div>
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3>
-                    <div class="bg-purple-100 p-2 rounded-lg">
-                       <svg class="w-5 h-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    </div>
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div class="lg:col-span-3 card fade-in" style="animation-delay: 0.8s;">
+                    <h3 class="text-lg font-semibold mb-4">Ventas por Día de la Semana</h3>
+                    <div class="relative h-80"><canvas id="salesByDayChart"></canvas></div>
                 </div>
-                <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
-            </div>
-            <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.3s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
-                    <div class="bg-amber-100 p-2 rounded-lg">
-                        <svg class="w-5 h-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    </div>
+                <div class="lg:col-span-2 card fade-in" style="animation-delay: 1s;">
+                    <h3 class="text-lg font-semibold mb-4">Composición de Stock</h3>
+                    <div class="relative h-80"><canvas id="stockByProductChart"></canvas></div>
                 </div>
-                <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
-            </div>
-            
-            <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
-                <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
-                <div class="overflow-y-auto flex-grow">
-                    <table class="w-full table-compact text-sm">
-                        <thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock Actual</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead>
-                        <tbody id="product-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.5s;">
-                <h3 class="text-slate-500 font-medium text-sm mb-2">Top Ventas</h3>
-                <p id="topProducto" class="text-2xl font-bold truncate mt-1">-</p>
-                <div class="mt-auto pt-4">
-                    <button id="openAssistantBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300">
-                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                        <span>Asistente Virtual</span>
-                        <span id="assistantAlertBadge" class="hidden absolute -top-2 -right-2 flex h-5 w-5">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs items-center justify-center"></span>
-                        </span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
-                 <h3 class="text-lg font-semibold mb-2">Composición de Stock</h3>
-                 <div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div>
-            </div>
-
-            <div class="md:col-span-6 bento-card" style="animation-delay: 0.7s;">
-                <h3 class="text-lg font-semibold mb-4">Ventas por Día de la Semana</h3>
-                <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
             </div>
         </main>
     </div>
-
-    <!-- Modal del Asistente Virtual -->
-    <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50 transition-opacity duration-300">
-        <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                 <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    </span>
-                    Asistente Virtual
-                 </h2>
-                 <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                 </button>
-            </div>
-            <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2">
-                <!-- El contenido se inyectará aquí -->
-            </div>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
-            authDomain: "repleno-app.firebaseapp.com",
-            projectId: "repleno-app",
-            storageBucket: "repleno-app.firebasestorage.app",
-            messagingSenderId: "705634142025",
-            appId: "1:705634142025:web:206f1a905f41ad79143c98",
-            measurementId: "G-FLTS8BFB46"
-        };
+    apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
+    authDomain: "repleno-app.firebaseapp.com",
+    projectId: "repleno-app",
+    storageBucket: "repleno-app.firebasestorage.app",
+    messagingSenderId: "705634142025",
+    appId: "1:705634142025:web:206f1a905f41ad79143c98",
+    measurementId: "G-FLTS8BFB46"
+  };
+        // =================================================================================
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -194,12 +145,8 @@
         const clientNameEl = document.getElementById('client-name');
         const syncStatusEl = document.getElementById('sync-status');
         const productTableBody = document.getElementById('product-table-body');
-        
-        const assistantModal = document.getElementById('assistantModal');
-        const openAssistantBtn = document.getElementById('openAssistantBtn');
-        const closeAssistantBtn = document.getElementById('closeAssistantBtn');
-        const assistantModalContent = document.getElementById('assistantModalContent');
-        const assistantAlertBadge = document.getElementById('assistantAlertBadge');
+        const assistantOutput = document.getElementById('assistant-output');
+        const assistantActions = document.getElementById('assistant-actions');
 
         let salesByDayChart, stockByProductChart;
         let dataRefreshInterval;
@@ -208,15 +155,26 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             const userId = sessionStorage.getItem('loggedInUserId');
-            if (!userId) { window.location.href = './index.html'; return; }
+            if (!userId) {
+                window.location.href = './index.html';
+                return;
+            }
+            
             const userRef = doc(db, "users", userId);
             const userSnap = await getDoc(userRef);
-            if (!userSnap.exists() || userSnap.data().mustChangePassword) { window.location.href = './index.html'; return; }
+
+            if (!userSnap.exists() || userSnap.data().mustChangePassword) {
+                window.location.href = './index.html';
+                return;
+            }
             currentUser = userSnap.data();
             initializeDashboard(currentUser.dataUrl, currentUser.clientName);
         });
         
-        function handleLogout() { sessionStorage.removeItem('loggedInUserId'); window.location.href = './index.html'; }
+        function handleLogout() {
+            sessionStorage.removeItem('loggedInUserId');
+            window.location.href = './index.html';
+        }
 
         function handleManualSync() {
             if (currentUser && currentUser.dataUrl) {
@@ -237,7 +195,7 @@
         }
         
         async function fetchAndAnalyze(url) {
-            syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-slate-500"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Sincronizando...</span></div>`;
+            syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-slate-500"><svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Sincronizando...</span></div>`;
             try {
                 const urlNoCache = `${url}?t=${new Date().getTime()}`;
                 const response = await fetch(urlNoCache);
@@ -247,7 +205,7 @@
                 if (data.length > 0) processAndDisplayData(data);
                 else throw new Error("El archivo CSV está vacío o tiene un formato incorrecto.");
             } catch (error) {
-                syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Error</span></div>`;
+                syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-red-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Error de conexión</span></div>`;
             }
         }
 
@@ -255,18 +213,21 @@
             if (dataRefreshInterval) clearInterval(dataRefreshInterval);
             let countdown = REFRESH_INTERVAL_MS / 1000;
             const updateCountdown = () => {
+                const hours = Math.floor(countdown / 3600);
                 const minutes = Math.floor((countdown % 3600) / 60);
-                syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-green-600"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span><span>Sincronizado. Próxima en <b>${minutes}m</b></span></div>`;
+                const seconds = countdown % 60;
+                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-green-600"><span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span><span>Sincronizado. Próxima en <b>${countdown > 60 ? timeString : `${countdown}s`}</b></span></div>`;
             };
             updateCountdown();
             dataRefreshInterval = setInterval(() => {
-                countdown -= 60;
+                countdown--;
                 if (countdown < 0) {
                     fetchAndAnalyze(url);
                     countdown = REFRESH_INTERVAL_MS / 1000;
                 }
                 updateCountdown();
-            }, 60000);
+            }, 1000);
         }
 
         function parseCSV(text) {
@@ -282,6 +243,22 @@
                 });
                 return obj;
             });
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
+                obj.innerHTML = currentValue.toLocaleString('es-CL');
+                if(!obj.classList.contains('counting-up')) {
+                    obj.classList.add('counting-up');
+                    obj.addEventListener('animationend', () => obj.classList.remove('counting-up'), { once: true });
+                }
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
         }
 
         function processAndDisplayData(data) {
@@ -314,16 +291,14 @@
             const productosUnicos = Object.keys(stock).length;
             const lowStockItems = Object.entries(stock).filter(([_, qty]) => qty <= 20).sort((a,b) => a[1] - b[1]);
             const topProductoCode = Object.keys(salesByProduct).length > 0 ? Object.entries(salesByProduct).sort((a, b) => b[1] - a[1])[0][0] : null;
-            
-            document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
-            document.getElementById('productosUnicos').textContent = productosUnicos.toLocaleString('es-CL');
-            document.getElementById('alertasStock').textContent = lowStockItems.length.toLocaleString('es-CL');
+            animateValue(document.getElementById('totalVentas'), 0, totalVentas, 500);
+            animateValue(document.getElementById('productosUnicos'), 0, productosUnicos, 500);
+            animateValue(document.getElementById('alertasStock'), 0, lowStockItems.length, 500);
             document.getElementById('topProducto').textContent = topProductoCode ? productInfo[topProductoCode].descripcion : '-';
-            
             updateSalesByDayChart(Object.values(salesByDay));
             updateStockByProductChart(Object.values(productInfo).map(p => p.descripcion), Object.values(stock));
             populateProductTable(stock, productInfo, salesByProduct);
-            startAssistant(lowStockItems, data, productInfo);
+            startAssistant(lowStockItems, data, stock, productInfo);
         }
         
         function populateProductTable(stock, productInfo, salesByProduct) {
@@ -334,7 +309,7 @@
                 const totalSales = salesByProduct[code] || 0;
                 const price = info.precio_venta ? `$${info.precio_venta.toLocaleString('es-CL')}` : '-';
                 const row = document.createElement('tr');
-                row.innerHTML = `<td class="py-3">${info.descripcion}</td><td class="font-semibold ${currentStock <= 20 ? 'text-red-600' : 'text-slate-700'}">${currentStock}</td><td>${price}</td><td>${totalSales}</td>`;
+                row.innerHTML = `<td>${info.descripcion}</td><td class="font-semibold ${currentStock <= 20 ? 'text-amber-600' : 'text-slate-700'}">${currentStock}</td><td>${price}</td><td>${totalSales}</td>`;
                 productTableBody.appendChild(row);
             }
         }
@@ -344,65 +319,98 @@
             if (!ctx) return;
             const labels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             if(salesByDayChart) salesByDayChart.destroy();
-            salesByDayChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Unidades Vendidas', data, backgroundColor: 'rgba(79, 70, 229, 0.7)', borderColor: 'rgba(79, 70, 229, 1)', borderWidth: 1, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } });
+            salesByDayChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Unidades Vendidas', data, backgroundColor: 'rgba(79, 70, 229, 0.7)', borderColor: 'rgba(79, 70, 229, 1)', borderWidth: 1, borderRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } });
         }
 
         function updateStockByProductChart(labels, data) {
             const ctx = document.getElementById('stockByProductChart')?.getContext('2d');
             if(!ctx) return;
             if(stockByProductChart) stockByProductChart.destroy();
-            stockByProductChart = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ label: 'Stock Actual', data, backgroundColor: ['#4f46e5', '#7c3aed', '#34d399', '#f59e0b', '#3b82f6', '#ec4899'], hoverOffset: 4, borderColor: '#FFFFFF', borderWidth: 4}] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } } });
+            stockByProductChart = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ label: 'Stock Actual', data, backgroundColor: ['#4F46E5', '#7C3AED', '#059669', '#D97706', '#2563EB', '#DB2777'], hoverOffset: 4, borderColor: '#FFFFFF'}] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#64748B' } } } } });
         }
 
-        function startAssistant(lowStockItems, allData, productInfo) {
-            let modalHTML = `<div class="p-4 rounded-lg bg-slate-50 border flex items-start gap-3"><span class="text-3xl mt-1">👋</span><div><h4 class="text-slate-800 font-bold">¡Hola! Ya revisé tus datos.</h4><p class="text-sm text-slate-600">Esto es lo que encontré en tu historial de los últimos 3 meses.</p></div></div>`;
-
-            if (lowStockItems.length > 0) {
-                const badge = assistantAlertBadge.querySelector('span:last-child');
-                badge.textContent = lowStockItems.length;
-                assistantAlertBadge.classList.remove('hidden');
-                
-                const criticalItemHTML = analyzeAndSuggest(lowStockItems[0], allData, productInfo);
-                const productListHTML = lowStockItems.slice(0, 3).map(([code, qty]) => `<li class="flex items-center gap-2 text-sm"><span class="w-2 h-2 rounded-full ${qty <=0 ? 'bg-red-500' : 'bg-amber-500'}"></span><b class="text-slate-800">${productInfo[code].descripcion}</b> (quedan ${qty})</li>`).join('');
-
-                modalHTML += `<div class="p-4 rounded-lg bg-amber-50 border border-amber-200"><div class="flex items-start gap-3"><svg class="w-10 h-10 text-amber-500 mt-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><div><h4 class="font-bold text-amber-800">¡Atención! Tienes ${lowStockItems.length} producto(s) con poco stock.</h4><p class="text-sm text-slate-600 mt-1">Los más urgentes son:</p><ul class="space-y-1.5 mt-2 text-slate-600">${productListHTML}</ul></div></div></div>${criticalItemHTML}`;
-            } else {
-                assistantAlertBadge.classList.add('hidden');
-                modalHTML += `<div class="p-4 rounded-lg bg-green-50 border border-green-200 flex items-start gap-3"><svg class="w-10 h-10 text-green-500 mt-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><h4 class="font-bold text-green-800">¡Todo en orden!</h4><p class="text-sm text-slate-600">No detecté productos con stock bajo. ¡Excelente trabajo con el inventario!</p></div></div>`;
-            }
-            assistantModalContent.innerHTML = modalHTML;
+        function clearAssistant() {
+            assistantOutput.innerHTML = '';
+            assistantActions.innerHTML = '';
         }
 
-        function analyzeAndSuggest(lowStockItem, allData, productInfo) {
+        function addAssistantMessage(message, isUser = false) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('assistant-bubble', 'fade-in');
+            if(isUser) bubble.classList.add('user');
+            bubble.innerHTML = message;
+            assistantOutput.appendChild(bubble);
+            assistantOutput.scrollTop = assistantOutput.scrollHeight;
+        }
+
+        function addAssistantActions(actions) {
+            assistantActions.innerHTML = '';
+            actions.forEach(action => {
+                const button = document.createElement('button');
+                button.className = (action.primary ? 'btn-primary' : 'btn-secondary action-btn');
+                button.textContent = action.text;
+                button.onclick = () => { addAssistantMessage(action.text, true); action.handler(); };
+                assistantActions.appendChild(button);
+            });
+        }
+
+        function startAssistant(lowStockItems, allData, currentStock, productInfo) {
+            clearAssistant();
+            setTimeout(() => {
+                addAssistantMessage("¡Hola! He analizado tu historial de 3 meses desde GitHub. Aquí tienes mis observaciones.");
+                if (lowStockItems.length > 0) {
+                    const productList = lowStockItems.slice(0, 3).map(([code, qty]) => `<li><b>${productInfo[code].descripcion}</b> (quedan ${qty} unidades)</li>`).join('');
+                    setTimeout(() => {
+                        addAssistantMessage(`Detecté ${lowStockItems.length} producto(s) con stock bajo. Los más críticos son: <ul>${productList}</ul> ¿Quieres que analice el más crítico para planificar una reposición inteligente?`);
+                        addAssistantActions([ { text: "Sí, analizar ahora", handler: () => analyzeRestock(lowStockItems[0], allData, currentStock, productInfo), primary: true }, { text: "No, gracias", handler: () => addAssistantMessage("Entendido. Estaré aquí si me necesitas.") } ]);
+                    }, 1000);
+                } else {
+                    setTimeout(() => addAssistantMessage("¡Excelente trabajo! No he detectado productos con niveles de stock bajos. Tu inventario está saludable."), 1000);
+                }
+            }, 500);
+        }
+
+        function analyzeRestock(lowStockItem, allData, currentStock, productInfo) {
             const [productCode, currentQty] = lowStockItem;
             const productSales = allData.filter(d => d.codigo_producto === productCode && d.tipo_transaccion === 'venta');
-
-            if (productSales.length === 0) { return `<p>No encontré datos de ventas para ${productInfo[productCode].descripcion}.</p>`; }
-
+            if (productSales.length === 0) { addAssistantMessage(`No encontré datos de ventas para ${productInfo[productCode].descripcion}.`); return; }
             const salesByDay = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0};
-            productSales.forEach(sale => { const day = new Date(sale.fecha).getDay(); if (!isNaN(day)) salesByDay[day] += sale.cantidad; });
-
+            const salesByMonth = {};
+            let weekendSales = 0;
+            productSales.forEach(sale => {
+                const date = new Date(sale.fecha);
+                const day = date.getDay();
+                const month = date.toLocaleString('es-ES', { month: 'long' });
+                if(!salesByMonth[month]) salesByMonth[month] = 0;
+                if(!isNaN(day)) {
+                   salesByDay[day] += sale.cantidad;
+                   salesByMonth[month] += sale.cantidad;
+                   if (day === 0 || day === 6) weekendSales += sale.cantidad;
+                }
+            });
             const peakDayIndex = Object.keys(salesByDay).reduce((a, b) => salesByDay[a] > salesByDay[b] ? a : b);
             const totalSoldLast90Days = productSales.reduce((sum, s) => sum + s.cantidad, 0);
             const dailyAvg = totalSoldLast90Days / 90;
-            const recommendedRestock = Math.ceil(dailyAvg * 30 * 1.2); 
+            const recommendedRestock = Math.ceil(dailyAvg * 30 * 1.2);
             const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-            const product = productInfo[productCode];
-            const estimatedCost = product.precio_compra * recommendedRestock;
-            
-            const today = new Date();
-            const idealPurchaseDayIndex = (peakDayIndex - 2 + 7) % 7;
-            let nextPurchaseDate = new Date();
-            nextPurchaseDate.setDate(today.getDate() + 1);
-            while (nextPurchaseDate.getDay() !== idealPurchaseDayIndex) { nextPurchaseDate.setDate(nextPurchaseDate.getDate() + 1); }
-            const formattedPurchaseDate = `${days[nextPurchaseDate.getDay()]} ${nextPurchaseDate.getDate()} de ${nextPurchaseDate.toLocaleString('es-ES', { month: 'long' })}`;
-
-            return `<div class="p-4 rounded-lg bg-indigo-50 border border-indigo-200 grid md:grid-cols-2 gap-6"><div><h4 class="font-bold text-indigo-800">Sugerencia para: <b class="block text-2xl text-slate-800">${product.descripcion}</b></h4><ul class="space-y-4 mt-4 text-slate-700"><li class="flex items-start gap-3"><span class="text-xl">🗓️</span><div>Tu día de más ventas es el <b>${days[peakDayIndex]}</b>.</div></li><li class="flex items-start gap-3"><span class="text-xl">⚡</span><div>Vendes un promedio de <b>${dailyAvg.toFixed(1)} unidades</b> al día.</div></li><li class="flex items-start gap-3"><span class="text-xl">📦</span><div>Para no quedarte corto, te sugiero pedir <b>${recommendedRestock} unidades</b>.</div></li></ul></div><div class="bg-white p-4 rounded-lg border flex flex-col"><h4 class="font-bold text-green-800">Plan de Compra</h4><div class="mt-2 text-sm text-slate-700 space-y-3 flex-grow"><p><b>Cantidad:</b> <span class="block text-xl font-bold text-green-600">${recommendedRestock}</span> unidades</p><p><b>Costo Estimado:</b> <span class="block text-xl font-bold text-green-600">$${(estimatedCost || 0).toLocaleString('es-CL')}</span></p><p><b>Día Ideal de Compra:</b> <span class="block text-xl font-bold text-blue-600">${formattedPurchaseDate}</span></p></div></div></div>`;
+            const topMonth = Object.keys(salesByMonth).length > 0 ? Object.entries(salesByMonth).sort((a,b) => b[1]-a[1])[0][0] : "N/A";
+            const recommendation = `<p><b>Análisis Inteligente para: ${productInfo[productCode].descripcion}</b></p><ul class="list-disc pl-5 space-y-1 text-sm"><li><b>Patrón Semanal:</b> El día de mayor venta es el <b>${days[peakDayIndex]}</b>. Se venden ~${((weekendSales / totalSoldLast90Days) * 100).toFixed(0)}% de las unidades durante el fin de semana.</li><li><b>Tendencia Mensual:</b> El mes de mayor venta histórica fue <b>${topMonth}</b>, indicando una posible estacionalidad.</li><li><b>Recomendación de Stock:</b> Basado en un promedio de <b>${dailyAvg.toFixed(1)} unidades/día</b>, sugiero reponer <b>${recommendedRestock} unidades</b> para mantener un inventario saludable por ~30 días y cubrir peaks de demanda.</li></ul><p class="text-sm mt-2">Esto te daría un stock total de <b>${currentQty + recommendedRestock} unidades</b>, minimizando el riesgo de quiebre.</p>`;
+            addAssistantMessage(recommendation);
+            setTimeout(() => {
+                addAssistantMessage("¿Te gustaría que prepare un resumen para tu proveedor?");
+                addAssistantActions([ { text: "Sí, preparar resumen", handler: () => createSupplierSummary(productCode, recommendedRestock, productInfo), primary: true }, { text: "No, lo gestiono yo", handler: () => addAssistantMessage("¡Perfecto! Asegúrate de hacer la compra pronto para no perder ventas.") } ]);
+            }, 1500);
         }
-        
-        openAssistantBtn.addEventListener('click', () => { assistantModal.classList.remove('hidden'); assistantModal.classList.add('flex'); });
-        closeAssistantBtn.addEventListener('click', () => { assistantModal.classList.add('hidden'); assistantModal.classList.remove('flex'); });
-        assistantModal.addEventListener('click', (e) => { if (e.target === assistantModal) { assistantModal.classList.add('hidden'); assistantModal.classList.remove('flex'); } });
+
+        function createSupplierSummary(productCode, quantity, productInfo) {
+            const product = productInfo[productCode];
+            const estimatedCost = product.precio_compra * quantity;
+            const today = new Date();
+            const recommendedDate = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+            const summary = `<div class="p-4 bg-white rounded-lg border border-indigo-200"><h4 class="font-bold text-lg text-indigo-600">Resumen de Orden de Compra</h4><ul class="mt-2 space-y-1 text-slate-700"><li><b>Producto:</b> ${product.descripcion}</li><li><b>Código:</b> ${productCode}</li><li><b>Cantidad a solicitar:</b> ${quantity} unidades</li><li><b>Costo estimado:</b> $${(estimatedCost || 0).toLocaleString('es-CL')}</li><li><b>Fecha recomendada de orden:</b> ${recommendedDate}</li></ul></div>`;
+            addAssistantMessage(summary);
+            addAssistantActions([]);
+        }
 
         logoutBtnUser.addEventListener('click', handleLogout);
         manualSyncBtn.addEventListener('click', handleManualSync);
