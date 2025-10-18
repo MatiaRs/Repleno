@@ -28,7 +28,7 @@
 
         .bento-card {
             background-color: var(--bg-card);
-            border-radius: 1.25rem; /* Bordes más redondeados */
+            border-radius: 1.25rem;
             padding: 1.5rem;
             border: 1px solid var(--border-color);
             transition: all 0.3s ease;
@@ -46,11 +46,23 @@
 
         .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
         .table-compact th {
-             font-weight: 600;
-             font-size: 0.8rem;
-             text-transform: uppercase;
-             letter-spacing: 0.05em;
-             color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        /* Styles for the detail section animation */
+        .details-section {
+            transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .details-section.visible {
+            max-height: 1000px; /* Large enough to fit content */
+            opacity: 1;
         }
     </style>
 </head>
@@ -86,70 +98,38 @@
             </div>
         </header>
 
-        <main id="dashboard" class="grid grid-cols-1 md:grid-cols-6 gap-6">
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.1s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3>
-                    <div class="bg-indigo-100 p-2 rounded-lg">
-                        <svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                    </div>
-                </div>
-                <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
-            </div>
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3>
-                    <div class="bg-purple-100 p-2 rounded-lg">
-                       <svg class="w-5 h-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    </div>
-                </div>
-                <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
-            </div>
-            <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.3s;">
-                <div class="flex items-start justify-between">
-                    <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
-                    <div class="bg-amber-100 p-2 rounded-lg">
-                        <svg class="w-5 h-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    </div>
-                </div>
-                <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
-            </div>
-            
-            <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
-                <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
-                <div class="overflow-y-auto flex-grow">
-                    <table class="w-full table-compact text-sm">
-                        <thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock Actual</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead>
-                        <tbody id="product-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
+        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6">
+            <!-- Contenido del dashboard se inserta dinámicamente -->
+        </main>
 
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.5s;">
-                <h3 class="text-slate-500 font-medium text-sm mb-2">Top Ventas</h3>
-                <p id="topProducto" class="text-2xl font-bold truncate mt-1">-</p>
-                <div class="mt-auto pt-4">
-                    <button id="openAssistantBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300">
-                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                        <span>Asistente Virtual</span>
-                        <span id="assistantAlertBadge" class="hidden absolute -top-2 -right-2 flex h-5 w-5">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs items-center justify-center"></span>
-                        </span>
+        <!-- Dynamic Daily Details Section -->
+        <div id="daily-detail-section" class="details-section">
+            <div class="bento-card mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="detail-title" class="text-lg font-semibold text-slate-800"></h3>
+                    <button id="close-detail-btn" class="text-slate-400 hover:text-slate-600" title="Cerrar detalle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/>
+                        </svg>
                     </button>
                 </div>
+                <div id="detail-content" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Details will be injected here by JavaScript -->
+                </div>
             </div>
+        </div>
 
-            <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
-                 <h3 class="text-lg font-semibold mb-2">Composición de Stock</h3>
-                 <div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div>
+        <!-- Pantalla de selección de base de datos -->
+        <div id="db-selection-screen" class="hidden">
+            <div class="bento-card max-w-2xl mx-auto text-center">
+                <h2 class="text-2xl font-bold text-slate-800">¡Bienvenido!</h2>
+                <p class="text-slate-600 mt-2">Para comenzar, importa los datos de tu negocio desde la fuente original.</p>
+                <div class="mt-6">
+                    <select id="db-select" class="w-full bg-white border border-slate-300 rounded-lg p-3"></select>
+                    <button id="save-db-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-indigo-400 disabled:cursor-not-allowed">Importar y Continuar</button>
+                </div>
             </div>
-
-            <div class="md:col-span-6 bento-card" style="animation-delay: 0.7s;">
-                <h3 class="text-lg font-semibold mb-4">Ventas por Día de la Semana</h3>
-                <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
-            </div>
-        </main>
+        </div>
     </div>
 
     <!-- Modal del Asistente Virtual -->
@@ -157,24 +137,23 @@
         <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                  <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                    </span>
-                    Asistente Virtual
+                     <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                     </span>
+                     Asistente Virtual
                  </h2>
                  <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                  </button>
             </div>
-            <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2">
-                <!-- El contenido se inyectará aquí -->
-            </div>
+            <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
@@ -188,70 +167,188 @@
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        function getAbsoluteUrl(filename) {
+            return `${window.location.origin}/${filename}`;
+        }
 
         const logoutBtnUser = document.getElementById('logoutBtnUser');
         const manualSyncBtn = document.getElementById('manualSyncBtn');
         const clientNameEl = document.getElementById('client-name');
         const syncStatusEl = document.getElementById('sync-status');
-        const productTableBody = document.getElementById('product-table-body');
+        
+        const dashboardContent = document.getElementById('dashboard-content');
+        const dbSelectionScreen = document.getElementById('db-selection-screen');
+        const dbSelect = document.getElementById('db-select');
+        const saveDbBtn = document.getElementById('save-db-btn');
+
+        const dailyDetailSection = document.getElementById('daily-detail-section');
+        const detailTitle = document.getElementById('detail-title');
+        const detailContent = document.getElementById('detail-content');
+        const closeDetailBtn = document.getElementById('close-detail-btn');
         
         const assistantModal = document.getElementById('assistantModal');
-        const openAssistantBtn = document.getElementById('openAssistantBtn');
         const closeAssistantBtn = document.getElementById('closeAssistantBtn');
         const assistantModalContent = document.getElementById('assistantModalContent');
-        const assistantAlertBadge = document.getElementById('assistantAlertBadge');
 
         let salesByDayChart, stockByProductChart;
+        let currentUserData;
+        let detailedSalesByDate = {}; // Stores detailed sales for the drill-down view
+        const REPO_URL = 'https://api.github.com/repos/jordyhrnlzn/BBDD/contents/';
         let dataRefreshInterval;
         const REFRESH_INTERVAL_MS = 3600000;
-        let currentUser;
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const userId = sessionStorage.getItem('loggedInUserId');
-            if (!userId) { window.location.href = './index.html'; return; }
-            const userRef = doc(db, "users", userId);
-            const userSnap = await getDoc(userRef);
-            if (!userSnap.exists() || userSnap.data().mustChangePassword) { window.location.href = './index.html'; return; }
-            currentUser = userSnap.data();
-            initializeDashboard(currentUser.dataUrl, currentUser.clientName);
-        });
         
-        function handleLogout() { sessionStorage.removeItem('loggedInUserId'); window.location.href = './index.html'; }
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    currentUserData = userDocSnap.data();
+                    sessionStorage.setItem('loggedInUserId', user.uid);
+                    if (currentUserData.dataCollectionPath) {
+                        showDashboard();
+                        initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
+                    } else {
+                        showDbSelection();
+                    }
+                } else {
+                    console.log("Waiting for user document to be created...");
+                }
+            } else {
+                window.location.href = getAbsoluteUrl('index.html');
+            }
+        });
 
-        function handleManualSync() {
-            if (currentUser && currentUser.dataUrl) {
-                const icon = document.getElementById('manualSyncIcon');
-                if (icon) icon.classList.add('animate-spin');
-                manualSyncBtn.disabled = true;
-                fetchAndAnalyze(currentUser.dataUrl).finally(() => {
-                    if (icon) icon.classList.remove('animate-spin');
-                    manualSyncBtn.disabled = false;
-                });
+        function showDashboard() {
+            dashboardContent.classList.remove('hidden');
+            dbSelectionScreen.classList.add('hidden');
+            dashboardContent.innerHTML = `
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.1s;"><div class="flex items-start justify-between"><h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3><div class="bg-indigo-100 p-2 rounded-lg"><svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div></div><p id="totalVentas" class="text-4xl font-bold mt-auto">0</p></div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;"><div class="flex items-start justify-between"><h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3><div class="bg-purple-100 p-2 rounded-lg"><svg class="w-5 h-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div></div><p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p></div>
+                <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.3s;"><div class="flex items-start justify-between"><h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3><div class="bg-amber-100 p-2 rounded-lg"><svg class="w-5 h-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div></div><p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p></div>
+                <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;"><h3 class="text-lg font-semibold mb-4">Inventario General</h3><div class="overflow-y-auto flex-grow"><table class="w-full table-compact text-sm"><thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock Actual</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead><tbody id="product-table-body"></tbody></table></div></div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.5s;"><h3 class="text-slate-500 font-medium text-sm mb-2">Top Ventas</h3><p id="topProducto" class="text-2xl font-bold truncate mt-1">-</p><div class="mt-auto pt-4"><button id="openAssistantBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Asistente Virtual</span><span id="assistantAlertBadge" class="hidden absolute -top-2 -right-2 flex h-5 w-5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs items-center justify-center"></span></span></button></div></div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;"><h3 class="text-lg font-semibold mb-2">Composición de Stock</h3><div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div></div>
+                <div class="md:col-span-6 bento-card" style="animation-delay: 0.7s;"><h3 id="sales-chart-title" class="text-lg font-semibold mb-4"></h3><div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div></div>`;
+            
+            document.getElementById('openAssistantBtn').addEventListener('click', () => {
+                assistantModal.classList.remove('hidden');
+                assistantModal.classList.add('flex');
+            });
+        }
+        
+        async function showDbSelection() {
+            dashboardContent.classList.add('hidden');
+            dbSelectionScreen.classList.remove('hidden');
+
+            try {
+                const response = await fetch(REPO_URL);
+                const contents = await response.json();
+                const repoDirs = contents.filter(item => item.type === 'dir');
+                
+                dbSelect.innerHTML = '<option disabled selected value="">Elige una fuente de datos...</option>';
+                for (const dir of repoDirs) {
+                    const dirContentsResponse = await fetch(dir.url);
+                    const dirContents = await dirContentsResponse.json();
+                    const csvFile = dirContents.find(file => file.name.endsWith('.csv'));
+                    if (csvFile) {
+                        const option = document.createElement('option');
+                        option.value = csvFile.download_url;
+                        option.textContent = dir.name;
+                        dbSelect.appendChild(option);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching databases", error);
             }
         }
-
-        function initializeDashboard(url, clientName) {
-            clientNameEl.textContent = `Panel para ${clientName}`;
-            fetchAndAnalyze(url);
-            startAutoRefresh(url);
-        }
         
-        async function fetchAndAnalyze(url) {
-            syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-slate-500"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Sincronizando...</span></div>`;
+        saveDbBtn.addEventListener('click', async () => {
+            const selectedDbUrl = dbSelect.value;
+            const selectedDbName = dbSelect.options[dbSelect.selectedIndex].text;
+
+            if (!selectedDbUrl) {
+                alert('Por favor, selecciona una fuente de datos.');
+                return;
+            }
+
+            saveDbBtn.disabled = true;
+            saveDbBtn.textContent = 'Importando... Esto puede tardar unos minutos.';
+
             try {
-                const urlNoCache = `${url}?t=${new Date().getTime()}`;
-                const response = await fetch(urlNoCache);
-                if (!response.ok) throw new Error(`Error de red: ${response.statusText}`);
+                // 1. Fetch from GitHub
+                const response = await fetch(selectedDbUrl);
+                if (!response.ok) throw new Error('No se pudo cargar el archivo desde GitHub.');
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
-                if (data.length > 0) processAndDisplayData(data);
-                else throw new Error("El archivo CSV está vacío o tiene un formato incorrecto.");
+                if (data.length === 0) throw new Error('El archivo CSV está vacío.');
+
+                // 2. Prepare for Firebase Batch Write
+                const userId = auth.currentUser.uid;
+                const collectionPathForUser = `business_data/${userId}`;
+                const transactionsColRef = collection(db, collectionPathForUser, 'transactions');
+
+                // Batch write in chunks of 400 to be safe
+                const batchSize = 400;
+                for (let i = 0; i < data.length; i += batchSize) {
+                    const batch = writeBatch(db);
+                    const chunk = data.slice(i, i + batchSize);
+                    chunk.forEach((rowData) => {
+                        const docRef = doc(transactionsColRef); // Auto-generate ID
+                        batch.set(docRef, rowData);
+                    });
+                    await batch.commit();
+                }
+
+                // 3. Update user document
+                const userRef = doc(db, "users", userId);
+                await updateDoc(userRef, {
+                    dataCollectionPath: collectionPathForUser,
+                    dataUrl: selectedDbUrl, // Keep original URL for potential re-syncs
+                    clientName: selectedDbName
+                });
+
+                currentUserData.dataCollectionPath = collectionPathForUser;
+                currentUserData.clientName = selectedDbName;
+
+                // 4. Initialize dashboard
+                showDashboard();
+                initializeDashboard(collectionPathForUser, selectedDbName);
+
             } catch (error) {
+                console.error("Error during data import:", error);
+                alert('Hubo un error al importar la base de datos: ' + error.message);
+                saveDbBtn.disabled = false;
+                saveDbBtn.textContent = 'Importar y Continuar';
+            }
+        });
+
+        function initializeDashboard(collectionPath, clientName) {
+            clientNameEl.textContent = `Panel para ${clientName}`;
+            fetchAndAnalyze(collectionPath);
+            startAutoRefresh(collectionPath);
+        }
+
+        async function fetchAndAnalyze(collectionPath) {
+            syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-slate-500"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Sincronizando...</span></div>`;
+            try {
+                const transactionsPath = `${collectionPath}/transactions`;
+                const querySnapshot = await getDocs(collection(db, transactionsPath));
+                const data = querySnapshot.docs.map(doc => doc.data());
+
+                if (data.length > 0) {
+                    processAndDisplayData(data);
+                } else {
+                    throw new Error("No se encontraron datos en Firebase. Es posible que la importación inicial no se haya completado.");
+                }
+            } catch (error) {
+                console.error("Error fetching data from Firebase:", error);
                 syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Error</span></div>`;
             }
         }
-
-        function startAutoRefresh(url) {
+        
+        function startAutoRefresh(collectionPath) {
             if (dataRefreshInterval) clearInterval(dataRefreshInterval);
             let countdown = REFRESH_INTERVAL_MS / 1000;
             const updateCountdown = () => {
@@ -262,7 +359,7 @@
             dataRefreshInterval = setInterval(() => {
                 countdown -= 60;
                 if (countdown < 0) {
-                    fetchAndAnalyze(url);
+                    fetchAndAnalyze(collectionPath);
                     countdown = REFRESH_INTERVAL_MS / 1000;
                 }
                 updateCountdown();
@@ -289,28 +386,87 @@
             const productInfo = {};
             let totalVentas = 0;
             const salesByProduct = {};
-            const salesByDay = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0};
+            
+            const salesByDate = {};
+            detailedSalesByDate = {}; 
+
             data.forEach(row => {
-                const { codigo_producto, descripcion, tipo_transaccion, cantidad } = row;
+                const { codigo_producto, descripcion, tipo_transaccion, cantidad, fecha, precio_unitario } = row;
                 if (!codigo_producto) return;
+
                 if (!stock[codigo_producto]) {
                     stock[codigo_producto] = 0;
                     productInfo[codigo_producto] = { descripcion, precio_compra: 0, precio_venta: 0 };
                     salesByProduct[codigo_producto] = 0;
                 }
                 productInfo[codigo_producto].descripcion = descripcion;
+                
                 if (tipo_transaccion.toLowerCase() === 'venta') {
                     stock[codigo_producto] -= cantidad;
                     totalVentas += cantidad;
                     salesByProduct[codigo_producto] += cantidad;
-                    productInfo[codigo_producto].precio_venta = row.precio_unitario;
-                    const date = new Date(row.fecha);
-                    if(!isNaN(date.getDay())) salesByDay[date.getDay()] += cantidad;
+                    productInfo[codigo_producto].precio_venta = precio_unitario;
+
+                    const saleDate = new Date(fecha);
+                    if (!isNaN(saleDate.getTime())) {
+                        const dateString = saleDate.toISOString().split('T')[0];
+                        const saleTotal = (precio_unitario || 0) * cantidad;
+
+                        if (!salesByDate[dateString]) salesByDate[dateString] = 0;
+                        if (!detailedSalesByDate[dateString]) detailedSalesByDate[dateString] = [];
+                        
+                        salesByDate[dateString] += saleTotal;
+                        detailedSalesByDate[dateString].push({
+                            productName: descripcion,
+                            quantity: cantidad,
+                            total: saleTotal
+                        });
+                    }
+
                 } else if (tipo_transaccion.toLowerCase() === 'compra') {
                     stock[codigo_producto] += cantidad;
                     productInfo[codigo_producto].precio_compra = row.precio_unitario;
                 }
             });
+
+            // Find the last 7 days with sales and prepare chart data
+            const allSaleDates = Object.keys(salesByDate).sort((a, b) => new Date(b) - new Date(a));
+            const last7SaleDays = allSaleDates.slice(0, 7).reverse();
+
+            const chartData = { labels: [], data: [], dates: [] };
+            let chartTitle = "Ventas por Día";
+
+            if (last7SaleDays.length > 0) {
+                const monthFormatter = new Intl.DateTimeFormat('es-CL', { month: 'long' });
+                const dayFormatter = new Intl.DateTimeFormat('es-CL', { weekday: 'short' });
+                
+                const firstDayVisible = new Date(last7SaleDays[0] + 'T00:00:00');
+                const lastDayVisible = new Date(last7SaleDays[last7SaleDays.length - 1] + 'T00:00:00');
+
+                last7SaleDays.forEach(dateString => {
+                    const date = new Date(dateString + 'T00:00:00');
+                    const dayName = dayFormatter.format(date).replace('.', '');
+                    
+                    chartData.labels.push(`${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${date.getDate()}`);
+                    chartData.data.push(salesByDate[dateString] || 0);
+                    chartData.dates.push(dateString);
+                });
+
+                const firstMonth = monthFormatter.format(firstDayVisible);
+                const lastMonth = monthFormatter.format(lastDayVisible);
+                
+                if (firstMonth === lastMonth) {
+                    chartTitle = `Últimas Ventas Registradas (${firstDayVisible.getDate()} - ${lastDayVisible.getDate()} de ${lastMonth})`;
+                } else {
+                    chartTitle = `Últimas Ventas Registradas (${firstDayVisible.getDate()} de ${firstMonth} - ${lastDayVisible.getDate()} de ${lastMonth})`;
+                }
+
+            } else {
+                chartTitle = "No se han encontrado registros de ventas";
+            }
+            
+            updateSalesByDayChart(chartData.labels, chartData.data, chartData.dates, chartTitle);
+
             const productosUnicos = Object.keys(stock).length;
             const lowStockItems = Object.entries(stock).filter(([_, qty]) => qty <= 20).sort((a,b) => a[1] - b[1]);
             const topProductoCode = Object.keys(salesByProduct).length > 0 ? Object.entries(salesByProduct).sort((a, b) => b[1] - a[1])[0][0] : null;
@@ -320,13 +476,13 @@
             document.getElementById('alertasStock').textContent = lowStockItems.length.toLocaleString('es-CL');
             document.getElementById('topProducto').textContent = topProductoCode ? productInfo[topProductoCode].descripcion : '-';
             
-            updateSalesByDayChart(Object.values(salesByDay));
             updateStockByProductChart(Object.values(productInfo).map(p => p.descripcion), Object.values(stock));
             populateProductTable(stock, productInfo, salesByProduct);
             startAssistant(lowStockItems, data, productInfo);
         }
         
         function populateProductTable(stock, productInfo, salesByProduct) {
+            const productTableBody = document.getElementById('product-table-body');
             productTableBody.innerHTML = '';
             for (const code in productInfo) {
                 const info = productInfo[code];
@@ -339,24 +495,145 @@
             }
         }
 
-        function updateSalesByDayChart(data) {
-            const ctx = document.getElementById('salesByDayChart')?.getContext('2d');
-            if (!ctx) return;
-            const labels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        function updateSalesByDayChart(labels, data, dates, title) {
+            const ctx = document.getElementById('salesByDayChart').getContext('2d');
+            document.getElementById('sales-chart-title').textContent = title;
             if(salesByDayChart) salesByDayChart.destroy();
-            salesByDayChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Unidades Vendidas', data, backgroundColor: 'rgba(79, 70, 229, 0.7)', borderColor: 'rgba(79, 70, 229, 1)', borderWidth: 1, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } } });
+            salesByDayChart = new Chart(ctx, { 
+                type: 'bar', 
+                data: { 
+                    labels: labels, 
+                    datasets: [{ 
+                        label: 'Total Vendido', 
+                        data, 
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)', 
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(79, 70, 229, 1)'
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true } }, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        const canvas = event.native.target;
+                        canvas.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const selectedDate = dates[index];
+                            showDailyDetails(selectedDate);
+                        }
+                    }
+                } 
+            });
         }
+        
+        function showDailyDetails(dateString) {
+            const salesForDay = detailedSalesByDate[dateString] || [];
+            const selectedDate = new Date(dateString + 'T00:00:00'); // Ensure correct date object for formatting
+            const dateFormatter = new Intl.DateTimeFormat('es-CL', { dateStyle: 'full' });
+            detailTitle.textContent = `Detalle de Ventas - ${dateFormatter.format(selectedDate)}`;
+            
+            if (salesForDay.length === 0) {
+                detailContent.innerHTML = '<p class="text-slate-500 md:col-span-2 text-center py-8">No se registraron ventas en esta fecha.</p>';
+            } else {
+                const productSummary = salesForDay.reduce((acc, sale) => {
+                    if (!acc[sale.productName]) {
+                        acc[sale.productName] = { quantity: 0, total: 0 };
+                    }
+                    acc[sale.productName].quantity += sale.quantity;
+                    acc[sale.productName].total += sale.total;
+                    return acc;
+                }, {});
+
+                const sortedProducts = Object.entries(productSummary)
+                    .map(([name, data]) => ({ name, ...data }))
+                    .sort((a, b) => b.total - a.total);
+
+                const createListHTML = (products, title) => {
+                    if (products.length === 0) return '';
+                    let html = `<div class="space-y-3"><h4 class="font-semibold text-slate-600">${title}</h4><ul class="space-y-2">`;
+                    products.forEach(p => {
+                        html += `<li class="flex justify-between items-center text-sm p-3 rounded-lg bg-slate-50">
+                                    <span>${p.name} <span class="text-slate-500">(x${p.quantity})</span></span>
+                                    <span class="font-semibold text-slate-800">${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(p.total)}</span>
+                                 </li>`;
+                    });
+                    html += `</ul></div>`;
+                    return html;
+                };
+                
+                const topProducts = sortedProducts.slice(0, 5);
+                const bottomProducts = sortedProducts.length > 5 ? sortedProducts.slice(-5).reverse() : [];
+
+                detailContent.innerHTML = createListHTML(topProducts, 'Productos Más Vendidos') + createListHTML(bottomProducts, 'Productos Menos Vendidos');
+            }
+            
+            dailyDetailSection.classList.add('visible');
+            dailyDetailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        closeDetailBtn.addEventListener('click', () => {
+             dailyDetailSection.classList.remove('visible');
+        });
 
         function updateStockByProductChart(labels, data) {
-            const ctx = document.getElementById('stockByProductChart')?.getContext('2d');
-            if(!ctx) return;
-            if(stockByProductChart) stockByProductChart.destroy();
-            stockByProductChart = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ label: 'Stock Actual', data, backgroundColor: ['#4f46e5', '#7c3aed', '#34d399', '#f59e0b', '#3b82f6', '#ec4899'], hoverOffset: 4, borderColor: '#FFFFFF', borderWidth: 4}] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } } });
-        }
+            const ctx = document.getElementById('stockByProductChart').getContext('2d');
+            const totalStock = data.filter(d => d > 0).reduce((sum, val) => sum + val, 0);
 
+            if(stockByProductChart) stockByProductChart.destroy();
+            stockByProductChart = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels, 
+                    datasets: [{ 
+                        data, 
+                        backgroundColor: ['#4f46e5', '#7c3aed', '#34d399', '#f59e0b', '#3b82f6', '#ec4899'], 
+                        borderColor: '#FFFFFF', 
+                        borderWidth: 4 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '70%', 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const percentage = totalStock > 0 ? ((value / totalStock) * 100).toFixed(1) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            });
+        }
+        
         function startAssistant(lowStockItems, allData, productInfo) {
             let modalHTML = `<div class="p-4 rounded-lg bg-slate-50 border flex items-start gap-3"><span class="text-3xl mt-1">👋</span><div><h4 class="text-slate-800 font-bold">¡Hola! Ya revisé tus datos.</h4><p class="text-sm text-slate-600">Esto es lo que encontré en tu historial de los últimos 3 meses.</p></div></div>`;
-
+            const assistantAlertBadge = document.getElementById('assistantAlertBadge');
             if (lowStockItems.length > 0) {
                 const badge = assistantAlertBadge.querySelector('span:last-child');
                 badge.textContent = lowStockItems.length;
@@ -400,12 +677,24 @@
             return `<div class="p-4 rounded-lg bg-indigo-50 border border-indigo-200 grid md:grid-cols-2 gap-6"><div><h4 class="font-bold text-indigo-800">Sugerencia para: <b class="block text-2xl text-slate-800">${product.descripcion}</b></h4><ul class="space-y-4 mt-4 text-slate-700"><li class="flex items-start gap-3"><span class="text-xl">🗓️</span><div>Tu día de más ventas es el <b>${days[peakDayIndex]}</b>.</div></li><li class="flex items-start gap-3"><span class="text-xl">⚡</span><div>Vendes un promedio de <b>${dailyAvg.toFixed(1)} unidades</b> al día.</div></li><li class="flex items-start gap-3"><span class="text-xl">📦</span><div>Para no quedarte corto, te sugiero pedir <b>${recommendedRestock} unidades</b>.</div></li></ul></div><div class="bg-white p-4 rounded-lg border flex flex-col"><h4 class="font-bold text-green-800">Plan de Compra</h4><div class="mt-2 text-sm text-slate-700 space-y-3 flex-grow"><p><b>Cantidad:</b> <span class="block text-xl font-bold text-green-600">${recommendedRestock}</span> unidades</p><p><b>Costo Estimado:</b> <span class="block text-xl font-bold text-green-600">$${(estimatedCost || 0).toLocaleString('es-CL')}</span></p><p><b>Día Ideal de Compra:</b> <span class="block text-xl font-bold text-blue-600">${formattedPurchaseDate}</span></p></div></div></div>`;
         }
         
-        openAssistantBtn.addEventListener('click', () => { assistantModal.classList.remove('hidden'); assistantModal.classList.add('flex'); });
-        closeAssistantBtn.addEventListener('click', () => { assistantModal.classList.add('hidden'); assistantModal.classList.remove('flex'); });
-        assistantModal.addEventListener('click', (e) => { if (e.target === assistantModal) { assistantModal.classList.add('hidden'); assistantModal.classList.remove('flex'); } });
-
+        function handleLogout() {
+            signOut(auth).then(() => {
+                sessionStorage.removeItem('loggedInUserId');
+                window.location.href = getAbsoluteUrl('index.html');
+            });
+        }
         logoutBtnUser.addEventListener('click', handleLogout);
-        manualSyncBtn.addEventListener('click', handleManualSync);
+        closeAssistantBtn.addEventListener('click', () => {
+            assistantModal.classList.add('hidden');
+            assistantModal.classList.remove('flex');
+        });
+        assistantModal.addEventListener('click', (e) => {
+            if (e.target === assistantModal) {
+                 assistantModal.classList.add('hidden');
+                 assistantModal.classList.remove('flex');
+            }
+        });
+        
     </script>
 </body>
 </html>
