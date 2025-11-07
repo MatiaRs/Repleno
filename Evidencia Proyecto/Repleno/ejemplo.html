@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .card-container {
+            display: flex;
+            gap: 20px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 250px;
+        }
+        .card h3 {
+            margin: 0 0 10px;
+        }
+        .card p {
+            color: #555;
+        }
+        .card button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .card button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <h3>Plan basico</h3>
+            <p>$10/month</p>
+            <p>Access to basic features</p>
+            <button>Select</button>
+        </div>
+        <div class="card">
+            <h3>Standard Plan</h3>
+            <p>$20/month</p>
+            <p>Access to standard features</p>
+            <button>Select</button>
+        </div>
+        <div class="card">
+            <h3>Premium Plan</h3>
+            <p>$30/month</p>
+            <p>Access to all features</p>
+            <button>Select</button>
+        </div>
+    </div>
+</body>
+</html>
