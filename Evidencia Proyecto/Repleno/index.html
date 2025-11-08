@@ -97,6 +97,13 @@
                  </div>
              </div>
              <button id="loginBtn" class="btn-primary w-full mt-6">Iniciar Sesión</button>
+             
+             <p class="text-center text-sm text-slate-500 mt-6">
+                ¿Olvidaste tu contraseña? 
+                <button id="forgot-modal" class="font-semibold text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+                    Restablecer
+                </button>
+            </p>
              <p class="text-center text-sm text-slate-500 mt-6">
                 ¿No tienes una cuenta? 
                 <button id="open-register" class="font-semibold text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
@@ -277,6 +284,19 @@
         function getAbsoluteUrl(filename) {
             return `${window.location.origin}/${filename}`;
         }
+        // --- Modal de ovidé mi contraseña ---
+        const forgotBtn = document.getElementById("forgot-modal");
+        const forgotModal = document.getElementById("forgotModal");
+        const closeForgot = document.getElementById("closeForgot");
+
+        forgotBtn.addEventListener("click", () => {
+            forgotModal.classList.remove("hidden");
+        });
+
+        closeForgot.addEventListener("click", () => {
+            forgotModal.classList.add("hidden");
+        });
+
     </script>
 
     <!-- Modal de Registro -->
@@ -379,6 +399,23 @@
             </div>
             <button id="close-terms" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+    <!-- moda olvidar contraseña -->
+     <div id="forgotModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-80">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Restablecer contraseña</h2>
+
+            <label class="block text-sm font-medium text-slate-600 mb-1">Correo electrónico</label>
+            <input type="email" class="w-full border border-slate-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-indigo-400" placeholder="EX@ejemplo.com">
+
+            <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg">
+                Enviar
+            </button>
+
+            <button id="closeForgot" class="mt-3 text-sm text-slate-500 hover:underline w-full">
+                Cancelar
             </button>
         </div>
     </div>
