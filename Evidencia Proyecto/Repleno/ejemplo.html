@@ -1,73 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f4f9;
-        }
-        .card-container {
-            display: flex;
-            gap: 20px;
-        }
-        .card {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-            width: 250px;
-        }
-        .card h3 {
-            margin: 0 0 10px;
-        }
-        .card p {
-            color: #555;
-        }
-        .card button {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .card button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes de Suscripción | Repleno</title>
+  <style>
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #e2e8f0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    p.subtitle {
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    .card-container {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      text-align: center;
+      width: 280px;
+      transition: transform 0.25s, box-shadow 0.25s;
+      border-top: 6px solid #007BFF;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      color: #007BFF;
+      margin-bottom: 10px;
+      font-size: 1.4rem;
+    }
+
+    .price {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #222;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      margin: 15px 0;
+      color: #555;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    ul li::before {
+      content: "✔️";
+    }
+
+    .card button {
+      margin-top: 20px;
+      padding: 10px 24px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .card button:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      margin-top: 50px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="card-container">
-        <div class="card">
-            <h3>Plan basico</h3>
-            <p>$10/month</p>
-            <p>Access to basic features</p>
-            <button>Select</button>
-        </div>
-        <div class="card">
-            <h3>Standard Plan</h3>
-            <p>$20/month</p>
-            <p>Access to standard features</p>
-            <button>Select</button>
-        </div>
-        <div class="card">
-            <h3>Premium Plan</h3>
-            <p>$30/month</p>
-            <p>Access to all features</p>
-            <button>Select</button>
-        </div>
+  <h1>Elige el plan ideal para ti</h1>
+  <p class="subtitle">hola no se me ocurre que mas pones pero saludos</p>
+
+  <div class="card-container">
+    <div class="card">
+      <h3>Plan Gratuito</h3>
+      <div class="price">$0 / mes</div>
+      <ul>
+        <li>Acceso básico a la plataforma</li>
+        <li>Gestión limitada del inventario</li>
+        <li>Duración: 1 mes de prueba</li>
+      </ul>
+      <button onclick="alert('Este plan gratuito es solo de demostración.')">Seleccionar</button>
     </div>
+
+    <div class="card">
+      <h3>Plan Básico</h3>
+      <div class="price">$5.000 / mes</div>
+      <ul>
+        <li>Gestión completa de inventario</li>
+        <li>Alertas automáticas de stock bajo</li>
+        <li>Recomendaciones de compra</li>
+      </ul>
+      <button onclick="iniciarPago(5000)">Seleccionar</button>
+    </div>
+
+    <div class="card">
+      <h3>Plan Premium</h3>
+      <div class="price">$10.000 / mes</div>
+      <ul>
+        <li>Gestión avanzada con IA</li>
+        <li>Alertas inteligentes y predicciones</li>
+        <li>Reportes detallados y métricas</li>
+      </ul>
+      <button onclick="iniciarPago(10000)">Seleccionar</button>
+    </div>
+  </div>
+
+
+  <script>
+    async function iniciarPago(monto) {
+      try {
+        const res = await fetch('http://localhost:3000/crear-transaccion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ monto })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al crear la transacción');
+
+        const ventana = window.open(
+          `${data.url}?token_ws=${data.token}`,
+          'webpay',
+          'width=700,height=800'
+        );
+
+        if (!ventana) {
+          window.location.href = `${data.url}?token_ws=${data.token}`;
+        }
+      } catch (err) {
+        console.error(err);
+        alert('No se pudo iniciar el pago.');
+      }
+    }
+  </script>
 </body>
 </html>
