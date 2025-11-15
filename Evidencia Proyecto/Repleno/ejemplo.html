@@ -1,159 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <link rel="icon" href="/icon.png">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planes de Suscripción | Repleno</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --accent-primary: #4f46e5;
+            --accent-secondary: #7c3aed;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --border-color: #eef2f6;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f7f8fa;
         }
-        .modal {
-            transition: opacity 0.3s ease-in-out;
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.5s ease-in-out;
+            background-color: #DC2626;
         }
-        .modal-content {
-            transition: transform 0.3s ease-in-out;
+
+        .notification.show {
+            transform: translateX(0);
         }
-        .modal-hidden {
-            opacity: 0;
-            pointer-events: none;
+
+        .notification.success {
+            background-color: #16A34A;
         }
-        .modal-hidden .modal-content {
-            transform: scale(0.95) translateY(10px);
-        }
-        .modal-visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-visible .modal-content {
-            transform: scale(1) translateY(0);
+
+        .plan-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
     </style>
 </head>
+
 <body class="bg-slate-100 min-h-screen flex flex-col items-center p-6 md:p-10 text-slate-900">
 
-    <div class="flex justify-center items-center gap-4 mb-4">
-        <svg id="replenoLogoLogin" width="60" height="60" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-        </svg>
-        <h1 class="text-4xl font-extrabold text-slate-900">Repleno</h1>
-    </div>
+    <div id="notification-area"></div>
+
+    <header class="flex flex-col md:flex-row justify-between items-center mb-8 w-full max-w-7xl">
+        <div class="flex items-center gap-3">
+            <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+                <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+            </svg>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Repleno</h1>
+                <p id="client-name" class="text-sm text-slate-500">¡Bienvenido! Elige tu plan para continuar</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 mt-4 md:mt-0">
+            <p class="text-sm text-text-muted">Paso 1 de 2</p>
+        </div>
+    </header>
 
     <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3 text-center">Elige el plan ideal para ti</h2>
-    <p class="text-lg text-slate-600 mb-12 text-center max-w-lg">Planes flexibles que se adaptan a tus necesidades, desde pruebas gratuitas hasta gestión avanzada con IA.</p>
+    <p class="text-lg text-slate-600 mb-12 text-center max-w-lg">Planes flexibles que se adaptan a tus necesidades, desde
+        pruebas gratuitas hasta gestión avanzada con IA.</p>
 
     <div class="flex flex-wrap justify-center items-start gap-8 w-full max-w-7xl">
 
-        <div class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
+        <div
+            class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="/plan basico 1.png" alt="Icono Plan Gratuito" class="w-16 h-16 rounded-full object-cover">
+                <img src="https://placehold.co/64x64/E0E7FF/4338CA?text=R" alt="Icono Plan Gratuito"
+                    class="w-16 h-16 rounded-full object-cover"
+                    onerror="this.src='https://placehold.co/64x64/E0E7FF/4338CA?text=R'">
             </div>
-            
+
             <h3 class="text-2xl font-bold text-slate-800 mb-2">Plan Gratuito</h3>
             <div class="mb-4">
                 <span class="text-4xl font-extrabold text-slate-900">$0</span>
                 <span class="text-lg font-medium text-slate-500">/ mes</span>
             </div>
             <p class="text-slate-500 mb-6 h-12 italic">Ideal para probar la plataforma y sus funcionalidades básicas.</p>
-            
+
             <ul class="space-y-3 text-left text-slate-600 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Acceso básico a la plataforma
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Gestión limitada del inventario
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Duración: 1 mes de prueba
                 </li>
             </ul>
-            
-            <button onclick="showDemoModal()" class="mt-auto w-full font-semibold py-3 px-6 rounded-lg transition duration-300 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300">
+
+            <button id="free-plan-btn"
+                class="plan-button mt-auto w-full font-semibold py-3 px-6 rounded-lg transition duration-300 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300">
                 Seleccionar
             </button>
         </div>
 
-        <div class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
-            
+        <div
+            class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
+
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="/plan basico.webp" alt="Icono Plan Básico" class="w-16 h-16 rounded-full object-cover">
+                <img src="https://placehold.co/64x64/C4B5FD/4338CA?text=R" alt="Icono Plan Básico"
+                    class="w-16 h-16 rounded-full object-cover"
+                    onerror="this.src='https.placehold.co/64x64/C4B5FD/4338CA?text=R'">
             </div>
 
-            <h3 class="text-2xl font-bold text-indigo-600 mb-2">Plan Estandar</h3>
+            <h3 class="text-2xl font-bold text-indigo-600 mb-2">Plan Estándar</h3>
             <div class="mb-4">
                 <span class="text-4xl font-extrabold text-slate-900">$5.000</span>
                 <span class="text-lg font-medium text-slate-500">/ mes</span>
             </div>
-            <p class="text-slate-500 mb-6 h-12 italic">Perfecto para negocios que necesitan control total de su inventario.</p>
-            
+            <p class="text-slate-500 mb-6 h-12 italic">Perfecto para negocios que necesitan control total de su inventario.
+            </p>
+
             <ul class="space-y-3 text-left text-slate-600 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Gestión completa de inventario
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Alertas automáticas de stock bajo
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Recomendaciones de compra
                 </li>
             </ul>
-            
-            <button onclick="iniciarPago(5000)" class="mt-auto w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 hover:bg-indigo-700 transform hover:scale-105">
+
+            <button data-plan="Plan Estándar" data-monto="5000"
+                class="plan-button mt-auto w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 hover:bg-indigo-700 transform hover:scale-105">
                 Seleccionar
             </button>
         </div>
 
-        <div class="card bg-gradient-to-br from-violet-600 to-indigo-700 text-white rounded-xl shadow-2xl p-8 w-full max-w-md md:max-w-sm flex flex-col relative transition-all duration-300 transform md:scale-105 hover:shadow-3xl text-center">
-            
-            <div class="absolute -top-4 right-1/2 translate-x-1/2 bg-sky-300 text-indigo-700 text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+        <div
+            class="card bg-gradient-to-br from-violet-600 to-indigo-700 text-white rounded-xl shadow-2xl p-8 w-full max-w-md md:max-w-sm flex flex-col relative transition-all duration-300 transform md:scale-105 hover:shadow-3xl text-center">
+
+            <div
+                class="absolute -top-4 right-1/2 translate-x-1/2 bg-sky-300 text-indigo-700 text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
                 Recomendado
             </div>
-            
+
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="/plan premium.webp" alt="Icono Plan Premium" class="w-16 h-16 rounded-full object-cover">
+                <img src="https://placehold.co/64x64/A5B4FC/4338CA?text=R" alt="Icono Plan Premium"
+                    class="w-16 h-16 rounded-full object-cover"
+                    onerror="this.src='https.placehold.co/64x64/A5B4FC/4338CA?text=R'">
             </div>
-            
+
             <h3 class="text-2xl font-bold text-white mb-2">Plan Premium</h3>
             <div class="mb-4">
                 <span class="text-4xl font-extrabold text-white">$10.000</span>
                 <span class="text-lg font-medium text-indigo-100">/ mes</span>
             </div>
             <p class="text-indigo-100 mb-6 h-12 italic">Potencia tu negocio con predicciones y alertas inteligentes.</p>
-            
+
             <ul class="space-y-3 text-left text-indigo-50 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Gestión avanzada con IA
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Alertas inteligentes y predicciones
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                     Reportes detallados y métricas
                 </li>
             </ul>
-            
-            <button onclick="iniciarPago(10000)" class="mt-auto w-full bg-white text-indigo-700 font-bold py-3 px-6 rounded-lg transition duration-300 hover:bg-slate-100 transform hover:scale-105">
+
+            <button data-plan="Plan Premium" data-monto="10000"
+                class="plan-button mt-auto w-full bg-white text-indigo-700 font-bold py-3 px-6 rounded-lg transition duration-300 hover:bg-slate-100 transform hover:scale-105">
                 Seleccionar
             </button>
         </div>
@@ -164,67 +246,156 @@
         &copy; 2025 Repleno. Todos los derechos reservados.
     </footer>
 
-    <div id="demo-modal" class="modal modal-hidden fixed inset-0 bg-slate-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-hidden="true">
-        <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-md relative text-center">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            
-            <div class="text-blue-500 mb-4">
-                <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-            
-            <h2 class="text-2xl font-bold text-slate-800 mb-3">Plan de Demostración</h2>
-            <p class="text-slate-600 mb-6">
-                Este plan gratuito es solo de demostración. ¡Gracias por tu interés!
-            </p>
-            
-            <button onclick="closeModal()" class="w-full bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-indigo-700">
-                Entendido
-            </button>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    <script>
-        const demoModal = document.getElementById('demo-modal');
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
+            authDomain: "repleno-app.firebaseapp.com",
+            projectId: "repleno-app",
+            storageBucket: "repleno-app.firebasestorage.app",
+            messagingSenderId: "705634142025",
+            appId: "1:705634142025:web:206f1a905f41ad79143c98",
+            measurementId: "G-FLTS8BFB46"
+        };
 
-        function showDemoModal() {
-            demoModal.classList.remove('modal-hidden');
-            demoModal.classList.add('modal-visible');
-            demoModal.setAttribute('aria-hidden', 'false');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const notificationArea = document.getElementById('notification-area');
+        const paidButtons = document.querySelectorAll('.plan-button[data-monto]');
+        const freeButton = document.getElementById('free-plan-btn');
+        let currentUserId = null;
+
+        function getAbsoluteUrl(filename) {
+            const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
+            const path = filename.startsWith('/') ? filename : `/${filename}`;
+            return `${origin}${path}`;
         }
 
-        function closeModal() {
-            demoModal.classList.add('modal-hidden');
-            demoModal.classList.remove('modal-visible');
-            demoModal.setAttribute('aria-hidden', 'true');
+        function showNotification(message, type = 'error') {
+            const notif = document.createElement('div');
+            notif.className = `notification ${type} show`;
+            notif.textContent = message;
+            notificationArea.appendChild(notif);
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.remove(), 500);
+            }, 3000);
         }
-    
-        async function iniciarPago(monto) {
+
+        function setButtonsLoading(isLoading) {
+            paidButtons.forEach(button => {
+                button.disabled = isLoading;
+                button.textContent = isLoading ? 'Cargando...' : `${button.dataset.plan} ($${parseInt(button.dataset.monto).toLocaleString('es-CL')})`;
+            });
+            freeButton.disabled = isLoading;
+            freeButton.textContent = isLoading ? 'Procesando...' : 'Seleccionar';
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                sessionStorage.setItem('loggedInUserId', user.uid);
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    document.getElementById('client-name').textContent = `¡Bienvenido, ${userData.nombre || 'usuario'}! Elige tu plan`;
+                    
+                    /*
+                    if (userData.subscriptionStatus === 'active') {
+                        window.location.href = getAbsoluteUrl('dashboard.html');
+                    }
+                    */
+                } else {
+                    showNotification('Error: No se encontraron datos de usuario.');
+                    signOut(auth);
+                }
+            } else {
+                currentUserId = null;
+                sessionStorage.removeItem('loggedInUserId');
+                showNotification('No has iniciado sesión. Serás redirigido.');
+                setTimeout(() => window.location.href = getAbsoluteUrl('index.html'), 2000);
+            }
+        });
+
+        freeButton.addEventListener('click', async () => {
+            if (!currentUserId) {
+                showNotification('Error de autenticación. Intenta recargar la página.');
+                return;
+            }
+
+            setButtonsLoading(true);
+
             try {
-                const res = await fetch('http://localhost:3000/crear-transaccion', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ monto })
+                const userRef = doc(db, "users", currentUserId);
+                await updateDoc(userRef, {
+                    plan: 'gratis',
+                    subscriptionStatus: 'active',
+                    planStartDate: new Date().toISOString()
                 });
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Error al crear la transacción');
+                window.location.href = getAbsoluteUrl('dashboard.html');
 
-                const ventana = window.open(
-                    `${data.url}?token_ws=${data.token}`,
-                    'webpay',
-                    'width=700,height=800'
-                );
-
-                if (!ventana) {
-                    window.location.href = `${data.url}?token_ws=${data.token}`;
-                }
-            } catch (err) {
-                console.error(err);
-                alert('No se pudo iniciar el pago. (Error: ' + err.message + ')');
+            } catch (error) {
+                console.error("Error al seleccionar plan gratis:", error);
+                showNotification('Error al guardar tu plan. Inténtalo de nuevo.');
+                setButtonsLoading(false);
             }
-        }
+        });
+
+        paidButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const plan = button.dataset.plan;
+                const monto = button.dataset.monto;
+
+                if (!plan || !monto) return;
+                if (!currentUserId) {
+                    showNotification('Error de autenticación. Intenta recargar la página.');
+                    return;
+                }
+
+                setButtonsLoading(true);
+
+                try {
+                    const response = await fetch('/crear-transaccion', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            monto: parseInt(monto, 10),
+                            plan: plan,
+                            userId: currentUserId // <-- ¡AÑADIR ESTA LÍNEA!
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error del servidor');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.url && data.token) {
+                        window.location.href = `${data.url}?token_ws=${data.token}`;
+                    } else {
+                        throw new Error('Respuesta inválida del servidor.');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Error al iniciar el pago: ' + error.message);
+                    setButtonsLoading(false);
+                }
+            });
+        });
     </script>
 </body>
+
 </html>

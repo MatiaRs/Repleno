@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <link rel="icon" href="/icon.png">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repleno - Dashboard</title>
@@ -14,16 +16,29 @@
             --bg-card: #FFFFFF;
             --border-color: #eef2f6;
             --accent-primary: #4f46e5;
+            /* indigo-600 */
             --accent-secondary: #7c3aed;
+            /* violet-600 */
             --text-dark: #111827;
             --text-muted: #6b7280;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-light); 
-            color: var(--text-dark); 
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
         }
 
         .bento-card {
@@ -37,14 +52,18 @@
             display: flex;
             flex-direction: column;
         }
-        
-        .bento-card:hover { 
-            transform: translateY(-5px); 
+
+        .bento-card:hover {
+            transform: translateY(-5px);
             border-color: var(--accent-primary);
             box-shadow: 0 10px 20px -5px rgb(79 70 229 / 0.1);
         }
 
-        .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
+        .table-compact th,
+        .table-compact td {
+            padding: 0.75rem 1rem;
+        }
+
         .table-compact th {
             font-weight: 600;
             font-size: 0.8rem;
@@ -53,68 +72,160 @@
             color: var(--text-muted);
         }
 
-        /* Styles for the detail section animation */
+        /* Estilos para la sección de detalles */
         .details-section {
             transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
         }
+
         .details-section.visible {
-            max-height: 1000px; /* Large enough to fit content */
+            max-height: 1000px;
             opacity: 1;
+        }
+
+        /* Estilos para el widget de plan */
+        .plan-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .plan-badge-gratis {
+            background-color: #f1f5f9;
+            /* slate-100 */
+            color: #475569;
+            /* slate-600 */
+        }
+
+        .plan-badge-estandar {
+            background-color: #eef2ff;
+            /* indigo-50 */
+            color: var(--accent-primary);
+            /* indigo-600 */
+        }
+
+        .plan-badge-premium {
+            background-color: #f5f3ff;
+            /* violet-50 */
+            color: var(--accent-secondary);
+            /* violet-600 */
+        }
+
+        .plan-days-critical {
+            color: #dc2626; /* red-600 */
+            font-weight: 600;
+        }
+        .plan-days-warning {
+            color: #f59e0b; /* amber-500 */
+            font-weight: 500;
         }
     </style>
 </head>
+
 <body class="overflow-x-hidden">
     <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8">
-             <div class="flex items-center gap-3">
-                 <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                     <defs>
-                         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                             <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
-                             <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
-                         </linearGradient>
-                     </defs>
-                     <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                     <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                     <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                 </svg>
-                 <div>
-                     <h1 class="text-2xl font-bold text-slate-900">Repleno</h1>
-                     <p id="client-name" class="text-sm text-slate-500">Panel de Inteligencia de Negocios</p>
-                 </div>
-             </div>
-            <div class="flex items-center gap-3 mt-4 md:mt-0">
-                <div id="sync-status" class="bg-white rounded-full p-2 px-3 text-sm shadow-sm border"></div>
-                <button id="manualSyncBtn" class="text-slate-500 hover:text-indigo-600 p-2 rounded-full hover:bg-slate-100" title="Sincronizar ahora">
-                     <svg id="manualSyncIcon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-4.991-2.695v-2.121a3.375 3.375 0 00-3.375-3.375H8.25m11.664 0l-3.181-3.183A8.25 8.25 0 002.985 5.964l-3.181 3.183" /></svg>
-                 </button>
-                <button id="logoutBtnUser" class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
-                   <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
-                </button>
+        <!-- Encabezado Rediseñado -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none"
+                        stroke-linecap="round" />
+                    <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none"
+                        stroke-linecap="round" />
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Repleno</h1>
+                </div>
+            </div>
+
+            <!-- Controles del Usuario y Plan -->
+            <div class="flex items-center gap-4">
+                <!-- (NUEVO) Widget de Estado del Plan -->
+                <div id="plan-status-widget" class="bento-card !p-3 !rounded-xl !flex-row items-center gap-4">
+                    <div class="text-right">
+                        <p id="plan-name" class="font-bold text-sm leading-tight">Cargando Plan...</p>
+                        <p id="plan-days-remaining" class="text-xs text-slate-500 leading-tight">Calculando...</p>
+                    </div>
+                    <!-- CORREGIDO: El enlace ahora apunta a ejemplo.html -->
+                    <a href="ejemplo.html" id="change-plan-btn"
+                        class="text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded-lg transition-colors whitespace-nowrap">
+                        Cambiar Plan
+                    </a>
+                </div>
+
+                <!-- Controles Existentes -->
+                <div class="flex items-center gap-2">
+                    <div id="sync-status"
+                        class="bg-white rounded-full p-2 px-3 text-sm shadow-sm border hidden md:block"></div>
+                    <button id="manualSyncBtn"
+                        class="text-slate-500 hover:text-indigo-600 p-2 rounded-full hover:bg-slate-100"
+                        title="Sincronizar ahora">
+                        <svg id="manualSyncIcon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-4.991-2.695v-2.121a3.375 3.375 0 00-3.375-3.375H8.25m11.664 0l-3.181-3.183A8.25 8.25 0 002.985 5.964l-3.181 3.183" />
+                        </svg>
+                    </button>
+                    <button id="logoutBtnUser"
+                        class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50"
+                        title="Cerrar Sesión">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </header>
 
         <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6">
-            <!-- Contenido del dashboard se inserta dinámicamente -->
+            <!-- El contenido se inyectará aquí -->
         </main>
 
-        <!-- Dynamic Daily Details Section -->
+        <!-- (NUEVO) Plantilla de Carga del Dashboard -->
+        <div id="dashboard-loader" class="text-center py-20">
+             <div class="flex items-center justify-center gap-2 text-slate-500">
+                 <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                     <path class="opacity-75" fill="var(--accent-primary)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                 </svg>
+                 <span>Cargando tu panel...</span>
+             </div>
+        </div>
+
+        <!-- Sección de Detalles (Drill-down) -->
         <div id="daily-detail-section" class="details-section">
             <div class="bento-card mt-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 id="detail-title" class="text-lg font-semibold text-slate-800"></h3>
                     <button id="close-detail-btn" class="text-slate-400 hover:text-slate-600" title="Cerrar detalle">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z" />
                         </svg>
                     </button>
                 </div>
                 <div id="detail-content" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Details will be injected here by JavaScript -->
+                    <!-- Detalles se inyectan aquí -->
                 </div>
             </div>
         </div>
@@ -123,28 +234,40 @@
         <div id="db-selection-screen" class="hidden">
             <div class="bento-card max-w-2xl mx-auto text-center">
                 <h2 class="text-2xl font-bold text-slate-800">¡Bienvenido!</h2>
-                <p class="text-slate-600 mt-2">Para comenzar, importa los datos de tu negocio desde la fuente original.</p>
+                <p class="text-slate-600 mt-2">Para comenzar, importa los datos de tu negocio desde la fuente original.
+                </p>
                 <div class="mt-6">
                     <select id="db-select" class="w-full bg-white border border-slate-300 rounded-lg p-3"></select>
-                    <button id="save-db-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-indigo-400 disabled:cursor-not-allowed">Importar y Continuar</button>
+                    <button id="save-db-btn"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-indigo-400 disabled:cursor-not-allowed">Importar
+                        y Continuar</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal del Asistente Virtual -->
-    <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50 transition-opacity duration-300">
+    <div id="assistantModal"
+        class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50 transition-opacity duration-300">
         <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
-                 <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                     <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
-                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                     </span>
-                     Asistente Virtual
-                 </h2>
-                 <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600">
-                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                 </button>
+                <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
+                    <span
+                        class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
+                    </span>
+                    Asistente Virtual
+                </h2>
+                <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
             </div>
             <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2"></div>
         </div>
@@ -152,7 +275,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -164,81 +287,238 @@
             appId: "1:705634142025:web:206f1a905f41ad79143c98",
             measurementId: "G-FLTS8BFB46"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        function getAbsoluteUrl(filename) {
-            return `${window.location.origin}/${filename}`;
-        }
-
+        // --- Selectores del DOM ---
         const logoutBtnUser = document.getElementById('logoutBtnUser');
         const manualSyncBtn = document.getElementById('manualSyncBtn');
-        const clientNameEl = document.getElementById('client-name');
         const syncStatusEl = document.getElementById('sync-status');
-        
         const dashboardContent = document.getElementById('dashboard-content');
+        const dashboardLoader = document.getElementById('dashboard-loader');
         const dbSelectionScreen = document.getElementById('db-selection-screen');
         const dbSelect = document.getElementById('db-select');
         const saveDbBtn = document.getElementById('save-db-btn');
-
         const dailyDetailSection = document.getElementById('daily-detail-section');
         const detailTitle = document.getElementById('detail-title');
         const detailContent = document.getElementById('detail-content');
         const closeDetailBtn = document.getElementById('close-detail-btn');
-        
         const assistantModal = document.getElementById('assistantModal');
         const closeAssistantBtn = document.getElementById('closeAssistantBtn');
         const assistantModalContent = document.getElementById('assistantModalContent');
 
+        // (NUEVO) Selectores de Plan
+        const planNameEl = document.getElementById('plan-name');
+        const planDaysEl = document.getElementById('plan-days-remaining');
+
         let salesByDayChart, stockByProductChart;
         let currentUserData;
-        let detailedSalesByDate = {}; // Stores detailed sales for the drill-down view
+        let detailedSalesByDate = {};
         const REPO_URL = 'https://api.github.com/repos/jordyhrnlzn/BBDD/contents/';
         let dataRefreshInterval;
         const REFRESH_INTERVAL_MS = 3600000;
-        
-        onAuthStateChanged(auth, async (user) => {
+        let userDocUnsubscribe = null; // Listener de Firestore
+
+        function getAbsoluteUrl(filename) {
+            const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
+            const path = filename.startsWith('/') ? filename : `/${filename}`;
+            return `${origin}${path}`;
+        }
+
+        onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    currentUserData = userDocSnap.data();
-                    sessionStorage.setItem('loggedInUserId', user.uid);
-                    if (currentUserData.dataCollectionPath) {
-                        showDashboard();
-                        initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
-                    } else {
-                        showDbSelection();
-                    }
-                } else {
-                    console.log("Waiting for user document to be created...");
+                // (NUEVO) Cancelar listener anterior si existe
+                if (userDocUnsubscribe) {
+                    userDocUnsubscribe();
                 }
+                
+                const userDocRef = doc(db, "users", user.uid);
+                
+                // (NUEVO) Usar onSnapshot para escuchar cambios en el plan en tiempo real
+                userDocUnsubscribe = onSnapshot(userDocRef, (userDocSnap) => {
+                    if (userDocSnap.exists()) {
+                        currentUserData = userDocSnap.data();
+                        sessionStorage.setItem('loggedInUserId', user.uid);
+
+                        // (NUEVO) Actualizar el estado del plan CADA VEZ que los datos del usuario cambien
+                        updatePlanStatus(currentUserData); 
+
+                        if (currentUserData.dataCollectionPath) {
+                            showDashboard();
+                            // Inicializar solo si no se ha hecho ya (o si la ruta cambió)
+                            if (!dashboardContent.dataset.initialized) {
+                                initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
+                                dashboardContent.dataset.initialized = true;
+                            }
+                        } else {
+                            showDbSelection();
+                            dashboardContent.dataset.initialized = false; // Resetear
+                        }
+                    } else {
+                        // Esto puede pasar brevemente durante el registro antes de que se cree el doc
+                        console.log("Esperando a que se cree el documento del usuario...");
+                        dashboardLoader.classList.remove('hidden');
+                        dashboardContent.classList.add('hidden');
+                        dbSelectionScreen.classList.add('hidden');
+                    }
+                });
             } else {
+                if (userDocUnsubscribe) userDocUnsubscribe();
                 window.location.href = getAbsoluteUrl('index.html');
             }
         });
+        
+        /**
+         * (NUEVA FUNCIÓN)
+         * Actualiza el widget de estado del plan en el encabezado.
+         * @param {object} userData - Los datos del documento del usuario de Firestore.
+         */
+        function updatePlanStatus(userData) {
+            const { plan, planStartDate } = userData;
+
+            if (!plan || !planStartDate) {
+                planNameEl.textContent = "Sin Plan";
+                planDaysEl.textContent = "Por favor, elige un plan";
+                planNameEl.className = "plan-badge plan-badge-gratis";
+                planDaysEl.className = "text-xs text-slate-500 leading-tight";
+                return;
+            }
+
+            // Capitalizar nombre del plan
+            const planDisplayName = plan.charAt(0).toUpperCase() + plan.slice(1);
+            planNameEl.textContent = planDisplayName;
+
+            // Asignar clase de estilo según el plan
+            if (plan === 'gratis') {
+                planNameEl.className = "plan-badge plan-badge-gratis";
+            } else if (plan === 'Plan Estándar') {
+                planNameEl.className = "plan-badge plan-badge-estandar";
+            } else {
+                planNameEl.className = "plan-badge plan-badge-premium";
+            }
+
+            // Calcular días restantes (Asumimos 30 días para todos los planes)
+            const startDate = new Date(planStartDate);
+            const planDurationDays = 30;
+            const endDate = new Date(startDate.getTime());
+            endDate.setDate(startDate.getDate() + planDurationDays);
+
+            const now = new Date();
+            const diffTime = endDate.getTime() - now.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Actualizar mensaje de días restantes
+            planDaysEl.className = "text-xs text-slate-500 leading-tight"; // Reset class
+            
+            if (plan === 'gratis') {
+                if (diffDays <= 0) {
+                    planDaysEl.textContent = "Tu prueba ha expirado";
+                    planDaysEl.classList.add('plan-days-critical');
+                } else if (diffDays <= 7) {
+                    planDaysEl.textContent = `¡Tu prueba termina en ${diffDays} días!`;
+                    planDaysEl.classList.add('plan-days-warning');
+                } else {
+                    planDaysEl.textContent = `Te quedan ${diffDays} días de prueba`;
+                }
+            } else {
+                // Lógica para planes pagados
+                if (diffDays <= 0) {
+                    planDaysEl.textContent = "Tu plan ha expirado";
+                    planDaysEl.classList.add('plan-days-critical');
+                } else if (diffDays <= 7) {
+                    planDaysEl.textContent = `Renueva en ${diffDays} días`;
+                    planDaysEl.classList.add('plan-days-warning');
+                } else {
+                    planDaysEl.textContent = `Quedan ${diffDays} días`;
+                }
+            }
+        }
+
 
         function showDashboard() {
-            dashboardContent.classList.remove('hidden');
+            dashboardLoader.classList.add('hidden');
             dbSelectionScreen.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+
+            // (NUEVO) Inyectar la estructura del bento grid rediseñada
             dashboardContent.innerHTML = `
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.1s;"><div class="flex items-start justify-between"><h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3><div class="bg-indigo-100 p-2 rounded-lg"><svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div></div><p id="totalVentas" class="text-4xl font-bold mt-auto">0</p></div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;"><div class="flex items-start justify-between"><h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3><div class="bg-purple-100 p-2 rounded-lg"><svg class="w-5 h-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div></div><p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p></div>
-                <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.3s;"><div class="flex items-start justify-between"><h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3><div class="bg-amber-100 p-2 rounded-lg"><svg class="w-5 h-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div></div><p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p></div>
-                <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;"><h3 class="text-lg font-semibold mb-4">Inventario General</h3><div class="overflow-y-auto flex-grow"><table class="w-full table-compact text-sm"><thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock Actual</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead><tbody id="product-table-body"></tbody></table></div></div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.5s;"><h3 class="text-slate-500 font-medium text-sm mb-2">Top Ventas</h3><p id="topProducto" class="text-2xl font-bold truncate mt-1">-</p><div class="mt-auto pt-4"><button id="openAssistantBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg><span>Asistente Virtual</span><span id="assistantAlertBadge" class="hidden absolute -top-2 -right-2 flex h-5 w-5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs items-center justify-center"></span></span></button></div></div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;"><h3 class="text-lg font-semibold mb-2">Composición de Stock</h3><div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div></div>
-                <div class="md:col-span-6 bento-card" style="animation-delay: 0.7s;"><h3 id="sales-chart-title" class="text-lg font-semibold mb-4"></h3><div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div></div>`;
-            
+                <!-- Fila 1: Bienvenida y KPIs -->
+                <div class="md:col-span-2 bento-card bg-gradient-to-br from-indigo-500 to-purple-600 text-white" style="animation-delay: 0.1s;">
+                    <!-- CORREGIDO: Saludo con el nombre de usuario -->
+                    <h3 id="client-name" class="text-2xl font-bold">¡Hola!</h3>
+                    <p class="text-indigo-100">Aquí está el resumen de tu negocio.</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3>
+                        <div class="bg-indigo-100 p-2 rounded-lg"><svg class="w-5 h-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></div>
+                    </div>
+                    <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.3s;">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3>
+                        <div class="bg-purple-100 p-2 rounded-lg"><svg class="w-5 h-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg></div>
+                    </div>
+                    <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
+                </div>
+
+                <!-- Fila 2: Inventario, Alertas y Asistente -->
+                <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
+                    <div class="overflow-y-auto flex-grow" style="max-height: 400px;">
+                        <table class="w-full table-compact text-sm">
+                            <thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock</th><th>Precio Venta</th><th>Ventas (3m)</th></tr></thead>
+                            <tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-10 text-text-muted">Cargando datos...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.5s;">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
+                        <div class="bg-amber-100 p-2 rounded-lg"><svg class="w-5 h-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>
+                    </div>
+                    <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
+                    <h3 class="text-slate-500 font-medium text-sm mb-2">Asistente Virtual</h3>
+                    <p id="topProducto" class="text-xl font-bold truncate mt-1">Analizando...</p>
+                    <div class="mt-auto pt-4">
+                        <button id="openAssistantBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                            <span>Ver Sugerencias</span>
+                            <span id="assistantAlertBadge" class="hidden absolute -top-2 -right-2 flex h-5 w-5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs items-center justify-center"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fila 3: Gráficos -->
+                <!-- CORREGIDO: Gráfico de ventas ajustado a 4 columnas -->
+                <div class="md:col-span-4 bento-card" style="animation-delay: 0.7s;">
+                    <h3 id="sales-chart-title" class="text-lg font-semibold mb-4">Ventas por Día</h3>
+                    <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
+                </div>
+                <!-- CORREGIDO: Gráfico de stock ajustado a 2 columnas (para estar en la misma fila) -->
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.8s;">
+                    <h3 class="text-lg font-semibold mb-2">Composición de Stock</h3>
+                    <div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div>
+                </div>
+            `;
+
+            // Volver a enlazar el botón del asistente, ya que se acaba de recrear
             document.getElementById('openAssistantBtn').addEventListener('click', () => {
                 assistantModal.classList.remove('hidden');
                 assistantModal.classList.add('flex');
             });
         }
-        
+
         async function showDbSelection() {
+            dashboardLoader.classList.add('hidden');
             dashboardContent.classList.add('hidden');
             dbSelectionScreen.classList.remove('hidden');
 
@@ -246,7 +526,7 @@
                 const response = await fetch(REPO_URL);
                 const contents = await response.json();
                 const repoDirs = contents.filter(item => item.type === 'dir');
-                
+
                 dbSelect.innerHTML = '<option disabled selected value="">Elige una fuente de datos...</option>';
                 for (const dir of repoDirs) {
                     const dirContentsResponse = await fetch(dir.url);
@@ -263,7 +543,7 @@
                 console.error("Error fetching databases", error);
             }
         }
-        
+
         saveDbBtn.addEventListener('click', async () => {
             const selectedDbUrl = dbSelect.value;
             const selectedDbName = dbSelect.options[dbSelect.selectedIndex].text;
@@ -277,44 +557,40 @@
             saveDbBtn.textContent = 'Importando... Esto puede tardar unos minutos.';
 
             try {
-                // 1. Fetch from GitHub
+                // 1. Fetch de GitHub
                 const response = await fetch(selectedDbUrl);
                 if (!response.ok) throw new Error('No se pudo cargar el archivo desde GitHub.');
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
                 if (data.length === 0) throw new Error('El archivo CSV está vacío.');
 
-                // 2. Prepare for Firebase Batch Write
+                // 2. Preparar Batch Write en Firebase
                 const userId = auth.currentUser.uid;
                 const collectionPathForUser = `business_data/${userId}`;
                 const transactionsColRef = collection(db, collectionPathForUser, 'transactions');
 
-                // Batch write in chunks of 400 to be safe
                 const batchSize = 400;
                 for (let i = 0; i < data.length; i += batchSize) {
                     const batch = writeBatch(db);
                     const chunk = data.slice(i, i + batchSize);
                     chunk.forEach((rowData) => {
-                        const docRef = doc(transactionsColRef); // Auto-generate ID
+                        const docRef = doc(transactionsColRef); // ID automático
                         batch.set(docRef, rowData);
                     });
                     await batch.commit();
                 }
 
-                // 3. Update user document
+                // 3. Actualizar documento del usuario
                 const userRef = doc(db, "users", userId);
                 await updateDoc(userRef, {
                     dataCollectionPath: collectionPathForUser,
-                    dataUrl: selectedDbUrl, // Keep original URL for potential re-syncs
+                    dataUrl: selectedDbUrl,
                     clientName: selectedDbName
                 });
 
-                currentUserData.dataCollectionPath = collectionPathForUser;
-                currentUserData.clientName = selectedDbName;
-
-                // 4. Initialize dashboard
-                showDashboard();
-                initializeDashboard(collectionPathForUser, selectedDbName);
+                // 4. Inicializar dashboard (el listener onSnapshot se encargará de mostrarlo)
+                // No es necesario llamar a showDashboard() o initializeDashboard() aquí,
+                // ya que onSnapshot detectará el cambio en dataCollectionPath y lo hará automáticamente.
 
             } catch (error) {
                 console.error("Error during data import:", error);
@@ -325,13 +601,16 @@
         });
 
         function initializeDashboard(collectionPath, clientName) {
-            clientNameEl.textContent = `Panel para ${clientName}`;
+            // CORREGIDO: Usar el nombre de usuario (currentUserData.nombre) si existe, si no, el nombre del cliente (base de datos)
+            const greetingName = currentUserData.nombre || clientName || "Usuario";
+            document.getElementById('client-name').textContent = `¡Hola, ${greetingName}!`;
             fetchAndAnalyze(collectionPath);
             startAutoRefresh(collectionPath);
         }
 
         async function fetchAndAnalyze(collectionPath) {
             syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-slate-500"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Sincronizando...</span></div>`;
+            syncStatusEl.classList.remove('hidden');
             try {
                 const transactionsPath = `${collectionPath}/transactions`;
                 const querySnapshot = await getDocs(collection(db, transactionsPath));
@@ -340,14 +619,14 @@
                 if (data.length > 0) {
                     processAndDisplayData(data);
                 } else {
-                    throw new Error("No se encontraron datos en Firebase. Es posible que la importación inicial no se haya completado.");
+                    throw new Error("No se encontraron datos en Firebase.");
                 }
             } catch (error) {
                 console.error("Error fetching data from Firebase:", error);
                 syncStatusEl.innerHTML = `<div class="flex items-center gap-2 text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Error</span></div>`;
             }
         }
-        
+
         function startAutoRefresh(collectionPath) {
             if (dataRefreshInterval) clearInterval(dataRefreshInterval);
             let countdown = REFRESH_INTERVAL_MS / 1000;
@@ -386,9 +665,9 @@
             const productInfo = {};
             let totalVentas = 0;
             const salesByProduct = {};
-            
+
             const salesByDate = {};
-            detailedSalesByDate = {}; 
+            detailedSalesByDate = {};
 
             data.forEach(row => {
                 const { codigo_producto, descripcion, tipo_transaccion, cantidad, fecha, precio_unitario } = row;
@@ -400,7 +679,7 @@
                     salesByProduct[codigo_producto] = 0;
                 }
                 productInfo[codigo_producto].descripcion = descripcion;
-                
+
                 if (tipo_transaccion.toLowerCase() === 'venta') {
                     stock[codigo_producto] -= cantidad;
                     totalVentas += cantidad;
@@ -414,7 +693,7 @@
 
                         if (!salesByDate[dateString]) salesByDate[dateString] = 0;
                         if (!detailedSalesByDate[dateString]) detailedSalesByDate[dateString] = [];
-                        
+
                         salesByDate[dateString] += saleTotal;
                         detailedSalesByDate[dateString].push({
                             productName: descripcion,
@@ -429,7 +708,6 @@
                 }
             });
 
-            // Find the last 7 days with sales and prepare chart data
             const allSaleDates = Object.keys(salesByDate).sort((a, b) => new Date(b) - new Date(a));
             const last7SaleDays = allSaleDates.slice(0, 7).reverse();
 
@@ -439,14 +717,14 @@
             if (last7SaleDays.length > 0) {
                 const monthFormatter = new Intl.DateTimeFormat('es-CL', { month: 'long' });
                 const dayFormatter = new Intl.DateTimeFormat('es-CL', { weekday: 'short' });
-                
+
                 const firstDayVisible = new Date(last7SaleDays[0] + 'T00:00:00');
                 const lastDayVisible = new Date(last7SaleDays[last7SaleDays.length - 1] + 'T00:00:00');
 
                 last7SaleDays.forEach(dateString => {
                     const date = new Date(dateString + 'T00:00:00');
                     const dayName = dayFormatter.format(date).replace('.', '');
-                    
+
                     chartData.labels.push(`${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${date.getDate()}`);
                     chartData.data.push(salesByDate[dateString] || 0);
                     chartData.dates.push(dateString);
@@ -454,7 +732,7 @@
 
                 const firstMonth = monthFormatter.format(firstDayVisible);
                 const lastMonth = monthFormatter.format(lastDayVisible);
-                
+
                 if (firstMonth === lastMonth) {
                     chartTitle = `Últimas Ventas Registradas (${firstDayVisible.getDate()} - ${lastDayVisible.getDate()} de ${lastMonth})`;
                 } else {
@@ -464,32 +742,37 @@
             } else {
                 chartTitle = "No se han encontrado registros de ventas";
             }
-            
+
             updateSalesByDayChart(chartData.labels, chartData.data, chartData.dates, chartTitle);
 
             const productosUnicos = Object.keys(stock).length;
-            const lowStockItems = Object.entries(stock).filter(([_, qty]) => qty <= 20).sort((a,b) => a[1] - b[1]);
+            const lowStockItems = Object.entries(stock).filter(([_, qty]) => qty <= 20).sort((a, b) => a[1] - b[1]);
             const topProductoCode = Object.keys(salesByProduct).length > 0 ? Object.entries(salesByProduct).sort((a, b) => b[1] - a[1])[0][0] : null;
-            
+
             document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
             document.getElementById('productosUnicos').textContent = productosUnicos.toLocaleString('es-CL');
             document.getElementById('alertasStock').textContent = lowStockItems.length.toLocaleString('es-CL');
             document.getElementById('topProducto').textContent = topProductoCode ? productInfo[topProductoCode].descripcion : '-';
-            
+
             updateStockByProductChart(Object.values(productInfo).map(p => p.descripcion), Object.values(stock));
             populateProductTable(stock, productInfo, salesByProduct);
             startAssistant(lowStockItems, data, productInfo);
         }
-        
+
         function populateProductTable(stock, productInfo, salesByProduct) {
             const productTableBody = document.getElementById('product-table-body');
             productTableBody.innerHTML = '';
+            if (Object.keys(productInfo).length === 0) {
+                 productTableBody.innerHTML = `<tr class="text-center"><td colspan="4" class="py-10 text-text-muted">No hay productos para mostrar.</td></tr>`;
+                 return;
+            }
             for (const code in productInfo) {
                 const info = productInfo[code];
                 const currentStock = stock[code] || 0;
                 const totalSales = salesByProduct[code] || 0;
                 const price = info.precio_venta ? `$${info.precio_venta.toLocaleString('es-CL')}` : '-';
                 const row = document.createElement('tr');
+                row.className = "border-b border-slate-100 hover:bg-slate-50";
                 row.innerHTML = `<td class="py-3">${info.descripcion}</td><td class="font-semibold ${currentStock <= 20 ? 'text-red-600' : 'text-slate-700'}">${currentStock}</td><td>${price}</td><td>${totalSales}</td>`;
                 productTableBody.appendChild(row);
             }
@@ -498,28 +781,28 @@
         function updateSalesByDayChart(labels, data, dates, title) {
             const ctx = document.getElementById('salesByDayChart').getContext('2d');
             document.getElementById('sales-chart-title').textContent = title;
-            if(salesByDayChart) salesByDayChart.destroy();
-            salesByDayChart = new Chart(ctx, { 
-                type: 'bar', 
-                data: { 
-                    labels: labels, 
-                    datasets: [{ 
-                        label: 'Total Vendido', 
-                        data, 
-                        backgroundColor: 'rgba(79, 70, 229, 0.7)', 
+            if (salesByDayChart) salesByDayChart.destroy();
+            salesByDayChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Vendido',
+                        data,
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
                         borderRadius: 8,
                         hoverBackgroundColor: 'rgba(79, 70, 229, 1)'
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    scales: { y: { beginAtZero: true } }, 
-                    plugins: { 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     let label = context.dataset.label || '';
                                     if (label) { label += ': '; }
                                     if (context.parsed.y !== null) {
@@ -541,16 +824,16 @@
                             showDailyDetails(selectedDate);
                         }
                     }
-                } 
+                }
             });
         }
-        
+
         function showDailyDetails(dateString) {
             const salesForDay = detailedSalesByDate[dateString] || [];
-            const selectedDate = new Date(dateString + 'T00:00:00'); // Ensure correct date object for formatting
+            const selectedDate = new Date(dateString + 'T00:00:00');
             const dateFormatter = new Intl.DateTimeFormat('es-CL', { dateStyle: 'full' });
             detailTitle.textContent = `Detalle de Ventas - ${dateFormatter.format(selectedDate)}`;
-            
+
             if (salesForDay.length === 0) {
                 detailContent.innerHTML = '<p class="text-slate-500 md:col-span-2 text-center py-8">No se registraron ventas en esta fecha.</p>';
             } else {
@@ -572,53 +855,53 @@
                     let html = `<div class="space-y-3"><h4 class="font-semibold text-slate-600">${title}</h4><ul class="space-y-2">`;
                     products.forEach(p => {
                         html += `<li class="flex justify-between items-center text-sm p-3 rounded-lg bg-slate-50">
-                                    <span>${p.name} <span class="text-slate-500">(x${p.quantity})</span></span>
-                                    <span class="font-semibold text-slate-800">${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(p.total)}</span>
-                                 </li>`;
+                                       <span>${p.name} <span class="text-slate-500">(x${p.quantity})</span></span>
+                                       <span class="font-semibold text-slate-800">${new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(p.total)}</span>
+                                     </li>`;
                     });
                     html += `</ul></div>`;
                     return html;
                 };
-                
+
                 const topProducts = sortedProducts.slice(0, 5);
                 const bottomProducts = sortedProducts.length > 5 ? sortedProducts.slice(-5).reverse() : [];
 
                 detailContent.innerHTML = createListHTML(topProducts, 'Productos Más Vendidos') + createListHTML(bottomProducts, 'Productos Menos Vendidos');
             }
-            
+
             dailyDetailSection.classList.add('visible');
             dailyDetailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         closeDetailBtn.addEventListener('click', () => {
-             dailyDetailSection.classList.remove('visible');
+            dailyDetailSection.classList.remove('visible');
         });
 
         function updateStockByProductChart(labels, data) {
             const ctx = document.getElementById('stockByProductChart').getContext('2d');
             const totalStock = data.filter(d => d > 0).reduce((sum, val) => sum + val, 0);
 
-            if(stockByProductChart) stockByProductChart.destroy();
-            stockByProductChart = new Chart(ctx, { 
-                type: 'doughnut', 
-                data: { 
-                    labels, 
-                    datasets: [{ 
-                        data, 
-                        backgroundColor: ['#4f46e5', '#7c3aed', '#34d399', '#f59e0b', '#3b82f6', '#ec4899'], 
-                        borderColor: '#FFFFFF', 
-                        borderWidth: 4 
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    cutout: '70%', 
-                    plugins: { 
+            if (stockByProductChart) stockByProductChart.destroy();
+            stockByProductChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: ['#4f46e5', '#7c3aed', '#34d399', '#f59e0b', '#3b82f6', '#ec4899'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const label = context.label || '';
                                     const value = context.parsed;
                                     const percentage = totalStock > 0 ? ((value / totalStock) * 100).toFixed(1) : 0;
@@ -626,11 +909,11 @@
                                 }
                             }
                         }
-                    } 
-                } 
+                    }
+                }
             });
         }
-        
+
         function startAssistant(lowStockItems, allData, productInfo) {
             let modalHTML = `<div class="p-4 rounded-lg bg-slate-50 border flex items-start gap-3"><span class="text-3xl mt-1">👋</span><div><h4 class="text-slate-800 font-bold">¡Hola! Ya revisé tus datos.</h4><p class="text-sm text-slate-600">Esto es lo que encontré en tu historial de los últimos 3 meses.</p></div></div>`;
             const assistantAlertBadge = document.getElementById('assistantAlertBadge');
@@ -638,9 +921,9 @@
                 const badge = assistantAlertBadge.querySelector('span:last-child');
                 badge.textContent = lowStockItems.length;
                 assistantAlertBadge.classList.remove('hidden');
-                
+
                 const criticalItemHTML = analyzeAndSuggest(lowStockItems[0], allData, productInfo);
-                const productListHTML = lowStockItems.slice(0, 3).map(([code, qty]) => `<li class="flex items-center gap-2 text-sm"><span class="w-2 h-2 rounded-full ${qty <=0 ? 'bg-red-500' : 'bg-amber-500'}"></span><b class="text-slate-800">${productInfo[code].descripcion}</b> (quedan ${qty})</li>`).join('');
+                const productListHTML = lowStockItems.slice(0, 3).map(([code, qty]) => `<li class="flex items-center gap-2 text-sm"><span class="w-2 h-2 rounded-full ${qty <= 0 ? 'bg-red-500' : 'bg-amber-500'}"></span><b class="text-slate-800">${productInfo[code].descripcion}</b> (quedan ${qty})</li>`).join('');
 
                 modalHTML += `<div class="p-4 rounded-lg bg-amber-50 border border-amber-200"><div class="flex items-start gap-3"><svg class="w-10 h-10 text-amber-500 mt-1 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><div><h4 class="font-bold text-amber-800">¡Atención! Tienes ${lowStockItems.length} producto(s) con poco stock.</h4><p class="text-sm text-slate-600 mt-1">Los más urgentes son:</p><ul class="space-y-1.5 mt-2 text-slate-600">${productListHTML}</ul></div></div></div>${criticalItemHTML}`;
             } else {
@@ -656,17 +939,17 @@
 
             if (productSales.length === 0) { return `<p>No encontré datos de ventas para ${productInfo[productCode].descripcion}.</p>`; }
 
-            const salesByDay = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0};
+            const salesByDay = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
             productSales.forEach(sale => { const day = new Date(sale.fecha).getDay(); if (!isNaN(day)) salesByDay[day] += sale.cantidad; });
 
             const peakDayIndex = Object.keys(salesByDay).reduce((a, b) => salesByDay[a] > salesByDay[b] ? a : b);
             const totalSoldLast90Days = productSales.reduce((sum, s) => sum + s.cantidad, 0);
             const dailyAvg = totalSoldLast90Days / 90;
-            const recommendedRestock = Math.ceil(dailyAvg * 30 * 1.2); 
+            const recommendedRestock = Math.ceil(dailyAvg * 30 * 1.2);
             const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             const product = productInfo[productCode];
             const estimatedCost = product.precio_compra * recommendedRestock;
-            
+
             const today = new Date();
             const idealPurchaseDayIndex = (peakDayIndex - 2 + 7) % 7;
             let nextPurchaseDate = new Date();
@@ -676,13 +959,16 @@
 
             return `<div class="p-4 rounded-lg bg-indigo-50 border border-indigo-200 grid md:grid-cols-2 gap-6"><div><h4 class="font-bold text-indigo-800">Sugerencia para: <b class="block text-2xl text-slate-800">${product.descripcion}</b></h4><ul class="space-y-4 mt-4 text-slate-700"><li class="flex items-start gap-3"><span class="text-xl">🗓️</span><div>Tu día de más ventas es el <b>${days[peakDayIndex]}</b>.</div></li><li class="flex items-start gap-3"><span class="text-xl">⚡</span><div>Vendes un promedio de <b>${dailyAvg.toFixed(1)} unidades</b> al día.</div></li><li class="flex items-start gap-3"><span class="text-xl">📦</span><div>Para no quedarte corto, te sugiero pedir <b>${recommendedRestock} unidades</b>.</div></li></ul></div><div class="bg-white p-4 rounded-lg border flex flex-col"><h4 class="font-bold text-green-800">Plan de Compra</h4><div class="mt-2 text-sm text-slate-700 space-y-3 flex-grow"><p><b>Cantidad:</b> <span class="block text-xl font-bold text-green-600">${recommendedRestock}</span> unidades</p><p><b>Costo Estimado:</b> <span class="block text-xl font-bold text-green-600">$${(estimatedCost || 0).toLocaleString('es-CL')}</span></p><p><b>Día Ideal de Compra:</b> <span class="block text-xl font-bold text-blue-600">${formattedPurchaseDate}</span></p></div></div></div>`;
         }
-        
+
         function handleLogout() {
+            if (userDocUnsubscribe) userDocUnsubscribe(); // Detener el listener al salir
             signOut(auth).then(() => {
                 sessionStorage.removeItem('loggedInUserId');
                 window.location.href = getAbsoluteUrl('index.html');
             });
         }
+        
+        // --- Event Listeners Globales ---
         logoutBtnUser.addEventListener('click', handleLogout);
         closeAssistantBtn.addEventListener('click', () => {
             assistantModal.classList.add('hidden');
@@ -690,12 +976,17 @@
         });
         assistantModal.addEventListener('click', (e) => {
             if (e.target === assistantModal) {
-                 assistantModal.classList.add('hidden');
-                 assistantModal.classList.remove('flex');
+                assistantModal.classList.add('hidden');
+                assistantModal.classList.remove('flex');
             }
         });
-        
+        manualSyncBtn.addEventListener('click', () => {
+             if (currentUserData && currentUserData.dataCollectionPath) {
+                fetchAndAnalyze(currentUserData.dataCollectionPath);
+             }
+        });
+
     </script>
 </body>
-</html>
 
+</html>
