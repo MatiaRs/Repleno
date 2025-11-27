@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repleno - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-light: #f7f8fa;
+            --bg-card: #FFFFFF;
+            --border-color: #eef2f6;
+            --accent-primary: #4f46e5;
+            --accent-secondary: #7c3aed;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .ai-thinking { animation: ai-pulse 1.5s infinite ease-in-out; }
+        @keyframes ai-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
+
+        .bento-card {
+            background-color: var(--bg-card);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05);
+            animation: fadeIn 0.6s ease-out forwards;
+            display: flex; flex-direction: column;
+        }
+        .bento-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); box-shadow: 0 10px 20px -5px rgb(79 70 229 / 0.1); }
+
+        .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
+        .table-compact th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+        .details-section { transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .details-section.visible { max-height: 1000px; opacity: 1; }
+
+        .plan-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; text-transform: capitalize; }
+        .plan-badge-gratis { background-color: #f1f5f9; color: #475569; }
+        .plan-badge-estandar { background-color: #eef2ff; color: var(--accent-primary); }
+        .plan-badge-premium { background-color: #f5f3ff; color: var(--accent-secondary); }
+        .plan-days-critical { color: #dc2626; font-weight: 600; }
+        .plan-days-warning { color: #f59e0b; font-weight: 500; }
+        
+        .locked-feature { filter: grayscale(1); opacity: 0.7; pointer-events: none; position: relative; }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+    <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="flex items-center gap-3">
+                <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" /><stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" /></linearGradient></defs>
+                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+                    <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+                </svg>
+                <div><h1 class="text-2xl font-bold text-slate-900">Repleno</h1></div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div id="plan-status-widget" class="bento-card !p-3 !rounded-xl !flex-row items-center gap-4">
+                    <div class="text-right">
+                        <p id="plan-name" class="font-bold text-sm leading-tight">Cargando...</p>
+                        <p id="plan-days-remaining" class="text-xs text-slate-500 leading-tight">...</p>
+                    </div>
+                    <a href="ejemplo.html" id="change-plan-btn" class="text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded-lg transition-colors whitespace-nowrap">Cambiar Plan</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="uploadMoreDataBtn" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 font-medium py-2 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="hidden md:inline">Subir Datos</span>
+                    </button>
+                    
+                    <button id="logoutBtnUser" class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6"></main>
+
+        <div id="dashboard-loader" class="text-center py-20">
+             <div class="flex items-center justify-center gap-2 text-slate-500">
+                 <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="var(--accent-primary)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                 <span>Cargando tu panel...</span>
+             </div>
+        </div>
+
+        <div id="daily-detail-section" class="details-section">
+            <div class="bento-card mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="detail-title" class="text-lg font-semibold text-slate-800"></h3>
+                    <button id="close-detail-btn" class="text-slate-400 hover:text-slate-600"><svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z" /></svg></button>
+                </div>
+                <div id="detail-content" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA ÚNICA DE CARGA (PARA TODOS LOS PLANES) -->
+        <div id="csv-upload-screen" class="hidden">
+            <div class="bento-card max-w-2xl mx-auto text-center border-dashed border-2 border-slate-300 bg-slate-50">
+                <h2 class="text-2xl font-bold text-slate-800">Gestión de Datos</h2>
+                <p class="text-slate-600 mt-2">Sube tu archivo CSV para analizar o actualizar tu inventario.</p>
+                <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 inline-block">
+                    💡 <b>Nota:</b> Los nuevos datos se sumarán a los existentes.
+                </div>
+                <div id="upload-limit-warning" class="hidden mt-2 bg-amber-50 text-amber-800 p-2 rounded-lg text-sm border border-amber-100">
+                    ⚠️ <b>Plan Gratis:</b> Solo se procesarán las primeras 100 filas de tu archivo.
+                </div>
+                <div class="mt-6 flex flex-col items-center justify-center">
+                    <label for="csv-file-input" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-8 w-full transition-all shadow-sm group">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-10 h-10 text-slate-400 group-hover:text-indigo-500 mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <span class="text-slate-600 group-hover:text-indigo-600 font-medium">Haz clic para seleccionar archivo</span>
+                            <span class="text-slate-400 text-sm mt-1">(.csv)</span>
+                        </div>
+                        <input type="file" id="csv-file-input" accept=".csv" class="hidden">
+                    </label>
+                    <div id="file-name-display" class="mt-4 text-sm font-semibold text-indigo-600 h-5"></div>
+                    <button id="process-csv-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md" disabled>Subir y Procesar</button>
+                    <button id="cancel-upload-btn" class="mt-3 text-slate-500 hover:text-slate-700 text-sm hidden">Cancelar y volver al Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asistente -->
+    <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col bg-white">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
+                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </span>
+                    Asistente IA Repleno
+                </h2>
+                <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2 flex-grow"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Éxito de Plan (Nuevo) -->
+    <div id="planSuccessModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[60] fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-50 rounded-full opacity-50"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-50 rounded-full opacity-50"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Bienvenido a tu nuevo plan!</h2>
+                <p class="text-slate-600 mb-6">Gracias por confiar en Repleno. Has actualizado a <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p>
+                <div class="bg-slate-50 rounded-xl p-4 text-left mb-8 border border-slate-100">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Tus nuevos superpoderes:</h4>
+                    <ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700"></ul>
+                </div>
+                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">¡Comenzar a explorar!</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
+            authDomain: "repleno-app.firebaseapp.com",
+            projectId: "repleno-app",
+            storageBucket: "repleno-app.firebasestorage.app",
+            messagingSenderId: "705634142025",
+            appId: "1:705634142025:web:206f1a905f41ad79143c98",
+            measurementId: "G-FLTS8BFB46"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // DOM Elements
+        const dashboardContent = document.getElementById('dashboard-content');
+        const dashboardLoader = document.getElementById('dashboard-loader');
+        
+        const csvUploadScreen = document.getElementById('csv-upload-screen');
+        const csvFileInput = document.getElementById('csv-file-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const processCsvBtn = document.getElementById('process-csv-btn');
+        const uploadLimitWarning = document.getElementById('upload-limit-warning');
+        const cancelUploadBtn = document.getElementById('cancel-upload-btn');
+        const uploadMoreDataBtn = document.getElementById('uploadMoreDataBtn');
+
+        const planNameEl = document.getElementById('plan-name');
+        const planDaysEl = document.getElementById('plan-days-remaining');
+        const planSuccessModal = document.getElementById('planSuccessModal');
+        const newPlanNameEl = document.getElementById('new-plan-name');
+        const planBenefitsList = document.getElementById('plan-benefits-list');
+        const dailyDetailSection = document.getElementById('daily-detail-section');
+        const detailTitle = document.getElementById('detail-title');
+        const detailContent = document.getElementById('detail-content');
+        const closeDetailBtn = document.getElementById('close-detail-btn');
+        
+        let currentUserData = null;
+        let salesByDayChart, stockByProductChart;
+        let detailedSalesByDate = {}; // Global para almacenar detalle
+        let userDocUnsubscribe = null;
+
+        function getAbsoluteUrl(filename) {
+            const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
+            const path = filename.startsWith('/') ? filename : `/${filename}`;
+            return `${origin}${path}`;
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (userDocUnsubscribe) userDocUnsubscribe();
+                const userDocRef = doc(db, "users", user.uid);
+                
+                userDocUnsubscribe = onSnapshot(userDocRef, (userDocSnap) => {
+                    if (userDocSnap.exists()) {
+                        const newUserData = userDocSnap.data();
+                        sessionStorage.setItem('loggedInUserId', user.uid);
+                        
+                        checkPlanChange(newUserData);
+                        currentUserData = newUserData;
+                        updatePlanStatus(currentUserData);
+
+                        const hasData = !!currentUserData.dataCollectionPath;
+
+                        if (hasData) {
+                            if (!dashboardContent.dataset.initialized) {
+                                showDashboard();
+                                initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
+                                dashboardContent.dataset.initialized = "true";
+                            }
+                        } else {
+                            showUploadScreen(false);
+                            dashboardContent.dataset.initialized = "";
+                        }
+                    } else {
+                        dashboardLoader.classList.remove('hidden');
+                    }
+                });
+            } else {
+                window.location.href = getAbsoluteUrl('index.html');
+            }
+        });
+
+        function checkPlanChange(newData) {
+            const lastPlan = localStorage.getItem('lastKnownPlan');
+            const currentPlan = newData.plan;
+            if (lastPlan && currentPlan && lastPlan !== currentPlan) {
+                showPlanSuccessModal(currentPlan);
+            }
+            if (currentPlan) localStorage.setItem('lastKnownPlan', currentPlan);
+        }
+
+        function showPlanSuccessModal(plan) {
+            newPlanNameEl.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+            planBenefitsList.innerHTML = '';
+            let benefits = [];
+            if (plan === 'gratis') {
+                benefits = ['Acceso básico al dashboard', 'Carga limitada (100 filas)', 'Sin costo mensual'];
+            } else if (plan === 'Plan Estándar') {
+                benefits = ['Carga de datos ilimitada', 'Alertas de stock bajo', 'Gráficos completos', 'Soporte prioritario'];
+            } else if (plan === 'Plan Premium') {
+                benefits = ['✨ Asistente con Inteligencia Artificial', 'Análisis predictivo de ventas', 'Carga ilimitada', 'Soporte VIP 24/7'];
+            }
+            benefits.forEach(b => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-3";
+                li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`;
+                planBenefitsList.appendChild(li);
+            });
+            planSuccessModal.classList.remove('hidden');
+            planSuccessModal.classList.add('flex');
+        }
+
+        document.getElementById('closePlanModalBtn').addEventListener('click', () => {
+            planSuccessModal.classList.add('hidden');
+            planSuccessModal.classList.remove('flex');
+        });
+
+        function updatePlanStatus(userData) {
+            const { plan, planStartDate } = userData;
+            if (!plan) return;
+            const planDisplayName = plan.charAt(0).toUpperCase() + plan.slice(1);
+            planNameEl.textContent = planDisplayName;
+            if (plan === 'gratis') planNameEl.className = "plan-badge plan-badge-gratis";
+            else if (plan === 'Plan Estándar') planNameEl.className = "plan-badge plan-badge-estandar";
+            else planNameEl.className = "plan-badge plan-badge-premium";
+
+            const startDate = new Date(planStartDate || new Date());
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 30);
+            const diffDays = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
+            planDaysEl.className = "text-xs text-slate-500 leading-tight";
+            if (diffDays <= 0) {
+                planDaysEl.textContent = "Expirado";
+                planDaysEl.classList.add('plan-days-critical');
+            } else {
+                planDaysEl.textContent = `Quedan ${diffDays} días`;
+            }
+        }
+
+        function showUploadScreen(canCancel = true) {
+            dashboardLoader.classList.add('hidden');
+            dashboardContent.classList.add('hidden');
+            csvUploadScreen.classList.remove('hidden');
+            csvFileInput.value = '';
+            fileNameDisplay.textContent = '';
+            processCsvBtn.disabled = true;
+            if (currentUserData.plan === 'gratis') uploadLimitWarning.classList.remove('hidden');
+            else uploadLimitWarning.classList.add('hidden');
+            if (canCancel) cancelUploadBtn.classList.remove('hidden');
+            else cancelUploadBtn.classList.add('hidden');
+        }
+
+        uploadMoreDataBtn.addEventListener('click', () => showUploadScreen(true));
+        cancelUploadBtn.addEventListener('click', () => {
+            csvUploadScreen.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+        });
+
+        csvFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDisplay.textContent = `Archivo: ${file.name}`;
+                processCsvBtn.disabled = false;
+            }
+        });
+
+        processCsvBtn.addEventListener('click', async () => {
+            const file = csvFileInput.files[0];
+            if (!file) return;
+            processCsvBtn.disabled = true;
+            processCsvBtn.textContent = "Procesando...";
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const csvText = event.target.result;
+                let data = parseCSV(csvText);
+                if (currentUserData.plan === 'gratis' && data.length > 100) {
+                    data = data.slice(0, 100);
+                    alert("⚠️ Plan Gratis: Se han limitado los datos a las primeras 100 filas.");
+                }
+                await uploadDataToFirebase(data, file.name);
+            };
+            reader.readAsText(file);
+        });
+
+        async function uploadDataToFirebase(data, clientName) {
+            try {
+                const userId = auth.currentUser.uid;
+                const path = `business_data/${userId}`;
+                const colRef = collection(db, path, 'transactions');
+                const batchSize = 400;
+                for (let i = 0; i < data.length; i += batchSize) {
+                    const batch = writeBatch(db);
+                    data.slice(i, i + batchSize).forEach(row => batch.set(doc(colRef), row));
+                    await batch.commit();
+                }
+                await updateDoc(doc(db, "users", userId), { dataCollectionPath: path });
+                alert("¡Datos subidos exitosamente!");
+                csvUploadScreen.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+                fetchAndAnalyze(path);
+            } catch (e) {
+                console.error(e);
+                alert("Error al subir datos: " + e.message);
+            } finally {
+                processCsvBtn.disabled = false;
+                processCsvBtn.textContent = "Subir y Procesar";
+            }
+        }
+
+        function showDashboard() {
+            dashboardLoader.classList.add('hidden');
+            csvUploadScreen.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+
+            const isPremium = currentUserData.plan === 'Plan Premium';
+            const aiButtonState = isPremium 
+                ? `<button id="openAssistantBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg><span>Consultar IA</span></button>`
+                : `<button disabled class="bg-slate-200 text-slate-400 font-semibold flex items-center justify-center gap-2 w-full py-3 rounded-xl cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg><span>IA Bloqueada (Solo Premium)</span></button>`;
+
+            dashboardContent.innerHTML = `
+                <div class="md:col-span-2 bento-card bg-gradient-to-br from-indigo-500 to-purple-600 text-white" style="animation-delay: 0.1s;">
+                    <h3 id="client-name" class="text-2xl font-bold">¡Hola!</h3>
+                    <p class="text-indigo-100">Aquí está el resumen de tu negocio.</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3>
+                        <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">💰</div>
+                    </div>
+                    <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.3s;">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3>
+                        <div class="bg-purple-100 p-2 rounded-lg text-purple-600">📦</div>
+                    </div>
+                    <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
+                </div>
+                <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
+                    <div class="overflow-y-auto flex-grow" style="max-height: 400px;">
+                        <table class="w-full table-compact text-sm">
+                            <thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock</th><th>Precio</th><th>Ventas</th></tr></thead>
+                            <tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-10 text-text-muted">Cargando...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.5s;">
+                    <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
+                    <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
+                    <h3 class="text-slate-500 font-medium text-sm mb-2">Asistente Virtual</h3>
+                    <p class="text-lg font-semibold text-indigo-600 truncate mt-1">${isPremium ? "Tu consultor 24/7" : "Actualiza a Premium"}</p>
+                    <div class="mt-auto pt-4">${aiButtonState}</div>
+                </div>
+                <div class="md:col-span-4 bento-card" style="animation-delay: 0.7s;">
+                    <h3 class="text-lg font-semibold mb-4">Ventas por Día</h3>
+                    <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
+                </div>
+                <div class="md:col-span-2 bento-card" style="animation-delay: 0.8s;">
+                    <h3 class="text-lg font-semibold mb-2">Composición</h3>
+                    <div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div>
+                </div>
+            `;
+
+            if (isPremium) {
+                document.getElementById('openAssistantBtn').addEventListener('click', () => {
+                    document.getElementById('assistantModal').classList.remove('hidden');
+                    document.getElementById('assistantModal').classList.add('flex');
+                    if (currentUserData && window.cachedDashboardData) {
+                        askGemini(window.cachedDashboardData);
+                    }
+                });
+            }
+        }
+
+        function initializeDashboard(collectionPath, clientName) {
+            const greetingName = currentUserData.nombre || clientName || "Usuario";
+            const clientNameEl = document.getElementById('client-name');
+            if(clientNameEl) clientNameEl.textContent = `¡Hola, ${greetingName}!`;
+            fetchAndAnalyze(collectionPath);
+        }
+
+        async function fetchAndAnalyze(collectionPath) {
+            try {
+                const querySnapshot = await getDocs(collection(db, `${collectionPath}/transactions`));
+                const data = querySnapshot.docs.map(doc => doc.data());
+                if (data.length > 0) processAndDisplayData(data);
+            } catch (error) { console.error(error); }
+        }
+
+        function processAndDisplayData(data) {
+            if (currentUserData.plan === 'gratis' && data.length > 100) {
+                data = data.slice(0, 100);
+            }
+
+            const stock = {}; const productInfo = {}; const salesByProduct = {}; let totalVentas = 0;
+            const weeklySalesPattern = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+            const productWeeklyPattern = {}; 
+            const salesByDate = {}; 
+            detailedSalesByDate = {}; // Resetear global
+
+            data.forEach(row => {
+                const code = row.codigo_producto;
+                if (!code) return;
+                if (!stock[code]) {
+                    stock[code] = 0; productInfo[code] = { desc: row.descripcion, price: 0 };
+                    salesByProduct[code] = 0; productWeeklyPattern[code] = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+                }
+                
+                if (row.tipo_transaccion.toLowerCase() === 'venta') {
+                    stock[code] -= row.cantidad;
+                    totalVentas += row.cantidad;
+                    salesByProduct[code] += row.cantidad;
+                    productInfo[code].price = row.precio_unitario;
+                    
+                    const date = new Date(row.fecha);
+                    if(!isNaN(date)) {
+                        const dString = date.toISOString().split('T')[0];
+                        salesByDate[dString] = (salesByDate[dString] || 0) + (row.precio_unitario * row.cantidad);
+                        weeklySalesPattern[date.getDay()] += row.cantidad;
+                        productWeeklyPattern[code][date.getDay()] += row.cantidad;
+
+                        // Llenar detalle
+                        if (!detailedSalesByDate[dString]) detailedSalesByDate[dString] = [];
+                        detailedSalesByDate[dString].push({
+                            name: row.descripcion,
+                            qty: row.cantidad,
+                            total: row.precio_unitario * row.cantidad
+                        });
+                    }
+                } else {
+                    stock[code] += row.cantidad;
+                }
+            });
+
+            document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
+            document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
+            const lowStock = Object.entries(stock).filter(([_,q]) => q<=20);
+            document.getElementById('alertasStock').textContent = lowStock.length;
+
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = '';
+            Object.keys(productInfo).slice(0,50).forEach(code => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-slate-50";
+                tr.innerHTML = `<td class="py-2">${productInfo[code].desc}</td><td class="font-bold">${stock[code]}</td><td>$${productInfo[code].price}</td><td>${salesByProduct[code]}</td>`;
+                tbody.appendChild(tr);
+            });
+
+            updateCharts(salesByDate, stock, productInfo);
+
+            const topProd = Object.entries(salesByProduct).sort((a,b)=>b[1]-a[1])[0];
+            const topCode = topProd ? topProd[0] : null;
+            
+            const daysMap = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            
+            window.cachedDashboardData = {
+                totalSales: totalVentas,
+                uniqueProducts: Object.keys(stock).length,
+                lowStockCount: lowStock.length,
+                weeklyPattern: Object.entries(weeklySalesPattern).map(([d, q]) => `${daysMap[d]}: ${q}`),
+                lowStockItems: lowStock.slice(0,5).map(([code, qty]) => ({
+                    name: productInfo[code].desc,
+                    qty: qty,
+                    salesPattern: productWeeklyPattern[code]
+                })),
+                topSeller: topProd ? { 
+                    name: productInfo[topCode].desc, 
+                    qty: salesByProduct[topCode],
+                    salesByDay: Object.entries(productWeeklyPattern[topCode]).map(([d,q]) => `${daysMap[d]}: ${q}`)
+                } : null
+            };
+        }
+
+        function updateCharts(salesDate, stock, info) {
+            const ctx1 = document.getElementById('salesByDayChart').getContext('2d');
+            const dates = Object.keys(salesDate).sort().slice(-7);
+            
+            if(salesByDayChart) salesByDayChart.destroy();
+            salesByDayChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: dates,
+                    datasets: [{ label: 'Ventas', data: Object.values(salesDate).slice(-7), backgroundColor: '#4f46e5', borderRadius: 4 }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    onClick: (e, elements) => {
+                        if(elements.length > 0) {
+                            const idx = elements[0].index;
+                            showDailyDetails(dates[idx]);
+                        }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('stockByProductChart').getContext('2d');
+            if(stockByProductChart) stockByProductChart.destroy();
+            stockByProductChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.values(info).slice(0,5).map(i=>i.desc),
+                    datasets: [{ data: Object.values(stock).slice(0,5), backgroundColor: ['#4f46e5','#7c3aed','#f59e0b','#10b981','#ec4899'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+            });
+        }
+
+        function showDailyDetails(dateString) {
+            const sales = detailedSalesByDate[dateString] || [];
+            const dateObj = new Date(dateString + 'T00:00:00');
+            detailTitle.textContent = `Ventas del ${dateObj.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' })}`;
+            
+            if (sales.length === 0) {
+                detailContent.innerHTML = '<p class="text-slate-500 col-span-2 text-center py-4">No hay ventas registradas.</p>';
+            } else {
+                // Agrupar por producto
+                const summary = sales.reduce((acc, curr) => {
+                    if (!acc[curr.name]) acc[curr.name] = { qty: 0, total: 0 };
+                    acc[curr.name].qty += curr.qty;
+                    acc[curr.name].total += curr.total;
+                    return acc;
+                }, {});
+
+                // Total del día
+                const totalDay = Object.values(summary).reduce((sum, item) => sum + item.total, 0);
+
+                let html = `<div class="col-span-2 bg-indigo-50 p-3 rounded-lg text-center mb-2">
+                                <span class="text-sm text-indigo-600 font-medium">Total del día</span>
+                                <p class="text-2xl font-bold text-indigo-900">$${totalDay.toLocaleString('es-CL')}</p>
+                            </div>
+                            <div class="col-span-2 space-y-2 max-h-60 overflow-y-auto pr-2">`;
+
+                Object.entries(summary)
+                    .sort((a, b) => b[1].total - a[1].total)
+                    .forEach(([name, data]) => {
+                        html += `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg text-sm">
+                                    <span class="text-slate-700 font-medium">${name} <span class="text-slate-400 text-xs">x${data.qty}</span></span>
+                                    <span class="font-bold text-slate-800">$${data.total.toLocaleString('es-CL')}</span>
+                                 </div>`;
+                    });
+                html += '</div>';
+                detailContent.innerHTML = html;
+            }
+
+            dailyDetailSection.classList.add('visible');
+            dailyDetailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        closeDetailBtn.addEventListener('click', () => dailyDetailSection.classList.remove('visible'));
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const vals = line.split(',');
+                let obj = {};
+                headers.forEach((h, i) => obj[h] = isNaN(Number(vals[i])) ? vals[i] : Number(vals[i]));
+                return obj;
+            });
+        }
+
+        async function askGemini(data) {
+            const content = document.getElementById('assistantModalContent');
+            content.innerHTML = '<div class="text-center py-10"><div class="ai-thinking text-4xl">🧠</div><p class="mt-4 text-slate-500">Analizando...</p></div>';
+            try {
+                const res = await fetch('/api/consultar-ia', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json', 'user-id': auth.currentUser.uid},
+                    body: JSON.stringify({ resumen: data })
+                });
+                if(!res.ok) throw new Error("Error API");
+                const json = await res.json();
+                content.innerHTML = json.html;
+            } catch(e) {
+                content.innerHTML = '<p class="text-red-500 text-center">Error al consultar IA.</p>';
+            }
+        }
+
+        document.getElementById('closeAssistantBtn').onclick = () => document.getElementById('assistantModal').classList.add('hidden');
+        document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
+
+    </script>
+</body>
+</html>
