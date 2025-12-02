@@ -3,8 +3,11 @@ Dependencias de Node.js
 node_modules/
 npm-debug.log
 yarn-error.log
+
+Archivos de entorno y secretos (¡MUY IMPORTANTE!)
+
 .env
-.serviceAccountKey.json
+serviceAccountKey.json
 
 Archivos temporales de la aplicación
 
