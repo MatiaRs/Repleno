@@ -2,284 +2,253 @@
 <html lang="es">
 
 <head>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repleno - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg-light: #f7f8fa; --bg-card: #FFFFFF; --border-color: #eef2f6; --accent-primary: #4f46e5; --accent-secondary: #7c3aed; --text-dark: #111827; --text-muted: #6b7280; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; overflow-x: hidden; }
+        .bg-decoration { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+        .blob { position: absolute; filter: blur(80px); opacity: 0.5; animation: float 10s infinite ease-in-out; }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #C7D2FE; animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: #E9D5FF; animation-delay: 2s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(20px, -20px) scale(1.05); } }
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 1.5rem; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -5px rgba(79, 70, 229, 0.15); border-color: rgba(99, 102, 241, 0.3); }
+        .btn-primary { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; transition: all 0.3s ease; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; background: #94A3B8; }
+        .btn-white { background: white; border: 1px solid #E2E8F0; color: #475569; transition: all 0.3s ease; }
+        .btn-white:hover { background: #F8FAFC; color: #4F46E5; border-color: #C7D2FE; }
+        .btn-danger-soft { background: #FEF2F2; color: #EF4444; border: 1px solid #FECACA; transition: all 0.3s ease; }
+        .btn-danger-soft:hover { background: #FEE2E2; color: #DC2626; border-color: #FCA5A5; }
+        .notification { position: fixed; top: 24px; right: 24px; padding: 1rem 1.5rem; border-radius: 1rem; color: white; z-index: 1000; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
+        .notification.show { transform: translateX(0); }
+        .notification.error { background: #EF4444; }
+        .notification.success { background: #10B981; }
+        .notification.info { background: #3B82F6; }
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
         .ai-thinking { animation: ai-pulse 1.5s infinite ease-in-out; }
         @keyframes ai-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
-        .bento-card { background-color: var(--bg-card); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--border-color); transition: all 0.3s ease; box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05); animation: fadeIn 0.6s ease-out forwards; display: flex; flex-direction: column; }
-        .bento-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); box-shadow: 0 10px 20px -5px rgb(79 70 229 / 0.1); }
-        .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
-        .table-compact th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-        .details-section { transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
-        .details-section.visible { max-height: 1000px; opacity: 1; }
-        .plan-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; text-transform: capitalize; }
-        .plan-badge-gratis { background-color: #f1f5f9; color: #475569; }
-        .plan-badge-estandar { background-color: #eef2ff; color: var(--accent-primary); }
-        .plan-badge-premium { background-color: #f5f3ff; color: var(--accent-secondary); }
-        .plan-days-critical { color: #dc2626; font-weight: 600; }
-        .plan-days-warning { color: #f59e0b; font-weight: 500; }
-        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 9999px; height: 8px; margin-top: 1rem; overflow: hidden; }
-        .progress-bar { height: 100%; background-color: var(--accent-primary); width: 0%; transition: width 0.3s ease; border-radius: 9999px; }
-        .demo-badge { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #FEF3C7; color: #D97706; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: 1px solid #FCD34D; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .demo-badge { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: #FFFBEB; color: #D97706; padding: 0.5rem 1.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; border: 1px solid #FCD34D; z-index: 100; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2); letter-spacing: 0.05em; text-transform: uppercase; }
+        .table-row { transition: background-color 0.2s; }
+        .table-row:hover { background-color: rgba(241, 245, 249, 0.5); }
+        .modal { transition: opacity 0.2s ease-in-out; }
+        .modal-content { transition: transform 0.2s ease-in-out; }
+        .modal-hidden { opacity: 0; pointer-events: none; }
+        .modal-hidden .modal-content { transform: scale(0.95); }
+        .modal-visible { opacity: 1; pointer-events: auto; }
+        .modal-visible .modal-content { transform: scale(1); }
+        .progress-bar-bg { background: #E2E8F0; border-radius: 999px; overflow: hidden; height: 0.5rem; }
+        .progress-bar-fill { background: linear-gradient(90deg, #4F46E5, #7C3AED); height: 100%; width: 0%; transition: width 0.4s ease; }
     </style>
 </head>
 
-<body class="overflow-x-hidden">
+<body class="min-h-screen flex flex-col">
+    <div class="bg-decoration"><div class="blob blob-1 rounded-full"></div><div class="blob blob-2 rounded-full"></div></div>
+    <div id="notification-area"></div>
     <div id="demo-indicator" class="demo-badge hidden">⚠️ Modo Demostración</div>
 
-    <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="flex items-center gap-3">
-                <svg id="replenoLogo" width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" /><stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" /></linearGradient></defs>
-                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                    <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                </svg>
-                <div><h1 class="text-2xl font-bold text-slate-900">Repleno</h1></div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div id="plan-status-widget" class="bento-card !p-3 !rounded-xl !flex-row items-center gap-4">
-                    <div class="text-right">
-                        <p id="plan-name" class="font-bold text-sm leading-tight">Cargando...</p>
-                        <p id="plan-days-remaining" class="text-xs text-slate-500 leading-tight">...</p>
-                    </div>
-                    <a href="ejemplo.html" id="change-plan-btn" class="text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded-lg transition-colors whitespace-nowrap">Cambiar Plan</a>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button id="uploadMoreDataBtn" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 font-medium py-2 px-4 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        <span class="hidden md:inline">Subir Datos</span>
-                    </button>
-                    <button id="deleteAccountBtn" class="bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 hover:text-red-700 p-2 rounded-full shadow-sm transition-all" title="Eliminar Cuenta">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                    <button id="logoutBtnUser" class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6"></main>
-
-        <div id="dashboard-loader" class="text-center py-20">
-             <div class="flex flex-col items-center justify-center gap-4 text-slate-500">
-                 <svg class="animate-spin h-8 w-8" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="var(--accent-primary)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                 <span id="loader-text">Cargando tu panel...</span>
+    <!-- Navbar -->
+    <nav class="w-full max-w-7xl mx-auto p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-white p-2 rounded-xl shadow-sm"><svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="navLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" /><stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" /></linearGradient></defs><path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#navLogoGrad)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M45,50 H80 V80 H45 Z" stroke="url(#navLogoGrad)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M55,60 V70" stroke="url(#navLogoGrad)" stroke-width="6" fill="none" stroke-linecap="round" /><path d="M68,55 V70" stroke="url(#navLogoGrad)" stroke-width="6" fill="none" stroke-linecap="round" /></svg></div>
+            <span class="text-xl font-bold text-slate-800 tracking-tight">Repleno</span>
+        </div>
+        <div class="flex items-center gap-3 bg-white/60 backdrop-blur-md p-1.5 rounded-2xl border border-white shadow-sm">
+             <div class="flex items-center gap-3 px-3 border-r border-slate-200 pr-4">
+                <div class="text-right"><p id="plan-name" class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Cargando...</p><p id="plan-days-remaining" class="text-[10px] text-slate-500 font-medium">...</p></div>
+                <a href="ejemplo.html" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 p-2 rounded-lg transition-colors" title="Cambiar Plan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></a>
+             </div>
+             <div class="flex items-center gap-1">
+                 <button id="uploadMoreDataBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Subir CSV"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></button>
+                 <button id="deleteAccountBtn" class="btn-danger-soft p-2 rounded-lg" title="Eliminar Cuenta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                 <button id="logoutBtnUser" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100 transition-colors" title="Salir"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
              </div>
         </div>
+    </nav>
 
-        <div id="daily-detail-section" class="details-section">
-            <div class="bento-card mt-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 id="detail-title" class="text-lg font-semibold text-slate-800"></h3>
-                    <button id="close-detail-btn" class="text-slate-400 hover:text-slate-600"><svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z" /></svg></button>
-                </div>
-                <div id="detail-content" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-            </div>
+    <div class="w-full max-w-7xl mx-auto p-4 md:p-6 flex-grow">
+        <div id="dashboard-loader" class="flex flex-col items-center justify-center py-20 text-slate-400">
+            <svg class="animate-spin h-10 w-10 mb-4 text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-sm font-medium">Cargando tu negocio...</span>
         </div>
+        
+        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6 pb-20">
+            
+            <!-- 1. Tarjeta de Bienvenida -->
+            <div class="md:col-span-2 glass-card bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 fade-in" style="animation-delay: 0.1s;">
+                <h3 id="client-name" class="text-2xl font-bold tracking-tight mb-1">¡Hola! 👋</h3>
+                <p class="text-indigo-100 text-sm opacity-90">Aquí tienes el resumen de tu negocio.</p>
+            </div>
 
-        <!-- PANTALLA ÚNICA DE CARGA -->
-        <div id="csv-upload-screen" class="hidden">
-            <div class="bento-card max-w-2xl mx-auto text-center border-dashed border-2 border-slate-300 bg-slate-50">
-                <h2 class="text-2xl font-bold text-slate-800">Gestión de Datos</h2>
-                <p class="text-slate-600 mt-2">Sube tu archivo CSV para analizar o actualizar tu inventario.</p>
-                <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 inline-block">💡 <b>Nota:</b> Aceptamos archivos separados por comas (,) o punto y coma (;).</div>
-                <div id="upload-limit-warning" class="hidden mt-2 bg-amber-50 text-amber-800 p-2 rounded-lg text-sm border border-amber-100">⚠️ <b>Plan Gratis:</b> Límite de 100 filas.</div>
+            <!-- 2. Ventas Totales -->
+            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.2s;">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="sales-period-label" class="text-slate-400 font-bold text-xs uppercase tracking-wider">Ventas Totales</h3>
+                    <div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg">💰</div>
+                </div>
+                <p id="totalVentas" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
+            </div>
 
-                <div class="mt-6 flex flex-col items-center justify-center">
-                    <label for="csv-file-input" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-8 w-full transition-all shadow-sm group">
-                        <div class="flex flex-col items-center">
-                            <svg class="w-10 h-10 text-slate-400 group-hover:text-indigo-500 mb-2 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <span class="text-slate-600 group-hover:text-indigo-600 font-medium">Haz clic para seleccionar archivo</span>
-                            <span class="text-slate-400 text-sm mt-1">(.csv)</span>
-                        </div>
-                        <input type="file" id="csv-file-input" accept=".csv" class="hidden">
-                    </label>
-                    <div id="file-name-display" class="mt-4 text-sm font-semibold text-indigo-600 h-5"></div>
-                    
-                    <div id="upload-progress-container" class="hidden w-full mt-4">
-                        <div class="flex justify-between text-xs text-slate-500 mb-1"><span id="upload-status-text">Procesando...</span><span id="upload-percentage">0%</span></div>
-                        <div class="progress-container"><div id="upload-progress-bar" class="progress-bar"></div></div>
+            <!-- 3. Productos Únicos -->
+            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.3s;">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider">Productos</h3>
+                    <div class="bg-purple-50 text-purple-600 p-2 rounded-lg">📦</div>
+                </div>
+                <p id="productosUnicos" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
+            </div>
+
+            <!-- 4. Tabla de Inventario -->
+            <div class="md:col-span-4 md:row-span-2 glass-card p-6 fade-in" style="animation-delay: 0.4s;">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Inventario General</h3>
+                <div class="overflow-y-auto flex-grow h-64 md:h-auto scrollbar-thin">
+                    <table class="w-full text-sm text-left text-slate-600">
+                        <thead class="text-xs text-slate-400 uppercase bg-slate-50/50 sticky top-0">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-lg">Producto</th>
+                                <th class="px-4 py-3">Stock</th>
+                                <th class="px-4 py-3">Precio</th>
+                                <th class="px-4 py-3 rounded-r-lg">Ventas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-table-body">
+                            <tr class="text-center"><td colspan="4" class="py-8 text-slate-400">Cargando datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. Alertas de Stock -->
+            <div class="md:col-span-2 glass-card p-6 border-l-4 border-amber-400 fade-in" style="animation-delay: 0.5s;">
+                <h3 class="text-amber-600 font-bold text-sm uppercase tracking-wider mb-1">Stock Bajo</h3>
+                <p id="alertasStock" class="text-4xl font-extrabold text-slate-800">0</p>
+                <p class="text-xs text-slate-400 mt-2">Productos requieren atención</p>
+            </div>
+            
+            <!-- 6. Tarjeta IA -->
+            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.6s;">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">✨</div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">Asistente IA</h3>
+                        <p class="text-xs text-slate-400">Análisis inteligente</p>
                     </div>
+                </div>
+                <div id="ai-button-container" class="mt-auto">
+                    <!-- Button injected here -->
+                </div>
+            </div>
 
-                    <button id="process-csv-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md" disabled>Subir y Procesar</button>
-                    <button id="cancel-upload-btn" class="mt-3 text-slate-500 hover:text-slate-700 text-sm hidden">Cancelar y volver al Dashboard</button>
+            <!-- 7. Gráfico Ventas -->
+            <div class="md:col-span-4 glass-card p-6 fade-in" style="animation-delay: 0.7s;">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Tendencia de Ventas</h3>
+                <div class="relative h-64 w-full"><canvas id="salesByDayChart"></canvas></div>
+            </div>
+
+            <!-- 8. Gráfico Composición -->
+            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.8s;">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Composición</h3>
+                <div class="relative h-48 w-full flex justify-center"><canvas id="stockByProductChart"></canvas></div>
+            </div>
+
+        </main>
+
+        <div id="csv-upload-screen" class="hidden fade-in">
+            <div class="glass-card max-w-2xl mx-auto text-center p-10 border-dashed border-2 border-slate-300 bg-white/50">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">📂</div>
+                <h2 class="text-2xl font-bold text-slate-800">Importar Datos</h2>
+                <p class="text-slate-500 mt-2 mb-6">Sube tu archivo CSV para actualizar el inventario.</p>
+                <div id="upload-limit-warning" class="hidden mb-6 bg-amber-50 text-amber-800 px-4 py-2 rounded-lg text-sm border border-amber-100 inline-flex items-center gap-2"><span>⚠️</span> <b>Plan Gratis:</b> Máximo 100 filas.</div>
+                <label for="csv-file-input" class="cursor-pointer group block w-full">
+                    <div class="border-2 border-dashed border-slate-200 group-hover:border-indigo-400 rounded-xl p-8 transition-colors bg-slate-50/50 group-hover:bg-white"><p class="text-slate-400 group-hover:text-indigo-500 font-medium transition-colors">Haz clic para seleccionar (.csv)</p><p id="file-name-display" class="text-sm text-indigo-600 mt-2 font-bold min-h-[20px]"></p></div>
+                    <input type="file" id="csv-file-input" accept=".csv" class="hidden">
+                </label>
+                <div id="upload-progress-container" class="hidden w-full mt-6 text-left">
+                    <div class="flex justify-between text-xs text-slate-500 mb-2"><span id="upload-status-text">Procesando...</span><span id="upload-percentage" class="font-bold text-indigo-600">0%</span></div>
+                    <div class="progress-bar-bg"><div id="upload-progress-bar" class="progress-bar-fill"></div></div>
+                </div>
+                <div class="mt-8 flex flex-col gap-3">
+                    <button id="process-csv-btn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Subir y Analizar</button>
+                    <button id="cancel-upload-btn" class="text-slate-500 hover:text-slate-700 text-sm font-medium hidden">Cancelar y Volver</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL GENÉRICO -->
-    <div id="genericModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center transform transition-all scale-100">
-            <div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div>
-            <h3 id="genericModalTitle" class="text-xl font-bold text-slate-900 mb-2">Mensaje</h3>
-            <p id="genericModalMessage" class="text-slate-600 text-sm mb-6">Detalle del mensaje.</p>
-            <button id="genericModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-colors">Entendido</button>
-        </div>
-    </div>
-
-    <!-- Modales -->
-    <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
-        <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col bg-white">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></span>
-                    Asistente IA Repleno
-                </h2>
-                <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <div id="assistantModalContent" class="overflow-y-auto space-y-6 p-2 flex-grow"></div>
-        </div>
-    </div>
-
-    <div id="planSuccessModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[60] fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-            <div class="relative z-10">
-                <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div>
-                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Bienvenido a tu nuevo plan!</h2>
-                <p class="text-slate-600 mb-6">Has actualizado a <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p>
-                <div class="bg-slate-50 rounded-xl p-4 text-left mb-8 border border-slate-100">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Tus nuevos superpoderes:</h4>
-                    <ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700"></ul>
-                </div>
-                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">¡Comenzar a explorar!</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="deleteAccountModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[70] fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 text-center">
-            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>
-            <h3 class="text-xl font-bold text-slate-900 mb-2">¿Eliminar tu cuenta?</h3>
-            <p class="text-slate-600 text-sm mb-6 leading-relaxed">Esta acción programará la eliminación de tu cuenta en <b>30 días</b>.<br><br>Si cambias de opinión, solo inicia sesión antes de ese plazo para <b>cancelar la eliminación automáticamente</b>.</p>
-            <div class="flex gap-3">
-                <button id="cancelDeleteBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">Cancelar</button>
-                <button id="confirmDeleteBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors">Sí, eliminar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="restoreAccountModal" class="fixed inset-0 bg-slate-900 bg-opacity-90 hidden items-center justify-center p-4 z-[80] fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden border-2 border-green-500">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">👋</div>
-            <h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Qué bueno verte de nuevo!</h2>
-            <p class="text-slate-600 mb-6">Hemos detectado que tu cuenta estaba programada para eliminarse.</p>
-            <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-6"><p class="text-green-800 font-medium">✅ Hemos cancelado la eliminación.</p><p class="text-green-700 text-sm mt-1">Tus datos están seguros y tu cuenta vuelve a estar activa.</p></div>
-            <button id="closeRestoreModalBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md">Entendido, ir al Dashboard</button>
-        </div>
-    </div>
+    <!-- MODALES -->
+    <div id="genericModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center"><div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div><h3 id="genericModalTitle" class="text-xl font-bold text-slate-900 mb-2">Mensaje</h3><p id="genericModalMessage" class="text-slate-600 text-sm mb-6 leading-relaxed">...</p><button id="genericModalBtn" class="btn-primary w-full py-2.5 rounded-xl font-bold text-sm">Entendido</button></div></div>
+    <div id="assistantModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true"><div class="modal-content glass-card w-full max-w-3xl max-h-[85vh] flex flex-col bg-white shadow-2xl border-0"><div class="flex justify-between items-center p-5 border-b border-slate-100"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><h2 class="text-lg font-bold text-slate-800">Repleno AI</h2></div><button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-50 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="assistantModalContent" class="overflow-y-auto p-6 flex-grow bg-slate-50/50"></div></div></div>
+    <div id="daily-detail-section" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 z-40 transition-all duration-500 translate-y-full opacity-0 pointer-events-none"><div class="glass-card p-6 shadow-2xl border-indigo-100 bg-white/95"><div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3"><h3 id="detail-title" class="text-lg font-bold text-slate-800">Detalle</h3><button id="close-detail-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="detail-content" class="max-h-60 overflow-y-auto pr-2"></div></div></div>
+    <div id="planSuccessModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-600"></div><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Mejoraste tu plan!</h2><p class="text-slate-600 mb-6">Ahora disfrutas de <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p><div class="bg-slate-50 rounded-xl p-5 text-left mb-6 border border-slate-100"><ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700 font-medium"></ul></div><button id="closePlanModalBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">¡Genial!</button></div></div>
+    <div id="deleteAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[70] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center"><div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">⚠️</div><h3 class="text-xl font-bold text-slate-900 mb-2">¿Eliminar Cuenta?</h3><p class="text-slate-600 text-sm mb-8 leading-relaxed">Esto programará el borrado de todos tus datos en <b>30 días</b>. <br>Si cambias de opinión, solo inicia sesión de nuevo.</p><div class="flex gap-3"><button id="cancelDeleteBtn" class="btn-white w-full py-3 rounded-xl font-bold">Cancelar</button><button id="confirmDeleteBtn" class="btn-danger-soft w-full py-3 rounded-xl font-bold border-none bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200">Sí, eliminar</button></div></div></div>
+    <div id="restoreAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md flex items-center justify-center z-[80] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative border border-green-100"><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">👋</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Te extrañamos!</h2><p class="text-slate-600 mb-6">Vimos que tu cuenta estaba por borrarse.</p><div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-8"><p class="text-green-800 font-bold text-sm flex items-center justify-center gap-2">✅ Eliminación cancelada</p><p class="text-green-700 text-xs mt-1">Tus datos están seguros y activos.</p></div><button id="closeRestoreModalBtn" class="btn-primary w-full py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 from-green-500 to-emerald-600">Ir a mi Dashboard</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // =========================================================
-        // 1. CONFIGURACIÓN
-        // =========================================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
-            authDomain: "repleno-app.firebaseapp.com",
-            projectId: "repleno-app",
-            storageBucket: "repleno-app.firebasestorage.app",
-            messagingSenderId: "705634142025",
-            appId: "1:705634142025:web:206f1a905f41ad79143c98",
-            measurementId: "G-FLTS8BFB46"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8", authDomain: "repleno-app.firebaseapp.com", projectId: "repleno-app", storageBucket: "repleno-app.firebasestorage.app", messagingSenderId: "705634142025", appId: "1:705634142025:web:206f1a905f41ad79143c98", measurementId: "G-FLTS8BFB46" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Variables Globales
-        let currentUserData = null;
-        let salesByDayChart, stockByProductChart;
-        let detailedSalesByDate = {}; 
-        let userDocUnsubscribe = null;
-        let isDemoMode = false;
+        let currentUserData = null, salesByDayChart, stockByProductChart, detailedSalesByDate = {}, userDocUnsubscribe = null, isDemoMode = false;
 
-        // =========================================================
-        // 2. SISTEMA DE ALERTAS Y HELPERS
-        // =========================================================
         function showAlert(title, message, type = 'info') {
             const modal = document.getElementById('genericModal');
-            const titleEl = document.getElementById('genericModalTitle');
-            const msgEl = document.getElementById('genericModalMessage');
-            const iconEl = document.getElementById('genericModalIcon');
-            const btnEl = document.getElementById('genericModalBtn');
+            document.getElementById('genericModalTitle').textContent = title;
+            document.getElementById('genericModalMessage').textContent = message;
+            document.getElementById('genericModalIcon').textContent = type === 'error' ? '❌' : (type === 'success' ? '✅' : 'ℹ️');
+            modal.classList.remove('modal-hidden'); modal.classList.add('modal-visible');
+        }
+        document.getElementById('genericModalBtn').onclick = () => { document.getElementById('genericModal').classList.add('modal-hidden'); document.getElementById('genericModal').classList.remove('modal-visible'); };
 
-            titleEl.textContent = title;
-            msgEl.textContent = message;
+        function raceWithTimeout(promise, ms, msg) { return Promise.race([promise, new Promise((_, r) => setTimeout(() => r(new Error(msg)), ms))]); }
+        function getAbsoluteUrl(f) { return `${window.location.origin.endsWith('/') ? window.location.origin.slice(0,-1) : window.location.origin}/${f}`; }
+        function activateDemoMode() { isDemoMode = true; document.getElementById('demo-indicator').classList.remove('hidden'); }
+        function getDummyData() { return [{codigo_producto:"P1",descripcion:"Demo 1",cantidad:10,precio_unitario:5000,tipo_transaccion:"Venta",fecha:new Date().toISOString()}]; }
 
-            if (type === 'error') {
-                iconEl.textContent = '❌';
-                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-red-100 text-red-600';
-                btnEl.className = 'w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition-colors';
-            } else if (type === 'success') {
-                iconEl.textContent = '✅';
-                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-green-100 text-green-600';
-                btnEl.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition-colors';
-            } else {
-                iconEl.textContent = 'ℹ️';
-                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600';
-                btnEl.className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-colors';
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+        // --- HELPERS: UI RESET ---
+        function resetUploadUI() {
+            const processBtn = document.getElementById('process-csv-btn');
+            const progressCont = document.getElementById('upload-progress-container');
+            const progressBar = document.getElementById('upload-progress-bar');
+            
+            processBtn.disabled = false;
+            processBtn.classList.remove('hidden');
+            processBtn.textContent = "Subir y Analizar";
+            progressCont.classList.add('hidden');
+            progressBar.style.width = '0%';
         }
 
-        document.getElementById('genericModalBtn').addEventListener('click', () => {
-            document.getElementById('genericModal').classList.add('hidden');
-            document.getElementById('genericModal').classList.remove('flex');
-        });
+        function showUploadScreen(canCancel = true) {
+            document.getElementById('dashboard-loader').classList.add('hidden');
+            document.getElementById('dashboard-content').classList.add('hidden');
+            document.getElementById('csv-upload-screen').classList.remove('hidden');
+            
+            document.getElementById('csv-file-input').value = '';
+            document.getElementById('file-name-display').textContent = '';
+            resetUploadUI();
 
-        function raceWithTimeout(promise, ms, errorMessage) {
-            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(errorMessage)), ms));
-            return Promise.race([promise, timeout]);
+            if (currentUserData && currentUserData.plan === 'gratis') document.getElementById('upload-limit-warning').classList.remove('hidden');
+            else document.getElementById('upload-limit-warning').classList.add('hidden');
+
+            if (canCancel) document.getElementById('cancel-upload-btn').classList.remove('hidden');
+            else document.getElementById('cancel-upload-btn').classList.add('hidden');
         }
 
-        function getAbsoluteUrl(filename) {
-            const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
-            const path = filename.startsWith('/') ? filename : `/${filename}`;
-            return `${origin}${path}`;
-        }
-
-        function activateDemoMode() {
-            isDemoMode = true;
-            document.getElementById('demo-indicator').classList.remove('hidden');
-        }
-
-        function getDummyData() {
-            return [
-                { codigo_producto: "D001", descripcion: "Producto Demo A", cantidad: 10, precio_unitario: 5000, tipo_transaccion: "Venta", fecha: new Date().toISOString() },
-                { codigo_producto: "D002", descripcion: "Producto Demo B", cantidad: 5, precio_unitario: 12000, tipo_transaccion: "Venta", fecha: new Date().toISOString() },
-                { codigo_producto: "D003", descripcion: "Producto Demo C", cantidad: 20, precio_unitario: 3000, tipo_transaccion: "Compra", fecha: new Date().toISOString() }
-            ];
-        }
-
+        // --- MANEJO DE PLANES ---
         function showPlanSuccessModal(plan) {
             const modal = document.getElementById('planSuccessModal');
             document.getElementById('new-plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
             const listEl = document.getElementById('plan-benefits-list');
             listEl.innerHTML = '';
-            
             let benefits = [];
             if (plan === 'gratis') benefits = ['Acceso básico', 'Carga limitada', 'Sin costo'];
             else if (plan === 'Plan Estándar') benefits = ['Carga ilimitada', 'Alertas stock', 'Soporte'];
@@ -291,355 +260,126 @@
                 li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`;
                 listEl.appendChild(li);
             });
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.remove('modal-hidden'); modal.classList.add('modal-visible');
         }
 
         function checkPlanChange(newData) {
             const lastPlan = localStorage.getItem('lastKnownPlan');
             const currentPlan = newData.plan;
-            if (lastPlan && currentPlan && lastPlan !== currentPlan) {
-                showPlanSuccessModal(currentPlan);
-            }
+            if (lastPlan && currentPlan && lastPlan !== currentPlan) showPlanSuccessModal(currentPlan);
             if (currentPlan) localStorage.setItem('lastKnownPlan', currentPlan);
         }
 
         function updatePlanStatus(userData) {
-            const elName = document.getElementById('plan-name');
+            if (!userData.plan) return;
+            document.getElementById('plan-name').textContent = userData.plan.charAt(0).toUpperCase() + userData.plan.slice(1);
+            const diffDays = Math.ceil((new Date(new Date(userData.planStartDate).setDate(new Date(userData.planStartDate).getDate() + 30)).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
             const elDays = document.getElementById('plan-days-remaining');
-            
-            // Protección contra null si el HTML no está listo
-            if (!elName || !elDays) return;
-
-            const { plan, planStartDate } = userData;
-            if (!plan) return;
-            
-            elName.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-            
-            if (plan === 'gratis') elName.className = "plan-badge plan-badge-gratis";
-            else if (plan === 'Plan Estándar') elName.className = "plan-badge plan-badge-estandar";
-            else elName.className = "plan-badge plan-badge-premium";
-
-            const startDate = new Date(planStartDate || new Date());
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 30);
-            const diffDays = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
-
-            elDays.className = "text-xs text-slate-500 leading-tight";
-            if (diffDays <= 0) {
-                elDays.textContent = "Expirado";
-                elDays.classList.add('plan-days-critical');
-            } else {
-                elDays.textContent = `Quedan ${diffDays} días`;
-            }
+            elDays.textContent = diffDays <= 0 ? "Expirado" : `Quedan ${diffDays} días`;
         }
 
-        // =========================================================
-        // 3. LÓGICA DE DASHBOARD (Visual)
-        // =========================================================
-
+        // --- CORE LOGIC ---
         function showDashboard() {
             document.getElementById('dashboard-loader').classList.add('hidden');
             document.getElementById('csv-upload-screen').classList.add('hidden');
             document.getElementById('dashboard-content').classList.remove('hidden');
-
+            
             const isPremium = currentUserData && currentUserData.plan === 'Plan Premium';
-            const aiButtonState = isPremium 
-                ? `<button id="openAssistantBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg><span>Consultar IA</span></button>`
-                : `<button disabled class="bg-slate-200 text-slate-400 font-semibold flex items-center justify-center gap-2 w-full py-3 rounded-xl cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg><span>IA Bloqueada (Solo Premium)</span></button>`;
-
-            // Lógica para el título de Ventas (Dinámico)
-            // Se calculará en processAndDisplayData, aquí ponemos un placeholder
-            const salesCardTitle = `<h3 id="sales-period-label" class="text-slate-500 font-medium text-sm">Ventas (Calculando...)</h3>`;
-
-            document.getElementById('dashboard-content').innerHTML = `
-                <div class="md:col-span-2 bento-card bg-gradient-to-br from-indigo-500 to-purple-600 text-white" style="animation-delay: 0.1s;">
-                    <h3 id="client-name" class="text-2xl font-bold">¡Hola!</h3>
-                    <p class="text-indigo-100">Aquí está el resumen de tu negocio.</p>
-                </div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
-                    <div class="flex items-start justify-between">
-                        ${salesCardTitle}
-                        <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">💰</div>
-                    </div>
-                    <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
-                </div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.3s;">
-                    <div class="flex items-start justify-between">
-                        <h3 class="text-slate-500 font-medium text-sm">Productos Únicos</h3>
-                        <div class="bg-purple-100 p-2 rounded-lg text-purple-600">📦</div>
-                    </div>
-                    <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
-                </div>
-
-                <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
-                    <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
-                    <div class="overflow-y-auto flex-grow" style="max-height: 400px;">
-                        <table class="w-full table-compact text-sm">
-                            <thead><tr class="border-b sticky top-0 bg-white z-10"><th>Producto</th><th>Stock</th><th>Precio</th><th>Ventas</th></tr></thead>
-                            <tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-10 text-text-muted">Cargando...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="md:col-span-2 bento-card bg-amber-50 border-amber-200" style="animation-delay: 0.5s;">
-                    <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
-                    <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
-                </div>
-                
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
-                    <h3 class="text-slate-500 font-medium text-sm mb-2">Asistente Virtual</h3>
-                    <p class="text-lg font-semibold text-indigo-600 truncate mt-1">
-                        ${isPremium ? "Tu consultor 24/7" : "Actualiza a Premium"}
-                    </p>
-                    <div class="mt-auto pt-4">${aiButtonState}</div>
-                </div>
-
-                <div class="md:col-span-4 bento-card" style="animation-delay: 0.7s;">
-                    <h3 class="text-lg font-semibold mb-4">Ventas por Día</h3>
-                    <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
-                </div>
-                <div class="md:col-span-2 bento-card" style="animation-delay: 0.8s;">
-                    <h3 class="text-lg font-semibold mb-2">Composición</h3>
-                    <div class="relative flex-grow h-64 mt-auto"><canvas id="stockByProductChart"></canvas></div>
-                </div>
-            `;
-
-            if (isPremium) {
-                document.getElementById('openAssistantBtn').addEventListener('click', () => {
-                    const modal = document.getElementById('assistantModal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    if (currentUserData && window.cachedDashboardData) {
-                        askGemini(window.cachedDashboardData);
-                    }
-                });
-            }
+            const btnAI = isPremium 
+                ? `<button id="openAssistantBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">Consultar IA</button>` 
+                : `<button disabled class="w-full py-3 rounded-xl font-bold bg-slate-100 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2">IA Bloqueada</button>`;
+            
+            document.getElementById('ai-button-container').innerHTML = btnAI;
+            if(isPremium) document.getElementById('openAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-hidden'); document.getElementById('assistantModal').classList.add('modal-visible'); if(currentUserData && window.cachedDashboardData) askGemini(window.cachedDashboardData); };
+            
+            document.getElementById('client-name').textContent = `¡Hola, ${currentUserData.nombre || 'Usuario'}! 👋`;
         }
 
-        function initializeDashboard(collectionPath, clientName) {
-            const greetingName = (currentUserData && currentUserData.nombre) || clientName || "Usuario";
-            const clientNameEl = document.getElementById('client-name');
-            if(clientNameEl) clientNameEl.textContent = `¡Hola, ${greetingName}!`;
-            fetchAndAnalyze(collectionPath);
+        function initializeDashboard(path, name) {
+            fetchAndAnalyze(path);
         }
 
-        async function fetchAndAnalyze(collectionPath) {
+        async function fetchAndAnalyze(path) {
             if (isDemoMode) { processAndDisplayData(getDummyData()); return; }
-
             try {
-                const querySnapshot = await raceWithTimeout(
-                    getDocs(collection(db, `${collectionPath}/transactions`)),
-                    15000,
-                    "Tiempo agotado."
-                );
-                
-                const data = querySnapshot.docs.map(doc => doc.data());
-                if (data.length > 0) processAndDisplayData(data);
+                const qs = await raceWithTimeout(getDocs(collection(db, `${path}/transactions`)), 15000, "Tiempo agotado.");
+                const data = qs.docs.map(d => d.data());
+                if(data.length > 0) processAndDisplayData(data);
                 else showUploadScreen(false);
-
-            } catch (error) { 
-                console.error("Error fetching data:", error);
-                if (error.message.includes('Quota') || error.message.includes('Tiempo') || error.code === 'resource-exhausted') {
-                    activateDemoMode();
-                    processAndDisplayData(getDummyData());
-                    showAlert("Modo Demostración Activado", "Debido a límites de la cuenta gratuita, se han cargado datos de demostración.", "info");
-                } else {
-                    showAlert("Error", error.message, "error");
-                    document.getElementById('dashboard-loader').classList.add('hidden'); 
-                }
+            } catch(e) { 
+                console.error(e);
+                if(e.message.includes('Quota') || e.code==='resource-exhausted') { activateDemoMode(); processAndDisplayData(getDummyData()); showAlert("Demo", "Cuota excedida.", "info"); }
+                else showAlert("Error", e.message, "error");
             }
         }
 
         function processAndDisplayData(data) {
             if (!document.getElementById('totalVentas')) return;
+            if (currentUserData.plan === 'gratis' && data.length > 100) data = data.slice(0, 100);
 
-            if (currentUserData && currentUserData.plan === 'gratis' && data.length > 100) {
-                data = data.slice(0, 100);
-            }
+            const stock={}, pInfo={}, sales={}, pDate={}, pWeekly={}; 
+            let total=0, minDate=Infinity, maxDate=-Infinity; detailedSalesByDate={};
 
-            const stock = {}; const productInfo = {}; const salesByProduct = {}; let totalVentas = 0;
-            const productWeeklyPattern = {}; 
-            const salesByDate = {}; 
-            detailedSalesByDate = {}; 
-            
-            // Variables para calcular rango de fechas
-            let minDate = Infinity;
-            let maxDate = -Infinity;
-
-            data.forEach(row => {
-                const code = row.codigo_producto;
-                if (!code) return;
-                if (!stock[code]) {
-                    stock[code] = 0; productInfo[code] = { desc: row.descripcion, price: 0 };
-                    salesByProduct[code] = 0; productWeeklyPattern[code] = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
-                }
-                
-                if (row.tipo_transaccion && row.tipo_transaccion.toLowerCase() === 'venta') {
-                    stock[code] -= row.cantidad;
-                    totalVentas += row.cantidad;
-                    salesByProduct[code] += row.cantidad;
-                    productInfo[code].price = row.precio_unitario;
-                    
-                    const date = new Date(row.fecha);
-                    if(!isNaN(date)) {
-                        const time = date.getTime();
-                        if (time < minDate) minDate = time;
-                        if (time > maxDate) maxDate = time;
-
-                        const dString = date.toISOString().split('T')[0];
-                        salesByDate[dString] = (salesByDate[dString] || 0) + (row.precio_unitario * row.cantidad);
-                        productWeeklyPattern[code][date.getDay()] += row.cantidad;
-
-                        if (!detailedSalesByDate[dString]) detailedSalesByDate[dString] = [];
-                        detailedSalesByDate[dString].push({
-                            name: row.descripcion,
-                            qty: row.cantidad,
-                            total: row.precio_unitario * row.cantidad
-                        });
+            data.forEach(r => {
+                const c = r.codigo_producto; if(!c) return;
+                if(!stock[c]) { stock[c]=0; pInfo[c]={desc:r.descripcion, price:0}; sales[c]=0; pWeekly[c] = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}; }
+                if(r.tipo_transaccion?.toLowerCase() === 'venta') {
+                    stock[c] -= r.cantidad; total += r.cantidad; sales[c] += r.cantidad; pInfo[c].price = r.precio_unitario;
+                    const d = new Date(r.fecha);
+                    if(!isNaN(d)) {
+                        if(d.getTime() < minDate) minDate = d.getTime();
+                        if(d.getTime() > maxDate) maxDate = d.getTime();
+                        const ds = d.toISOString().split('T')[0];
+                        pDate[ds] = (pDate[ds]||0) + (r.precio_unitario*r.cantidad);
+                        if (pWeekly[c]) pWeekly[c][d.getDay()] += r.cantidad;
+                        if(!detailedSalesByDate[ds]) detailedSalesByDate[ds]=[];
+                        detailedSalesByDate[ds].push({name:r.descripcion, qty:r.cantidad, total:r.precio_unitario*r.cantidad});
                     }
-                } else {
-                    stock[code] += row.cantidad;
-                }
+                } else stock[c] += r.cantidad;
             });
 
-            // LÓGICA DE TIEMPO DINÁMICO
             let timeLabel = "Ventas (Total)";
             if (minDate !== Infinity && maxDate !== -Infinity) {
-                const diffTime = Math.abs(maxDate - minDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                
+                const diffDays = Math.ceil(Math.abs(maxDate - minDate) / (1000 * 60 * 60 * 24)); 
                 if (diffDays <= 7) timeLabel = `Ventas (${diffDays} días)`;
                 else if (diffDays <= 60) timeLabel = `Ventas (${Math.round(diffDays/7)} semanas)`;
-                else if (diffDays <= 365) timeLabel = `Ventas (${Math.round(diffDays/30)} meses)`;
-                else timeLabel = `Ventas (${(diffDays/365).toFixed(1)} años)`;
+                else timeLabel = `Ventas (${Math.round(diffDays/30)} meses)`;
             }
-            
-            const periodLabel = document.getElementById('sales-period-label');
-            if(periodLabel) periodLabel.textContent = timeLabel;
-
-            document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
+            document.getElementById('sales-period-label').textContent = timeLabel;
+            document.getElementById('totalVentas').textContent = total.toLocaleString('es-CL');
             document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
+            const low = Object.entries(stock).filter(([_,q])=>q<=20);
+            document.getElementById('alertasStock').textContent = low.length;
             
-            const lowStock = Object.entries(stock).filter(([_,q]) => q<=20);
-            document.getElementById('alertasStock').textContent = lowStock.length;
-
-            const tbody = document.getElementById('product-table-body');
-            if(tbody) {
-                tbody.innerHTML = '';
-                Object.keys(productInfo).slice(0,50).forEach(code => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b hover:bg-slate-50";
-                    tr.innerHTML = `<td class="py-2">${productInfo[code].desc}</td><td class="font-bold">${stock[code]}</td><td>$${productInfo[code].price}</td><td>${salesByProduct[code]}</td>`;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            updateCharts(salesByDate, stock, productInfo);
-
-            const topProd = Object.entries(salesByProduct).sort((a,b)=>b[1]-a[1])[0];
-            const topCode = topProd ? topProd[0] : null;
-            
-            window.cachedDashboardData = {
-                totalSales: totalVentas,
-                uniqueProducts: Object.keys(stock).length,
-                lowStockCount: lowStock.length,
-                lowStockItems: lowStock.slice(0,10).map(([code, qty]) => {
-                    const info = productInfo[code] || { desc: "Producto Desconocido" };
-                    return { name: info.desc, qty: qty, salesPattern: productWeeklyPattern[code] || {} };
-                }),
-                topSeller: topProd ? { name: productInfo[topCode]?.desc || "Producto Top", qty: salesByProduct[topCode] } : null
-            };
-            
-            const clientNameEl = document.getElementById('client-name');
-            if(clientNameEl && clientNameEl.innerHTML.includes('Actualizando')) {
-                 clientNameEl.innerHTML = `¡Hola, ${currentUserData.nombre || 'Usuario'}!`;
-            }
-        }
-
-        function updateCharts(salesDate, stock, info) {
-            const ctx1 = document.getElementById('salesByDayChart');
-            if(!ctx1) return; 
-            const ctx1Context = ctx1.getContext('2d');
-            const dates = Object.keys(salesDate).sort().slice(-7);
-            
-            if(salesByDayChart) salesByDayChart.destroy();
-            salesByDayChart = new Chart(ctx1Context, {
-                type: 'bar',
-                data: {
-                    labels: dates,
-                    datasets: [{ label: 'Ventas', data: Object.values(salesDate).slice(-7), backgroundColor: '#4f46e5', borderRadius: 4 }]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    onClick: (e, elements) => {
-                        if(elements.length > 0) {
-                            const idx = elements[0].index;
-                            showDailyDetails(dates[idx]);
-                        }
-                    }
-                }
+            const tbody = document.getElementById('product-table-body'); tbody.innerHTML = '';
+            Object.keys(pInfo).slice(0,50).forEach(c => {
+                tbody.innerHTML += `<tr class="table-row border-b border-slate-50 last:border-0"><td class="px-4 py-3 font-medium text-slate-700">${pInfo[c].desc}</td><td class="px-4 py-3 font-bold">${stock[c]}</td><td class="px-4 py-3">$${pInfo[c].price}</td><td class="px-4 py-3">${sales[c]}</td></tr>`;
             });
-
-            const ctx2 = document.getElementById('stockByProductChart');
-            if(!ctx2) return;
-            const ctx2Context = ctx2.getContext('2d');
-
-            if(stockByProductChart) stockByProductChart.destroy();
-            stockByProductChart = new Chart(ctx2Context, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.values(info).slice(0,5).map(i=>i.desc),
-                    datasets: [{ data: Object.values(stock).slice(0,5), backgroundColor: ['#4f46e5','#7c3aed','#f59e0b','#10b981','#ec4899'] }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
-            });
-        }
-
-        function showDailyDetails(dateString) {
-            const sales = detailedSalesByDate[dateString] || [];
-            const dateObj = new Date(dateString + 'T00:00:00');
-            const detailTitle = document.getElementById('detail-title');
-            const detailContent = document.getElementById('detail-content');
-            const section = document.getElementById('daily-detail-section');
-
-            detailTitle.textContent = `Ventas del ${dateObj.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' })}`;
             
-            if (sales.length === 0) {
-                detailContent.innerHTML = '<p class="text-slate-500 col-span-2 text-center py-4">No hay ventas registradas.</p>';
-            } else {
-                const summary = sales.reduce((acc, curr) => {
-                    if (!acc[curr.name]) acc[curr.name] = { qty: 0, total: 0 };
-                    acc[curr.name].qty += curr.qty;
-                    acc[curr.name].total += curr.total;
-                    return acc;
-                }, {});
-
-                const totalDay = Object.values(summary).reduce((sum, item) => sum + item.total, 0);
-
-                let html = `<div class="col-span-2 bg-indigo-50 p-3 rounded-lg text-center mb-2">
-                                <span class="text-sm text-indigo-600 font-medium">Total del día</span>
-                                <p class="text-2xl font-bold text-indigo-900">$${totalDay.toLocaleString('es-CL')}</p>
-                            </div>
-                            <div class="col-span-2 space-y-2 max-h-60 overflow-y-auto pr-2">`;
-
-                Object.entries(summary)
-                    .sort((a, b) => b[1].total - a[1].total)
-                    .forEach(([name, data]) => {
-                        html += `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg text-sm">
-                                    <span class="text-slate-700 font-medium">${name} <span class="text-slate-400 text-xs">x${data.qty}</span></span>
-                                    <span class="font-bold text-slate-800">$${data.total.toLocaleString('es-CL')}</span>
-                                 </div>`;
-                    });
-                html += '</div>';
-                detailContent.innerHTML = html;
-            }
-
-            section.classList.add('visible');
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updateCharts(pDate, stock, pInfo);
+            
+            const top = Object.entries(sales).sort((a,b)=>b[1]-a[1])[0];
+            window.cachedDashboardData = { totalSales: total, uniqueProducts: Object.keys(stock).length, lowStockCount: low.length, lowStockItems: low.slice(0,10).map(([c,q])=>({name:pInfo[c]?.desc, qty:q})), topSeller: top ? {name:pInfo[top[0]]?.desc, qty:sales[top[0]], price:pInfo[top[0]]?.price, salesPattern:pWeekly[top[0]]} : null };
         }
 
-        document.getElementById('close-detail-btn').addEventListener('click', () => document.getElementById('daily-detail-section').classList.remove('visible'));
+        function updateCharts(sDate, stock, info) {
+            const c1=document.getElementById('salesByDayChart'), c2=document.getElementById('stockByProductChart');
+            if(c1) { if(salesByDayChart) salesByDayChart.destroy(); salesByDayChart=new Chart(c1.getContext('2d'), { type:'bar', data:{labels:Object.keys(sDate).sort().slice(-7), datasets:[{label:'Ventas',data:Object.values(sDate).slice(-7),backgroundColor:'#6366F1',borderRadius:6}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{display:false}},x:{grid:{display:false}}},onClick:(e,el)=>{if(el.length>0)showDetails(Object.keys(sDate).sort().slice(-7)[el[0].index])}} }); }
+            if(c2) { if(stockByProductChart) stockByProductChart.destroy(); stockByProductChart=new Chart(c2.getContext('2d'), { type:'doughnut', data:{labels:Object.values(info).slice(0,5).map(i=>i.desc),datasets:[{data:Object.values(stock).slice(0,5),backgroundColor:['#4F46E5','#7C3AED','#A78BFA','#C4B5FD','#E0E7FF'],borderWidth:0}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{position:'right',labels:{usePointStyle:true,boxWidth:8}}}} }); }
+        }
+        
+        function showDetails(ds) {
+            document.getElementById('detail-title').textContent = `Ventas ${ds}`;
+            const d = detailedSalesByDate[ds] || [];
+            let h = d.length ? '' : '<p class="text-center text-slate-400">Sin datos</p>';
+            if(d.length) {
+                const s = d.reduce((a,c)=>{ if(!a[c.name])a[c.name]={qty:0,total:0}; a[c.name].qty+=c.qty; a[c.name].total+=c.total; return a; },{});
+                Object.entries(s).forEach(([n,v])=>{ h+=`<div class="flex justify-between p-3 border-b text-sm"><span class="text-slate-700">${n} x${v.qty}</span><span class="font-bold text-indigo-600">$${v.total}</span></div>`; });
+            }
+            document.getElementById('detail-content').innerHTML = h;
+            document.getElementById('daily-detail-section').classList.remove('translate-y-full','opacity-0','pointer-events-none');
+        }
+        document.getElementById('close-detail-btn').onclick = () => document.getElementById('daily-detail-section').classList.add('translate-y-full','opacity-0','pointer-events-none');
 
         // --- CSV PARSING & UPLOAD ---
         function parseCSV(text) {
@@ -748,218 +488,188 @@
             }
         }
 
-        function resetUploadUI() {
-            const els = {
-                processBtn: document.getElementById('process-csv-btn'),
-                progressCont: document.getElementById('upload-progress-container'),
-                progressBar: document.getElementById('upload-progress-bar')
-            };
-            els.processBtn.disabled = false;
-            els.processBtn.classList.remove('hidden');
-            els.processBtn.textContent = "Subir y Procesar";
-            els.progressCont.classList.add('hidden');
-            els.progressBar.style.width = '0%';
-        }
-
-        function showUploadScreen(canCancel = true) {
-            document.getElementById('dashboard-loader').classList.add('hidden');
-            document.getElementById('dashboard-content').classList.add('hidden');
-            document.getElementById('csv-upload-screen').classList.remove('hidden');
-            document.getElementById('csv-file-input').value = '';
-            document.getElementById('file-name-display').textContent = '';
-            resetUploadUI();
-            
-            if (currentUserData.plan === 'gratis') document.getElementById('upload-limit-warning').classList.remove('hidden');
-            else document.getElementById('upload-limit-warning').classList.add('hidden');
-
-            if (canCancel) document.getElementById('cancel-upload-btn').classList.remove('hidden');
-            else document.getElementById('cancel-upload-btn').classList.add('hidden');
-        }
-
-        async function askGemini(data) {
-            const content = document.getElementById('assistantModalContent');
-            content.innerHTML = '<div class="text-center py-10"><div class="ai-thinking text-4xl">🧠</div><p class="mt-4 text-slate-500">Analizando...</p></div>';
-            
-            if (isDemoMode) {
-                setTimeout(() => {
-                    content.innerHTML = `<div class="space-y-4 font-inter"><div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-5 rounded-2xl text-white shadow-md"><h3 class="font-bold text-lg flex items-center gap-2">🧠 Análisis Demo</h3><p class="text-indigo-100 mt-1">En modo demo, simulo que tu día fuerte es el Viernes.</p></div></div>`;
-                }, 1000);
-                return;
-            }
-
-            try {
-                const res = await raceWithTimeout(
-                    fetch('/api/consultar-ia', {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json', 'user-id': auth.currentUser.uid},
-                        body: JSON.stringify({ resumen: data })
-                    }),
-                    25000,
-                    "La IA tarda demasiado."
-                );
-
-                const json = await res.json();
-                if(!res.ok) throw new Error(json.error || "Error API");
-                content.innerHTML = json.html;
-            } catch(e) {
-                content.innerHTML = `<p class="text-red-500 text-center p-4">⚠️ ${e.message}</p>`;
-            }
-        }
-
-        // =========================================================
-        // 5. EVENT LISTENERS
-        // =========================================================
-        
-        document.getElementById('csv-file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) { 
-                document.getElementById('file-name-display').textContent = `Archivo: ${file.name}`; 
-                document.getElementById('process-csv-btn').disabled = false; 
-            }
-        });
-
-        document.getElementById('process-csv-btn').addEventListener('click', async () => {
-            const file = document.getElementById('csv-file-input').files[0];
-            if (!file) return;
-            
-            const btn = document.getElementById('process-csv-btn');
-            btn.disabled = true;
-            btn.classList.add('hidden');
-            document.getElementById('upload-progress-container').classList.remove('hidden');
-
-            const reader = new FileReader();
-            reader.onload = async (event) => {
+        // --- EVENT LISTENERS ---
+        document.getElementById('csv-file-input').onchange = (e) => { if(e.target.files[0]) { document.getElementById('file-name-display').textContent = e.target.files[0].name; document.getElementById('process-csv-btn').disabled = false; } };
+        document.getElementById('process-csv-btn').onclick = async () => {
+            const f = document.getElementById('csv-file-input').files[0]; if(!f) return;
+            const btn = document.getElementById('process-csv-btn'); btn.disabled = true; btn.textContent = 'Procesando...';
+            const r = new FileReader();
+            r.onload = async (e) => {
                 try {
-                    const data = parseCSV(event.target.result);
-                    if (data.length === 0) throw new Error("Archivo vacío o formato inválido.");
-                    if (currentUserData.plan === 'gratis' && data.length > 100) data.splice(100); 
-                    await uploadDataToFirebase(data, file.name);
-                } catch (error) {
-                    showAlert("Error CSV", error.message, "error");
-                    resetUploadUI();
-                }
+                    const lines = e.target.result.trim().split('\n').filter(l=>l.trim()!=='');
+                    const sep = (lines[0].match(/;/g)||[]).length > (lines[0].match(/,/g)||[]).length ? ';' : ',';
+                    const h = lines[0].split(sep).map(x=>x.trim().replace(/^"|"$/g,''));
+                    const data = lines.slice(1).map(l=>{ const v=l.split(sep); let o={}; h.forEach((k,i)=>{let val=v[i]?v[i].trim().replace(/^"|"$/g,''):''; o[k]=(val===''||isNaN(Number(val)))?val:Number(val)}); return o; });
+                    await uploadDataToFirebase(data, f.name);
+                } catch(err) { showAlert("Error CSV", err.message, "error"); resetUploadUI(); }
             };
-            reader.readAsText(file);
-        });
-
-        document.getElementById('uploadMoreDataBtn').addEventListener('click', () => showUploadScreen(true));
-        document.getElementById('cancel-upload-btn').addEventListener('click', () => { 
-            document.getElementById('csv-upload-screen').classList.add('hidden'); 
-            document.getElementById('dashboard-content').classList.remove('hidden'); 
-        });
-
-        document.getElementById('closeAssistantBtn').onclick = () => document.getElementById('assistantModal').classList.add('hidden');
-        document.getElementById('closePlanModalBtn').onclick = () => document.getElementById('planSuccessModal').classList.add('hidden');
-        document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
+            r.readAsText(f);
+        };
         
-        // Borrado de Cuenta
-        document.getElementById('deleteAccountBtn').onclick = () => document.getElementById('deleteAccountModal').classList.remove('hidden');
-        document.getElementById('cancelDeleteBtn').onclick = () => document.getElementById('deleteAccountModal').classList.add('hidden');
-        
+        document.getElementById('uploadMoreDataBtn').onclick = () => showUploadScreen(true);
+        document.getElementById('cancel-upload-btn').onclick = () => { document.getElementById('csv-upload-screen').classList.add('hidden'); document.getElementById('dashboard-content').classList.remove('hidden'); };
+        document.getElementById('closeAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-visible'); document.getElementById('assistantModal').classList.add('modal-hidden'); };
+        document.getElementById('closePlanModalBtn').onclick = () => { document.getElementById('planSuccessModal').classList.remove('modal-visible'); document.getElementById('planSuccessModal').classList.add('modal-hidden'); };
+        document.getElementById('deleteAccountBtn').onclick = () => { document.getElementById('deleteAccountModal').classList.remove('modal-hidden'); document.getElementById('deleteAccountModal').classList.add('modal-visible'); };
+        document.getElementById('cancelDeleteBtn').onclick = () => { document.getElementById('deleteAccountModal').classList.remove('modal-visible'); document.getElementById('deleteAccountModal').classList.add('modal-hidden'); };
         document.getElementById('confirmDeleteBtn').onclick = async () => {
-            if (!auth.currentUser) return;
-            const btn = document.getElementById('confirmDeleteBtn');
-            btn.disabled = true; btn.textContent = "Procesando...";
-            try {
-                if (userDocUnsubscribe) userDocUnsubscribe();
-                const userRef = doc(db, "users", auth.currentUser.uid);
-                const deletionDate = new Date(Date.now() + 30*24*60*60*1000);
-                
-                await raceWithTimeout(
-                    updateDoc(userRef, { deletionScheduledAt: deletionDate.toISOString(), status: 'pending_deletion' }),
-                    10000, "Tiempo agotado."
-                );
-                
-                showAlert("Cuenta Programada", "Tu cuenta se eliminará en 30 días. ¡Hasta pronto!", "info");
-                setTimeout(async () => {
+             try {
+                 // CRITICAL FIX: Set the flag BEFORE updating the DB and redirecting
+                 sessionStorage.setItem('isDeleting', 'true');
+                 
+                 await updateDoc(doc(db,"users",auth.currentUser.uid), {deletionScheduledAt: new Date(Date.now()+30*24*60*60*1000).toISOString(), status: 'pending_deletion'});
+                 showAlert("Cuenta Programada", "Adios.", "info");
+                 
+                 setTimeout(async () => {
                     await signOut(auth);
                     window.location.href = getAbsoluteUrl('index.html');
-                }, 2000);
+                 }, 2000);
 
-            } catch (e) {
-                console.error("Delete Error:", e);
-                showAlert("Error", e.message, "error");
-                btn.disabled = false; btn.textContent = "Sí, eliminar";
-            }
+             } catch(e) { showAlert("Error", e.message, "error"); }
         };
-
-        // Restauración
+        document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
         document.getElementById('closeRestoreModalBtn').onclick = () => {
-            document.getElementById('restoreAccountModal').classList.add('hidden');
-            if (currentUserData) {
-                updatePlanStatus(currentUserData);
-                if (!!currentUserData.dataCollectionPath || isDemoMode) {
-                    showDashboard();
-                    if (!document.getElementById('dashboard-content').dataset.initialized) {
-                        initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
-                        document.getElementById('dashboard-content').dataset.initialized = "true";
-                    }
-                } else {
-                    showUploadScreen(false);
-                }
-            }
+            document.getElementById('restoreAccountModal').classList.remove('modal-visible');
+            document.getElementById('restoreAccountModal').classList.add('modal-hidden');
+            if(currentUserData) updateUI(currentUserData);
         };
 
-        // =========================================================
-        // 6. LISTENER PRINCIPAL (AUTH)
-        // =========================================================
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                if (userDocUnsubscribe) userDocUnsubscribe();
-                const userDocRef = doc(db, "users", user.uid);
-                
-                userDocUnsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
-                    if (userDocSnap.exists()) {
-                        const newUserData = userDocSnap.data();
-                        sessionStorage.setItem('loggedInUserId', user.uid);
-                        currentUserData = newUserData;
+        async function askGemini(data) {
+             const c = document.getElementById('assistantModalContent');
+             c.innerHTML = '<div class="text-center py-10 text-4xl animate-pulse">🧠</div><p class="text-center text-slate-500">Analizando tus datos...</p>';
+             try {
+                 const r = await raceWithTimeout(
+                    fetch('/api/consultar-ia', { method:'POST', headers:{'Content-Type':'application/json','user-id':auth.currentUser.uid}, body:JSON.stringify({resumen:data}) }),
+                    25000,
+                    "La IA tardó demasiado en responder."
+                 );
+                 const j = await r.json();
+                 if(!r.ok) throw new Error(j.error);
+                 c.innerHTML = j.html;
+             } catch(e) { c.innerHTML = `<p class="text-red-500 text-center p-6 bg-red-50 rounded-xl border border-red-100 font-medium">⚠️ ${e.message}</p>`; }
+        }
 
-                        if (newUserData.deletionScheduledAt) {
-                            document.getElementById('restoreAccountModal').classList.remove('hidden');
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                const ref = doc(db,"users",user.uid);
+                userDocUnsubscribe = onSnapshot(ref, (s) => {
+                    if(s.exists()) {
+                        const newUserData = s.data();
+                        
+                        // FIX: Check if the 'isDeleting' flag exists first.
+                        const isDeleting = sessionStorage.getItem('isDeleting');
+                        
+                        if (newUserData.deletionScheduledAt && isDeleting !== 'true') {
+                            document.getElementById('restoreAccountModal').classList.remove('modal-hidden');
+                            document.getElementById('restoreAccountModal').classList.add('modal-visible');
                             document.getElementById('dashboard-loader').classList.add('hidden');
-                            if (!isDemoMode) {
-                                updateDoc(userDocRef, { deletionScheduledAt: deleteField(), status: 'active' }).catch(err => console.error("Error cancelando borrado:", err));
-                            }
-                            return; 
+                            updateDoc(ref, {deletionScheduledAt: deleteField(), status: 'active'}).catch(()=>{});
+                            sessionStorage.removeItem('isDeleting'); // Clear flag after modal is shown
+                            return;
                         }
                         
-                        if (!document.getElementById('restoreAccountModal').classList.contains('hidden')) return;
-
-                        checkPlanChange(newUserData);
-                        updatePlanStatus(currentUserData);
-
-                        const hasData = !!currentUserData.dataCollectionPath;
-
-                        if (hasData) {
-                            if (!document.getElementById('dashboard-content').dataset.initialized) {
-                                showDashboard();
-                                initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
-                                document.getElementById('dashboard-content').dataset.initialized = "true";
-                            }
-                        } else {
-                            if (document.getElementById('restoreAccountModal').classList.contains('hidden')) {
-                                document.getElementById('dashboard-loader').classList.add('hidden');
-                                document.getElementById('dashboard-content').classList.add('hidden');
-                                showUploadScreen(false);
-                                document.getElementById('dashboard-content').dataset.initialized = "";
-                            }
+                        // Clear the flag if the user is now authenticated and deleting is not pending
+                        if (isDeleting === 'true' && !newUserData.deletionScheduledAt) {
+                            sessionStorage.removeItem('isDeleting');
                         }
-                    } else {
-                        document.getElementById('dashboard-loader').innerHTML = '<div class="text-red-500 p-4">Error: Perfil no encontrado.</div>';
+                        
+                        currentUserData = newUserData;
+                        if(document.getElementById('restoreAccountModal').classList.contains('modal-hidden')) updateUI(currentUserData);
                     }
-                }, (error) => {
-                    console.error("Snapshot error:", error);
-                    activateDemoMode();
-                    currentUserData = { nombre: "Usuario Demo", plan: "Plan Premium", planStartDate: new Date().toISOString() };
-                    updatePlanStatus(currentUserData);
-                    showDashboard();
-                    initializeDashboard(null, "Negocio Demo");
                 });
             } else {
-                window.location.href = getAbsoluteUrl('index.html');
+                 // Clear flag on exit
+                 sessionStorage.removeItem('isDeleting');
+                 window.location.href = getAbsoluteUrl('index.html');
             }
         });
 
+        function updateUI(u) {
+            updatePlanStatus(u);
+            if(u.plan) checkPlanChange(u);
+            
+            // Render the full Dashboard Structure (Ensures IDs exist)
+            const container = document.getElementById('dashboard-content');
+            container.innerHTML = `
+                <div class="md:col-span-2 glass-card bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 fade-in" style="animation-delay: 0.1s;">
+                    <h3 id="client-name" class="text-2xl font-bold tracking-tight mb-1">¡Hola, ${u.nombre || 'Usuario'}! 👋</h3>
+                    <p class="text-indigo-100 text-sm opacity-90">Aquí tienes el resumen de tu negocio.</p>
+                </div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.2s;">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 id="sales-period-label" class="text-slate-400 font-bold text-xs uppercase tracking-wider">Ventas Totales</h3>
+                        <div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg">💰</div>
+                    </div>
+                    <p id="totalVentas" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
+                </div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.3s;">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider">Productos</h3>
+                        <div class="bg-purple-50 text-purple-600 p-2 rounded-lg">📦</div>
+                    </div>
+                    <p id="productosUnicos" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
+                </div>
+
+                <div class="md:col-span-4 md:row-span-2 glass-card p-6 fade-in" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Inventario General</h3>
+                    <div class="overflow-y-auto flex-grow h-64 md:h-auto scrollbar-thin">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-xs text-slate-400 uppercase bg-slate-50/50 sticky top-0"><tr><th class="px-4 py-3 rounded-l-lg">Producto</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Precio</th><th class="px-4 py-3 rounded-r-lg">Ventas</th></tr></thead>
+                            <tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-8 text-slate-400">Cargando datos...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 glass-card p-6 border-l-4 border-amber-400 fade-in" style="animation-delay: 0.5s;">
+                    <h3 class="text-amber-600 font-bold text-sm uppercase tracking-wider mb-1">Stock Bajo</h3>
+                    <p id="alertasStock" class="text-4xl font-extrabold text-slate-800">0</p>
+                    <p class="text-xs text-slate-400 mt-2">Productos requieren atención</p>
+                </div>
+                
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.6s;">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">✨</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Asistente IA</h3>
+                            <p class="text-xs text-slate-400">Análisis inteligente</p>
+                        </div>
+                    </div>
+                    <div id="ai-button-container" class="mt-auto">
+                         <!-- Button injected here -->
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 glass-card p-6 fade-in" style="animation-delay: 0.7s;">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Tendencia de Ventas</h3>
+                    <div class="relative h-64 w-full"><canvas id="salesByDayChart"></canvas></div>
+                </div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.8s;">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4">Composición</h3>
+                    <div class="relative h-48 w-full flex justify-center"><canvas id="stockByProductChart"></canvas></div>
+                </div>
+            `;
+            
+            // Re-bind AI button
+            const isPremium = u && u.plan === 'Plan Premium';
+            const btnAI = isPremium 
+                ? `<button id="openAssistantBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">Consultar IA</button>` 
+                : `<button disabled class="w-full py-3 rounded-xl font-bold bg-slate-100 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2">IA Bloqueada</button>`;
+            
+            document.getElementById('ai-button-container').innerHTML = btnAI;
+            if(isPremium) document.getElementById('openAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-hidden'); document.getElementById('assistantModal').classList.add('modal-visible'); if(currentUserData && window.cachedDashboardData) askGemini(window.cachedDashboardData); };
+
+
+            if(u.dataCollectionPath || isDemoMode) {
+                document.getElementById('csv-upload-screen').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+                if(!document.getElementById('dashboard-content').dataset.initialized) {
+                    initializeDashboard(u.dataCollectionPath, u.clientName);
+                    document.getElementById('dashboard-content').dataset.initialized="true";
+                }
+            } else {
+                showUploadScreen(false);
+            }
+        }
     </script>
 </body>
 </html>
