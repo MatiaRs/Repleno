@@ -2,275 +2,248 @@
 <html lang="es">
 
 <head>
-    <!-- 
-      Icono de la pestaña: 
-      Se utiliza un data URI del logo SVG para evitar errores 404.
-    -->
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
-
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repleno - Iniciar Sesión</title>
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Estilos CSS personalizados -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-light: #F7F8FC;
-            --bg-card: #FFFFFF;
-            --border-color: #E2E8F0;
-            --accent-primary: #4338CA;
-            --accent-secondary: #7C3AED;
-            --text-dark: #1E293B;
-            --text-muted: #64748B;
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; overflow-x: hidden; }
+        
+        /* Fondo decorativo sutil */
+        .bg-pattern {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: radial-gradient(#E0E7FF 1px, transparent 1px);
+            background-size: 24px 24px; opacity: 0.5;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-        }
+        /* Animaciones */
+        .fadeInUp { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        .floating-card {
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            animation: float 6s ease-in-out infinite;
+        }
+        .float-delay-1 { animation-delay: 0s; }
+        .float-delay-2 { animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .btn-primary {
-            background-color: var(--accent-primary);
-            color: white;
-            border: 1px solid var(--accent-primary);
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            transition: all 0.3s ease;
         }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; background: #94A3B8; }
 
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        /* Inputs con Padding Extra para Iconos */
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 1rem; color: #94A3B8; pointer-events: none; z-index: 10; }
+        .styled-input { 
+            padding-left: 3.5rem !important; /* Espacio asegurado para el icono */
+            transition: all 0.2s; 
         }
+        .styled-input:focus { border-color: #6366F1; ring: 2px; ring-color: #E0E7FF; }
 
-        .btn-primary:disabled {
-            background-color: #A5B4FC;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.8s ease-in-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
-        }
-
-        /* --- Estilos de Notificación --- */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            color: white;
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.5s ease-in-out;
-        }
-
+        /* Notificaciones */
+        .notification { position: fixed; top: 24px; right: 24px; padding: 1rem 1.5rem; border-radius: 1rem; color: white; z-index: 1000; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
         .notification.show { transform: translateX(0); }
-        .notification.error { background-color: #DC2626; }
-        .notification.success { background-color: #16A34A; }
+        .notification.error { background: #EF4444; }
+        .notification.success { background: #10B981; }
 
-        /* --- Estilos de Modales --- */
-        .modal { transition: opacity 0.3s ease-in-out; }
-        .modal-content { transition: transform 0.3s ease-in-out; }
+        /* Modales */
+        .modal { transition: opacity 0.2s ease-in-out; }
+        .modal-content { transition: transform 0.2s ease-in-out; }
         .modal-hidden { opacity: 0; pointer-events: none; }
-        .modal-hidden .modal-content { transform: scale(0.95) translateY(10px); }
+        .modal-hidden .modal-content { transform: scale(0.95); }
         .modal-visible { opacity: 1; pointer-events: auto; }
-        .modal-visible .modal-content { transform: scale(1) translateY(0); }
+        .modal-visible .modal-content { transform: scale(1); }
+
+        /* Estilos Tarjetas Laterales */
+        .side-card {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .side-card:hover { transform: scale(1.02) translateY(-5px); }
     </style>
 </head>
 
-<body class="overflow-x-hidden">
-
-    <!-- Área para mostrar notificaciones -->
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-pattern"></div>
     <div id="notification-area"></div>
 
-    <!-- Pantalla de Login -->
-    <div id="login-screen" class="screen">
-        <div class="card w-full max-w-sm text-center p-8 fade-in">
-            <!-- Logo y Título -->
-            <div class="flex justify-center items-center gap-4 mb-4">
-                <svg id="replenoLogoLogin" width="60" height="60" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                    <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                </svg>
-                <h1 class="text-4xl font-extrabold text-slate-900">Repleno</h1>
+    <!-- Layout Principal: Grid de 3 columnas -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full max-w-7xl items-center relative">
+        
+        <!-- COLUMNA IZQUIERDA: Beneficios -->
+        <div class="hidden lg:flex lg:col-span-4 flex-col gap-6 relative z-0">
+            <!-- Tarjeta 1 -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-2 hover:rotate-0">
+                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm">🚀</div>
+                <h3 class="font-bold text-slate-800 text-lg">Gestión Integral</h3>
+                <p class="text-slate-500 text-sm mt-2 leading-relaxed">Centraliza tu inventario, ventas y clientes en una sola plataforma fácil de usar.</p>
             </div>
-            <p class="text-slate-500 mb-6">Inicia sesión para continuar</p>
+            
+            <!-- Tarjeta 2 -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-1 hover:rotate-0 translate-x-4">
+                <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm">🤖</div>
+                <h3 class="font-bold text-slate-800 text-lg">Inteligencia Artificial</h3>
+                <p class="text-slate-500 text-sm mt-2 leading-relaxed">Nuestro asistente analiza tus datos para darte consejos estratégicos de venta.</p>
+            </div>
+        </div>
 
-            <!-- Formulario de Login -->
-            <div class="text-left space-y-4">
-                <div>
-                    <label for="email" class="block text-sm font-medium text-slate-600 mb-1">Correo Electrónico</label>
-                    <input type="text" id="email" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-900 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none" autocomplete="email">
+        <!-- COLUMNA CENTRAL: Login -->
+        <div class="col-span-1 lg:col-span-4 w-full relative z-10 fadeInUp">
+            <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-10 border border-white/50">
+                <!-- Logo -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-md mb-4 border border-indigo-50 transform hover:rotate-3 transition-transform">
+                        <svg id="replenoLogoLogin" width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" /><stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" /></linearGradient></defs>
+                            <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+                            <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Repleno</h1>
+                    <p class="text-slate-500 text-sm mt-2 font-medium">Potencia tu negocio hoy</p>
                 </div>
-                <div>
-                    <label for="password" class="block text-sm font-medium text-slate-600 mb-1">Contraseña</label>
-                    <input type="password" id="password" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-900 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none" autocomplete="current-password">
+
+                <!-- Formulario -->
+                <div class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider">Correo Electrónico</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+                            <input type="email" id="email" class="styled-input w-full rounded-xl border border-slate-200 p-3.5 bg-slate-50 focus:bg-white outline-none text-slate-800 font-medium" placeholder="tu@empresa.com" autocomplete="email">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider">Contraseña</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <input type="password" id="password" class="styled-input w-full rounded-xl border border-slate-200 p-3.5 bg-slate-50 focus:bg-white outline-none text-slate-800 font-medium" placeholder="••••••••" autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button id="forgot-modal-btn" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors">¿Olvidaste tu contraseña?</button>
+                    </div>
+
+                    <button id="loginBtn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-indigo-200/50 hover:shadow-indigo-300/50">
+                        Iniciar Sesión
+                    </button>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+                    <p class="text-slate-500 text-sm font-medium">¿Aún no tienes cuenta? <button id="open-register-btn" class="font-bold text-indigo-600 hover:text-indigo-800 ml-1 transition-colors">Regístrate gratis</button></p>
                 </div>
             </div>
-            <button id="loginBtn" class="btn-primary w-full mt-6">Iniciar Sesión</button>
+        </div>
 
-            <!-- Enlaces de Registro y Olvidar Contraseña -->
-            <p class="text-center text-sm text-slate-500 mt-6">
-                ¿Olvidaste tu contraseña?
-                <button id="forgot-modal-btn" class="font-semibold text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
-                    Restablecer
-                </button>
-            </p>
-            <p class="text-center text-sm text-slate-500 mt-6">
-                ¿No tienes una cuenta?
-                <button id="open-register-btn" class="font-semibold text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
-                    Regístrate aquí
-                </button>
-            </p>
+        <!-- COLUMNA DERECHA: Propuestas de Valor -->
+        <div class="hidden lg:flex lg:col-span-4 flex-col gap-6 relative z-0 items-end">
+            <!-- Tarjeta 3 -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-2 hover:rotate-0 -translate-x-4 w-72">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">📊</div>
+                    <h3 class="font-bold text-slate-800 text-lg">Datos Reales</h3>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed">Visualiza el estado de tu negocio en tiempo real para tomar decisiones informadas al instante.</p>
+            </div>
+
+            <!-- Tarjeta 4 -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-1 hover:rotate-0 w-72">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">⏰</div>
+                    <h3 class="font-bold text-slate-800 text-lg">Eficiencia</h3>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed">Automatiza tareas repetitivas y ahorra horas de trabajo administrativo cada semana.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODALES -->
+
+    <!-- Modal Registro -->
+    <div id="register-modal" class="modal modal-hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true">
+        <div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <div class="sticky top-0 bg-white/95 backdrop-blur-md p-6 border-b border-slate-100 flex justify-between items-center z-10">
+                <h2 class="text-2xl font-bold text-slate-800">Crear Cuenta</h2>
+                <button id="close-register-btn" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-8">
+                <form id="register-form" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><label class="text-sm font-bold text-slate-600 ml-1">Nombre</label><input type="text" id="register-nombre" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="Tu Nombre" required></div>
+                        <div><label class="text-sm font-bold text-slate-600 ml-1">Apellido</label><input type="text" id="register-apellido" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="Tu Apellido" required></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div><label class="text-sm font-bold text-slate-600 ml-1">RUT</label><input type="text" id="register-rut" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="12.345.678-9" required></div>
+                        <div><label class="text-sm font-bold text-slate-600 ml-1">Teléfono</label><input type="tel" id="register-phone" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="+56 9 ..." required></div>
+                    </div>
+                    <div><label class="text-sm font-bold text-slate-600 ml-1">Correo Electrónico</label><input type="email" id="register-email" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="empresa@mail.com" required></div>
+                    <div><label class="text-sm font-bold text-slate-600 ml-1">Nombre del Negocio</label><input type="text" id="register-negocio" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="Mi Pyme SpA" required></div>
+                    <div><label class="text-sm font-bold text-slate-600 ml-1">Contraseña</label><input type="password" id="register-password" class="styled-input w-full rounded-xl border-slate-200 p-3 bg-slate-50" placeholder="Mínimo 6 caracteres" required></div>
+                    
+                    <div class="flex items-start space-x-3 pt-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <input type="checkbox" id="accept-terms" class="mt-1 h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" required>
+                        <label for="accept-terms" class="text-sm text-slate-600">He leído y acepto los <button type="button" id="open-terms-btn" class="font-bold text-indigo-600 hover:underline">Términos y Condiciones</button>.</label>
+                    </div>
+                    <button type="submit" id="registerSubmitBtn" class="btn-primary w-full py-3.5 rounded-xl text-white font-bold text-lg shadow-lg">Comenzar Gratis</button>
+                </form>
+            </div>
         </div>
     </div>
 
-
-    <!-- Modal de Registro -->
-    <div id="register-modal" class="modal modal-hidden fixed inset-0 bg-slate-900 bg-opacity-75 flex items-center justify-center z-50 p-4" aria-hidden="true">
-        <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
-            <button id="close-register-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">Crea tu cuenta en Repleno</h2>
-                <p class="text-slate-500 mt-1">Es rápido y fácil.</p>
-            </div>
-            <!-- Formulario de Registro -->
-            <form id="register-form" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="register-nombre" class="block text-sm font-medium text-slate-600 mb-1">Nombre</label>
-                        <input type="text" id="register-nombre" placeholder="Tu nombre" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                    </div>
-                    <div>
-                        <label for="register-apellido" class="block text-sm font-medium text-slate-600 mb-1">Apellido</label>
-                        <input type="text" id="register-apellido" placeholder="Tu apellido" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                    </div>
+    <!-- Modal Recuperar -->
+    <div id="forgot-modal" class="modal modal-hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true">
+        <div class="modal-content bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔑</div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Recuperar Acceso</h2>
+            <p class="text-slate-500 mb-6">Te enviaremos un enlace de recuperación a tu correo.</p>
+            <form id="forgot-form" class="space-y-4">
+                <div class="input-wrapper text-left">
+                    <svg class="input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <input type="email" id="forgot-email" class="styled-input w-full rounded-xl border-slate-200 p-3.5 bg-slate-50" placeholder="tu@correo.com" required>
                 </div>
-                <div>
-                    <label for="register-rut" class="block text-sm font-medium text-slate-600 mb-1">RUT</label>
-                    <input type="text" id="register-rut" placeholder="12.345.678-9" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                </div>
-                <div>
-                    <label for="register-email" class="block text-sm font-medium text-slate-600 mb-1">Correo electrónico</label>
-                    <input type="email" id="register-email" placeholder="tu@correo.com" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="register-phone" class="block text-sm font-medium text-slate-600 mb-1">Número telefónico</label>
-                        <input type="tel" id="register-phone" placeholder="+56 9 1234 5678" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                    </div>
-                    <div>
-                        <label for="register-negocio" class="block text-sm font-medium text-slate-600 mb-1">Nombre del negocio</label>
-                        <input type="text" id="register-negocio" placeholder="Mi Negocio SpA" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                    </div>
-                </div>
-                <div>
-                    <label for="register-password" class="block text-sm font-medium text-slate-600 mb-1">Contraseña</label>
-                    <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-200 outline-none" required>
-                </div>
-                <div class="flex items-start space-x-3 pt-2">
-                    <input type="checkbox" id="accept-terms" class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" required>
-                    <label for="accept-terms" class="text-sm text-slate-600">
-                        He leído y acepto los <button type="button" id="open-terms-btn" class="font-medium text-indigo-600 hover:underline">Términos y Condiciones</button>.
-                    </label>
-                </div>
-                <button type="submit" id="registerSubmitBtn" class="w-full btn-primary py-3 !mt-6">Crear mi cuenta</button>
+                <button type="submit" id="send-reset-btn" class="btn-primary w-full py-3 rounded-xl text-white font-bold">Enviar Enlace</button>
+                <button type="button" id="close-forgot-btn" class="text-slate-400 hover:text-slate-600 text-sm font-medium mt-2 block mx-auto">Cancelar</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal de Términos y Condiciones -->
-    <div id="terms-modal" class="modal modal-hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" aria-hidden="true">
-        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-11/12 max-w-3xl relative max-h-[80vh] overflow-y-auto">
-            <button id="close-terms-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <h2 class="text-2xl font-bold mb-4 text-center text-slate-800">Términos y Condiciones</h2>
-            <div class="text-sm text-gray-700 space-y-4">
-                 <p>Bienvenido a Repleno. Estos términos y condiciones describen las reglas y regulaciones para el uso del sitio web de Repleno.</p>
-                 <h3 class="font-semibold text-slate-700">1. Aceptación de los Términos</h3>
-                 <p>Al registrarse, acceder o utilizar nuestro servicio de subscripcion (en adelante el "servicio"), usted ("Cliente") acepta plenamente estos Terminos y Condiciones de uso junto con la politica de Privacidad del proveedor.</p>
-                 <h3 class="font-semibold text-slate-700">2. Descripcion del servicio</h3>
-                 <p>El Servicio consiste en una plataforma de software como servicio (SaaS) basada en inteligencia artificial y machine learning, diseñada para predecir la demanda futura de productos y optimizar la gestión de inventario.</p>
-                 <p class="font-bold mt-4">Al registrarse, usted acepta nuestros términos de servicio y política de privacidad.</p>
+    <!-- Modal Términos -->
+    <div id="terms-modal" class="modal modal-hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true">
+        <div class="modal-content bg-white p-8 rounded-3xl shadow-2xl w-full max-w-3xl relative max-h-[80vh] overflow-y-auto">
+            <button id="close-terms-btn" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <h2 class="text-2xl font-bold mb-4 text-slate-800">Términos y Condiciones</h2>
+            <div class="text-sm text-slate-600 space-y-4">
+                 <p>Bienvenido a Repleno. Al registrarse, usted acepta nuestros términos de servicio y política de privacidad para el uso de la plataforma.</p>
+                 <p class="font-bold text-indigo-600">1. Uso del Servicio</p>
+                 <p>La plataforma se proporciona para la gestión de inventario y ventas. El usuario es responsable de la confidencialidad de su cuenta.</p>
+                 <p class="font-bold text-indigo-600">2. Privacidad</p>
+                 <p>Tus datos son tuyos. No compartimos información con terceros sin consentimiento.</p>
             </div>
         </div>
     </div>
 
-    <!-- Modal Olvidar Contraseña -->
-    <div id="forgot-modal" class="modal modal-hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" aria-hidden="true">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
-            <h2 class="text-2xl font-bold text-slate-800 mb-4">Restablecer contraseña</h2>
-            <form id="forgot-form">
-                <label for="forgot-email" class="block text-sm font-medium text-slate-600 mb-1">Correo electrónico</label>
-                <input type="email" id="forgot-email" class="w-full border border-slate-300 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="tu@correo.com" required>
-                <button type="submit" id="send-reset-btn" class="w-full btn-primary py-2.5">Enviar enlace</button>
-                <button type="button" id="close-forgot-btn" class="mt-3 text-sm text-slate-500 hover:underline w-full">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- Scripts de Firebase y Lógica de la Aplicación -->
+    <!-- LÓGICA JAVASCRIPT (Funcionalidad Robusta) -->
     <script type="module">
-        // --- 1. Importaciones de Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            sendPasswordResetEmail
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // --- 2. Configuración de Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
             authDomain: "repleno-app.firebaseapp.com",
@@ -281,22 +254,17 @@
             measurementId: "G-FLTS8BFB46"
         };
 
-        // --- 3. Inicialización de Firebase ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- 4. Funciones Auxiliares ---
         function showNotification(message, type = 'error') {
             const notif = document.createElement('div');
             notif.className = `notification ${type} show`;
-            notif.textContent = message;
+            const icon = type === 'success' ? '✅' : '⚠️';
+            notif.innerHTML = `<span>${icon}</span><span>${message}</span>`;
             document.getElementById('notification-area').appendChild(notif);
-
-            setTimeout(() => {
-                notif.classList.remove('show');
-                setTimeout(() => notif.remove(), 500);
-            }, 3000);
+            setTimeout(() => { notif.classList.remove('show'); setTimeout(() => notif.remove(), 500); }, 3500);
         }
 
         function getAbsoluteUrl(filename) {
@@ -305,116 +273,50 @@
             return `${origin}${path}`;
         }
 
-        function showModal(modal) {
-            if (!modal) return;
-            modal.classList.remove('modal-hidden');
-            modal.classList.add('modal-visible');
-            modal.setAttribute('aria-hidden', 'false');
-        }
+        function showModal(modal) { if(modal) { modal.classList.remove('modal-hidden'); modal.classList.add('modal-visible'); modal.setAttribute('aria-hidden', 'false'); } }
+        function hideModal(modal) { if(modal) { modal.classList.add('modal-hidden'); modal.classList.remove('modal-visible'); modal.setAttribute('aria-hidden', 'true'); } }
+        function handleModalOverlayClick(e, modal) { if (e.target === modal) hideModal(modal); }
+        function raceWithTimeout(promise, ms, errorMessage) { return Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(errorMessage)), ms))]); }
 
-        function hideModal(modal) {
-            if (!modal) return;
-            modal.classList.add('modal-hidden');
-            modal.classList.remove('modal-visible');
-            modal.setAttribute('aria-hidden', 'true');
-        }
+        document.addEventListener('DOMContentLoaded', () => sessionStorage.removeItem('loggedInUserId'));
 
-        function handleModalOverlayClick(e, modal) {
-            if (e.target === modal) {
-                hideModal(modal);
-            }
-        }
-        
-        // Función de seguridad: Timeout para promesas
-        function raceWithTimeout(promise, ms, errorMessage) {
-            const timeout = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error(errorMessage)), ms)
-            );
-            return Promise.race([promise, timeout]);
-        }
-
-        // --- 5. Lógica de la Aplicación (Event Listeners) ---
-
-        // Limpiar sesión al cargar
-        document.addEventListener('DOMContentLoaded', () => {
-            sessionStorage.removeItem('loggedInUserId');
-        });
-
-        // --- Lógica de Login ---
+        // LOGIN LOGIC
         async function handleLogin() {
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const loginBtn = document.getElementById('loginBtn');
-            
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            
-            if (!email || !password) {
-                showNotification('Por favor, ingresa correo y contraseña.');
-                return;
-            }
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            if (!email || !password) return showNotification('Faltan credenciales.');
 
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Ingresando...';
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true; btn.textContent = 'Verificando...';
 
             try {
-                // Timeout de 15 segundos para el login
-                const userCredential = await raceWithTimeout(
-                    signInWithEmailAndPassword(auth, email, password),
-                    15000,
-                    "El inicio de sesión tardó demasiado. Revisa tu conexión."
-                );
-                
+                const userCredential = await raceWithTimeout(signInWithEmailAndPassword(auth, email, password), 15000, "Conexión inestable.");
                 const user = userCredential.user;
-                const userDocRef = doc(db, "users", user.uid);
-                
-                // Timeout para la lectura de datos
-                const userDocSnap = await raceWithTimeout(
-                     getDoc(userDocRef),
-                     10000,
-                     "Error al obtener datos del usuario."
-                );
+                const userDocSnap = await raceWithTimeout(getDoc(doc(db, "users", user.uid)), 10000, "Error de datos.");
 
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
                     sessionStorage.setItem('loggedInUserId', user.uid);
-
-                    if (userData.role === 'admin') {
-                        window.location.href = getAbsoluteUrl('admin.html');
-                    } else if (userData.subscriptionStatus !== 'active') {
-                         window.location.href = getAbsoluteUrl('ejemplo.html');
-                    } else {
-                        window.location.href = getAbsoluteUrl('dashboard.html');
-                    }
+                    if (userData.role === 'admin') window.location.href = getAbsoluteUrl('admin.html');
+                    else if (userData.subscriptionStatus !== 'active') window.location.href = getAbsoluteUrl('ejemplo.html');
+                    else window.location.href = getAbsoluteUrl('dashboard.html');
                 } else {
-                    showNotification('No se encontraron datos asociados a esta cuenta.');
+                    showNotification('Usuario sin datos.');
                     auth.signOut();
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Iniciar Sesión';
+                    btn.disabled = false; btn.textContent = 'Iniciar Sesión';
                 }
             } catch (error) {
-                console.error("Login Error:", error.code, error.message);
-                let msg = error.message; // Usar mensaje del timeout si existe
-                
-                // Mensajes de Firebase
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email') {
-                    msg = 'Correo o contraseña incorrectos.';
-                } else if (error.code && error.code.includes('auth/')) {
-                    msg = 'Error de autenticación. Inténtalo nuevamente.';
-                }
-                
+                let msg = error.message;
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') msg = 'Credenciales incorrectas.';
                 showNotification(msg);
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Iniciar Sesión';
+                btn.disabled = false; btn.textContent = 'Iniciar Sesión';
             }
         }
 
         document.getElementById('loginBtn').addEventListener('click', handleLogin);
         document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-        document.getElementById('email').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-
-        // --- Lógica del Modal de Registro ---
+        // REGISTRO LOGIC
         const registerModal = document.getElementById('register-modal');
         document.getElementById('open-register-btn').addEventListener('click', () => showModal(registerModal));
         document.getElementById('close-register-btn').addEventListener('click', () => hideModal(registerModal));
@@ -422,123 +324,65 @@
 
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const rut = document.getElementById('register-rut').value.trim();
-            const nombre = document.getElementById('register-nombre').value.trim();
-            const apellido = document.getElementById('register-apellido').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const phone = document.getElementById('register-phone').value.trim();
-            const negocio = document.getElementById('register-negocio').value.trim();
-            const password = document.getElementById('register-password').value;
-            const termsAccepted = document.getElementById('accept-terms').checked;
-            const registerSubmitBtn = document.getElementById('registerSubmitBtn');
-
-            if (!rut || !nombre || !apellido || !email || !phone || !negocio || !password) {
-                showNotification("Todos los campos son obligatorios.");
-                return;
-            }
-            if (!termsAccepted) {
-                showNotification("Debes aceptar los Términos y Condiciones.");
-                return;
-            }
-
-            registerSubmitBtn.disabled = true;
-            registerSubmitBtn.textContent = 'Creando cuenta...';
-
+            const btn = document.getElementById('registerSubmitBtn');
+            if (!document.getElementById('accept-terms').checked) return showNotification("Debes aceptar los términos.");
+            
+            btn.disabled = true; btn.textContent = 'Creando...';
+            
             try {
-                // Timeout de 20 segundos para todo el proceso de registro
-                const registrationPromise = async () => {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-
-                    await setDoc(doc(db, "users", user.uid), {
-                        rut, nombre, apellido, email, phone, negocio,
-                        negocio_lowercase: negocio.toLowerCase(),
-                        role: 'client',
-                        plan: 'none',
-                        subscriptionStatus: 'pending'
-                    });
-                    return user;
-                };
-
-                const user = await raceWithTimeout(
-                    registrationPromise(), 
-                    20000, 
-                    "El registro está tardando demasiado. Verifica tu conexión e intenta de nuevo."
-                );
-
-                showNotification('¡Registro exitoso! Redirigiendo...', 'success');
+                const email = document.getElementById('register-email').value.trim();
+                const password = document.getElementById('register-password').value;
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await setDoc(doc(db, "users", user.uid), {
+                    rut: document.getElementById('register-rut').value.trim(),
+                    nombre: document.getElementById('register-nombre').value.trim(),
+                    apellido: document.getElementById('register-apellido').value.trim(),
+                    email: email,
+                    phone: document.getElementById('register-phone').value.trim(),
+                    negocio: document.getElementById('register-negocio').value.trim(),
+                    role: 'client', plan: 'none', subscriptionStatus: 'pending'
+                });
+                showNotification('¡Bienvenido! Redirigiendo...', 'success');
                 sessionStorage.setItem('loggedInUserId', user.uid);
-
-                setTimeout(() => {
-                    window.location.href = getAbsoluteUrl('ejemplo.html');
-                }, 1500);
-
+                setTimeout(() => window.location.href = getAbsoluteUrl('ejemplo.html'), 1500);
             } catch (error) {
-                console.error("Registration Error:", error);
                 let msg = error.message;
-                if (error.code === 'auth/email-already-in-use') {
-                    msg = 'Este correo electrónico ya está en uso.';
-                } else if (error.code === 'auth/weak-password') {
-                    msg = 'La contraseña debe tener al menos 6 caracteres.';
-                }
+                if (error.code === 'auth/email-already-in-use') msg = 'Este correo ya existe.';
+                if (error.code === 'auth/weak-password') msg = 'Contraseña muy débil.';
                 showNotification(msg);
-            } finally {
-                registerSubmitBtn.disabled = false;
-                registerSubmitBtn.textContent = 'Crear mi cuenta';
+                btn.disabled = false; btn.textContent = 'Comenzar Gratis';
             }
         });
 
-
-        // --- Lógica del Modal de Términos ---
-        const termsModal = document.getElementById('terms-modal');
-        document.getElementById('open-terms-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            showModal(termsModal);
-        });
-        document.getElementById('close-terms-btn').addEventListener('click', () => hideModal(termsModal));
-        termsModal.addEventListener('click', (e) => handleModalOverlayClick(e, termsModal));
-
-
-        // --- Lógica del Modal de Olvidar Contraseña ---
+        // MODALES EXTRA
         const forgotModal = document.getElementById('forgot-modal');
-        const forgotForm = document.getElementById('forgot-form');
-        const forgotEmailInput = document.getElementById('forgot-email');
-        const sendResetBtn = document.getElementById('send-reset-btn');
-
         document.getElementById('forgot-modal-btn').addEventListener('click', () => showModal(forgotModal));
         document.getElementById('close-forgot-btn').addEventListener('click', () => hideModal(forgotModal));
         forgotModal.addEventListener('click', (e) => handleModalOverlayClick(e, forgotModal));
-
-        forgotForm.addEventListener('submit', async (e) => {
+        
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = forgotEmailInput.value.trim();
-            if (!email) {
-                showNotification('Por favor, ingresa tu correo electrónico.');
-                return;
-            }
-
-            sendResetBtn.disabled = true;
-            sendResetBtn.textContent = 'Enviando...';
-
+            const email = document.getElementById('forgot-email').value.trim();
+            const btn = document.getElementById('send-reset-btn');
+            btn.disabled = true; btn.textContent = 'Enviando...';
             try {
-                await raceWithTimeout(sendPasswordResetEmail(auth, email), 10000, "Error de conexión al enviar correo.");
-                showNotification('Enlace enviado. Revisa tu bandeja (y spam).', 'success');
+                await raceWithTimeout(sendPasswordResetEmail(auth, email), 10000, "Error conexión.");
+                showNotification('Enlace enviado. Revisa tu correo.', 'success');
                 hideModal(forgotModal);
-                forgotForm.reset();
+                e.target.reset();
             } catch (error) {
-                console.error("Password Reset Error:", error.code);
-                let msg = error.message;
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email') {
-                    msg = 'No se encontró un usuario con ese correo.';
-                }
+                let msg = 'Error al enviar.';
+                if (error.code === 'auth/user-not-found') msg = 'Correo no registrado.';
                 showNotification(msg);
-            } finally {
-                sendResetBtn.disabled = false;
-                sendResetBtn.textContent = 'Enviar enlace';
-            }
+            } finally { btn.disabled = false; btn.textContent = 'Enviar Enlace'; }
         });
 
-    </script>
+        const termsModal = document.getElementById('terms-modal');
+        document.getElementById('open-terms-btn').addEventListener('click', (e) => { e.preventDefault(); showModal(termsModal); });
+        document.getElementById('close-terms-btn').addEventListener('click', () => hideModal(termsModal));
+        termsModal.addEventListener('click', (e) => handleModalOverlayClick(e, termsModal));
 
+    </script>
 </body>
 </html>

@@ -1,0 +1,23 @@
+Dependencias de Node.js
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
+Archivos de entorno y secretos (¡MUY IMPORTANTE!)
+
+.env
+serviceAccountKey.json
+
+Archivos temporales de la aplicación
+
+transactions_temp.json
+
+Archivos del sistema operativo
+
+.DS_Store
+Thumbs.db
+
+Logs y archivos de debug
+
+*.log
