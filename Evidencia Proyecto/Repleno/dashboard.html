@@ -11,57 +11,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --bg-light: #f7f8fa;
-            --bg-card: #FFFFFF;
-            --border-color: #eef2f6;
-            --accent-primary: #4f46e5;
-            --accent-secondary: #7c3aed;
-            --text-dark: #111827;
-            --text-muted: #6b7280;
-        }
-
+        :root { --bg-light: #f7f8fa; --bg-card: #FFFFFF; --border-color: #eef2f6; --accent-primary: #4f46e5; --accent-secondary: #7c3aed; --text-dark: #111827; --text-muted: #6b7280; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
         .ai-thinking { animation: ai-pulse 1.5s infinite ease-in-out; }
         @keyframes ai-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
-
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
-
-        .bento-card {
-            background-color: var(--bg-card);
-            border-radius: 1.25rem;
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05);
-            animation: fadeIn 0.6s ease-out forwards;
-            display: flex; flex-direction: column;
-        }
+        .bento-card { background-color: var(--bg-card); border-radius: 1.25rem; padding: 1.5rem; border: 1px solid var(--border-color); transition: all 0.3s ease; box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05); animation: fadeIn 0.6s ease-out forwards; display: flex; flex-direction: column; }
         .bento-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); box-shadow: 0 10px 20px -5px rgb(79 70 229 / 0.1); }
-
         .table-compact th, .table-compact td { padding: 0.75rem 1rem; }
         .table-compact th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-
         .details-section { transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
         .details-section.visible { max-height: 1000px; opacity: 1; }
-
         .plan-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; text-transform: capitalize; }
         .plan-badge-gratis { background-color: #f1f5f9; color: #475569; }
         .plan-badge-estandar { background-color: #eef2ff; color: var(--accent-primary); }
         .plan-badge-premium { background-color: #f5f3ff; color: var(--accent-secondary); }
         .plan-days-critical { color: #dc2626; font-weight: 600; }
         .plan-days-warning { color: #f59e0b; font-weight: 500; }
-        
-        .locked-feature { filter: grayscale(1); opacity: 0.7; pointer-events: none; position: relative; }
-        
-        /* Estilos de la Barra de Progreso */
         .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 9999px; height: 8px; margin-top: 1rem; overflow: hidden; }
         .progress-bar { height: 100%; background-color: var(--accent-primary); width: 0%; transition: width 0.3s ease; border-radius: 9999px; }
+        .demo-badge { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: #FEF3C7; color: #D97706; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: 1px solid #FCD34D; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     </style>
 </head>
 
 <body class="overflow-x-hidden">
+    <div id="demo-indicator" class="demo-badge hidden">⚠️ Modo Demostración</div>
+
     <div id="app-container" class="container mx-auto p-4 md:p-6 lg:p-8">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div class="flex items-center gap-3">
@@ -88,7 +63,9 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         <span class="hidden md:inline">Subir Datos</span>
                     </button>
-                    
+                    <button id="deleteAccountBtn" class="bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 hover:text-red-700 p-2 rounded-full shadow-sm transition-all" title="Eliminar Cuenta">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
                     <button id="logoutBtnUser" class="text-slate-500 hover:text-red-600 p-2 rounded-full hover:bg-red-50" title="Cerrar Sesión">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
                     </button>
@@ -115,19 +92,12 @@
             </div>
         </div>
 
-        <!-- PANTALLA ÚNICA DE CARGA (PARA TODOS LOS PLANES) -->
         <div id="csv-upload-screen" class="hidden">
             <div class="bento-card max-w-2xl mx-auto text-center border-dashed border-2 border-slate-300 bg-slate-50">
                 <h2 class="text-2xl font-bold text-slate-800">Gestión de Datos</h2>
                 <p class="text-slate-600 mt-2">Sube tu archivo CSV para analizar o actualizar tu inventario.</p>
-                
-                <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 inline-block">
-                    💡 <b>Nota:</b> Los nuevos datos se sumarán a los existentes.
-                </div>
-
-                <div id="upload-limit-warning" class="hidden mt-2 bg-amber-50 text-amber-800 p-2 rounded-lg text-sm border border-amber-100">
-                    ⚠️ <b>Plan Gratis:</b> Solo se procesarán las primeras 100 filas de tu archivo.
-                </div>
+                <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 inline-block">💡 <b>Nota:</b> Aceptamos archivos separados por comas (,) o punto y coma (;).</div>
+                <div id="upload-limit-warning" class="hidden mt-2 bg-amber-50 text-amber-800 p-2 rounded-lg text-sm border border-amber-100">⚠️ <b>Plan Gratis:</b> Límite de 100 filas.</div>
 
                 <div class="mt-6 flex flex-col items-center justify-center">
                     <label for="csv-file-input" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-8 w-full transition-all shadow-sm group">
@@ -140,15 +110,9 @@
                     </label>
                     <div id="file-name-display" class="mt-4 text-sm font-semibold text-indigo-600 h-5"></div>
                     
-                    <!-- Barra de Progreso -->
                     <div id="upload-progress-container" class="hidden w-full mt-4">
-                        <div class="flex justify-between text-xs text-slate-500 mb-1">
-                            <span id="upload-status-text">Procesando...</span>
-                            <span id="upload-percentage">0%</span>
-                        </div>
-                        <div class="progress-container">
-                            <div id="upload-progress-bar" class="progress-bar"></div>
-                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 mb-1"><span id="upload-status-text">Procesando...</span><span id="upload-percentage">0%</span></div>
+                        <div class="progress-container"><div id="upload-progress-bar" class="progress-bar"></div></div>
                     </div>
 
                     <button id="process-csv-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md" disabled>Subir y Procesar</button>
@@ -158,14 +122,21 @@
         </div>
     </div>
 
-    <!-- Modal Asistente -->
+    <!-- Modales -->
+    <div id="genericModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-[100]">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center transform transition-all scale-100">
+            <div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div>
+            <h3 id="genericModalTitle" class="text-xl font-bold text-slate-900 mb-2">Mensaje</h3>
+            <p id="genericModalMessage" class="text-slate-600 text-sm mb-6">Detalle del mensaje.</p>
+            <button id="genericModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-colors">Entendido</button>
+        </div>
+    </div>
+
     <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
         <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col bg-white">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
-                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </span>
+                    <span class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></span>
                     Asistente IA Repleno
                 </h2>
                 <button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -174,7 +145,6 @@
         </div>
     </div>
 
-    <!-- Modal de Éxito de Plan -->
     <div id="planSuccessModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[60] fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
@@ -186,16 +156,41 @@
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Tus nuevos superpoderes:</h4>
                     <ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700"></ul>
                 </div>
-                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md">¡Comenzar!</button>
+                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">¡Comenzar a explorar!</button>
             </div>
+        </div>
+    </div>
+
+    <div id="deleteAccountModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[70] fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">⚠️</div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">¿Eliminar tu cuenta?</h3>
+            <p class="text-slate-600 text-sm mb-6 leading-relaxed">Esta acción programará la eliminación de tu cuenta en <b>30 días</b>.<br><br>Si cambias de opinión, solo inicia sesión antes de ese plazo para <b>cancelar la eliminación automáticamente</b>.</p>
+            <div class="flex gap-3">
+                <button id="cancelDeleteBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">Cancelar</button>
+                <button id="confirmDeleteBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="restoreAccountModal" class="fixed inset-0 bg-slate-900 bg-opacity-90 hidden items-center justify-center p-4 z-[80] fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden border-2 border-green-500">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">👋</div>
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Qué bueno verte de nuevo!</h2>
+            <p class="text-slate-600 mb-6">Hemos detectado que tu cuenta estaba programada para eliminarse.</p>
+            <div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-6"><p class="text-green-800 font-medium">✅ Hemos cancelado la eliminación.</p><p class="text-green-700 text-sm mt-1">Tus datos están seguros y tu cuenta vuelve a estar activa.</p></div>
+            <button id="closeRestoreModalBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md">Entendido, ir al Dashboard</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+        // =========================================================
+        // 1. CONFIGURACIÓN
+        // =========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
             authDomain: "repleno-app.firebaseapp.com",
@@ -210,39 +205,53 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // DOM Elements
-        const dashboardContent = document.getElementById('dashboard-content');
-        const dashboardLoader = document.getElementById('dashboard-loader');
-        const loaderText = document.getElementById('loader-text');
-        
-        const csvUploadScreen = document.getElementById('csv-upload-screen');
-        const csvFileInput = document.getElementById('csv-file-input');
-        const fileNameDisplay = document.getElementById('file-name-display');
-        const processCsvBtn = document.getElementById('process-csv-btn');
-        const uploadLimitWarning = document.getElementById('upload-limit-warning');
-        const cancelUploadBtn = document.getElementById('cancel-upload-btn');
-        const uploadMoreDataBtn = document.getElementById('uploadMoreDataBtn');
-        
-        // Progress Bar Elements
-        const uploadProgressContainer = document.getElementById('upload-progress-container');
-        const uploadProgressBar = document.getElementById('upload-progress-bar');
-        const uploadStatusText = document.getElementById('upload-status-text');
-        const uploadPercentage = document.getElementById('upload-percentage');
-
-        const planNameEl = document.getElementById('plan-name');
-        const planDaysEl = document.getElementById('plan-days-remaining');
-        const planSuccessModal = document.getElementById('planSuccessModal');
-        const newPlanNameEl = document.getElementById('new-plan-name');
-        const planBenefitsList = document.getElementById('plan-benefits-list');
-        const dailyDetailSection = document.getElementById('daily-detail-section');
-        const detailTitle = document.getElementById('detail-title');
-        const detailContent = document.getElementById('detail-content');
-        const closeDetailBtn = document.getElementById('close-detail-btn');
-        
+        // Variables Globales
         let currentUserData = null;
         let salesByDayChart, stockByProductChart;
         let detailedSalesByDate = {}; 
         let userDocUnsubscribe = null;
+        let isDemoMode = false;
+
+        // =========================================================
+        // 2. SISTEMA DE ALERTAS Y HELPERS
+        // =========================================================
+        function showAlert(title, message, type = 'info') {
+            const modal = document.getElementById('genericModal');
+            const titleEl = document.getElementById('genericModalTitle');
+            const msgEl = document.getElementById('genericModalMessage');
+            const iconEl = document.getElementById('genericModalIcon');
+            const btnEl = document.getElementById('genericModalBtn');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+
+            if (type === 'error') {
+                iconEl.textContent = '❌';
+                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-red-100 text-red-600';
+                btnEl.className = 'w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition-colors';
+            } else if (type === 'success') {
+                iconEl.textContent = '✅';
+                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-green-100 text-green-600';
+                btnEl.className = 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition-colors';
+            } else {
+                iconEl.textContent = 'ℹ️';
+                iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600';
+                btnEl.className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-colors';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        document.getElementById('genericModalBtn').addEventListener('click', () => {
+            document.getElementById('genericModal').classList.add('hidden');
+            document.getElementById('genericModal').classList.remove('flex');
+        });
+
+        function raceWithTimeout(promise, ms, errorMessage) {
+            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(errorMessage)), ms));
+            return Promise.race([promise, timeout]);
+        }
 
         function getAbsoluteUrl(filename) {
             const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
@@ -250,42 +259,39 @@
             return `${origin}${path}`;
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                if (userDocUnsubscribe) userDocUnsubscribe();
-                const userDocRef = doc(db, "users", user.uid);
-                
-                userDocUnsubscribe = onSnapshot(userDocRef, (userDocSnap) => {
-                    if (userDocSnap.exists()) {
-                        const newUserData = userDocSnap.data();
-                        sessionStorage.setItem('loggedInUserId', user.uid);
-                        
-                        checkPlanChange(newUserData);
-                        currentUserData = newUserData;
-                        updatePlanStatus(currentUserData);
+        function activateDemoMode() {
+            isDemoMode = true;
+            document.getElementById('demo-indicator').classList.remove('hidden');
+        }
 
-                        const hasData = !!currentUserData.dataCollectionPath;
+        function getDummyData() {
+            return [
+                { codigo_producto: "D001", descripcion: "Producto Demo A", cantidad: 10, precio_unitario: 5000, tipo_transaccion: "Venta", fecha: new Date().toISOString() },
+                { codigo_producto: "D002", descripcion: "Producto Demo B", cantidad: 5, precio_unitario: 12000, tipo_transaccion: "Venta", fecha: new Date().toISOString() },
+                { codigo_producto: "D003", descripcion: "Producto Demo C", cantidad: 20, precio_unitario: 3000, tipo_transaccion: "Compra", fecha: new Date().toISOString() }
+            ];
+        }
 
-                        if (hasData) {
-                            if (!dashboardContent.dataset.initialized) {
-                                showDashboard();
-                                initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
-                                dashboardContent.dataset.initialized = "true";
-                            }
-                        } else {
-                            dashboardLoader.classList.add('hidden');
-                            dashboardContent.classList.add('hidden');
-                            showUploadScreen(false);
-                            dashboardContent.dataset.initialized = "";
-                        }
-                    } else {
-                        dashboardLoader.classList.remove('hidden');
-                    }
-                });
-            } else {
-                window.location.href = getAbsoluteUrl('index.html');
-            }
-        });
+        function showPlanSuccessModal(plan) {
+            const modal = document.getElementById('planSuccessModal');
+            document.getElementById('new-plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+            const listEl = document.getElementById('plan-benefits-list');
+            listEl.innerHTML = '';
+            
+            let benefits = [];
+            if (plan === 'gratis') benefits = ['Acceso básico', 'Carga limitada', 'Sin costo'];
+            else if (plan === 'Plan Estándar') benefits = ['Carga ilimitada', 'Alertas stock', 'Soporte'];
+            else if (plan === 'Plan Premium') benefits = ['✨ Asistente IA', 'Predicciones', 'Soporte VIP'];
+            
+            benefits.forEach(b => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-3";
+                li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`;
+                listEl.appendChild(li);
+            });
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
         function checkPlanChange(newData) {
             const lastPlan = localStorage.getItem('lastKnownPlan');
@@ -296,157 +302,51 @@
             if (currentPlan) localStorage.setItem('lastKnownPlan', currentPlan);
         }
 
-        function showPlanSuccessModal(plan) {
-            newPlanNameEl.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
-            planBenefitsList.innerHTML = '';
-            let benefits = [];
-            if (plan === 'gratis') {
-                benefits = ['Acceso básico al dashboard', 'Carga limitada (100 filas)', 'Sin costo mensual'];
-            } else if (plan === 'Plan Estándar') {
-                benefits = ['Carga de datos ilimitada', 'Alertas de stock bajo', 'Gráficos completos', 'Soporte prioritario'];
-            } else if (plan === 'Plan Premium') {
-                benefits = ['✨ Asistente con Inteligencia Artificial', 'Análisis predictivo de ventas', 'Carga ilimitada', 'Soporte VIP 24/7'];
-            }
-            benefits.forEach(b => {
-                const li = document.createElement('li');
-                li.className = "flex items-start gap-3";
-                li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`;
-                planBenefitsList.appendChild(li);
-            });
-            planSuccessModal.classList.remove('hidden');
-            planSuccessModal.classList.add('flex');
-        }
-
-        document.getElementById('closePlanModalBtn').addEventListener('click', () => {
-            planSuccessModal.classList.add('hidden');
-            planSuccessModal.classList.remove('flex');
-        });
-
         function updatePlanStatus(userData) {
+            const elName = document.getElementById('plan-name');
+            const elDays = document.getElementById('plan-days-remaining');
+            
+            // Protección contra null si el HTML no está listo
+            if (!elName || !elDays) return;
+
             const { plan, planStartDate } = userData;
             if (!plan) return;
-            const planDisplayName = plan.charAt(0).toUpperCase() + plan.slice(1);
-            planNameEl.textContent = planDisplayName;
-            if (plan === 'gratis') planNameEl.className = "plan-badge plan-badge-gratis";
-            else if (plan === 'Plan Estándar') planNameEl.className = "plan-badge plan-badge-estandar";
-            else planNameEl.className = "plan-badge plan-badge-premium";
+            
+            elName.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+            
+            if (plan === 'gratis') elName.className = "plan-badge plan-badge-gratis";
+            else if (plan === 'Plan Estándar') elName.className = "plan-badge plan-badge-estandar";
+            else elName.className = "plan-badge plan-badge-premium";
 
             const startDate = new Date(planStartDate || new Date());
             const endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + 30);
             const diffDays = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
-            planDaysEl.className = "text-xs text-slate-500 leading-tight";
+
+            elDays.className = "text-xs text-slate-500 leading-tight";
             if (diffDays <= 0) {
-                planDaysEl.textContent = "Expirado";
-                planDaysEl.classList.add('plan-days-critical');
+                elDays.textContent = "Expirado";
+                elDays.classList.add('plan-days-critical');
             } else {
-                planDaysEl.textContent = `Quedan ${diffDays} días`;
+                elDays.textContent = `Quedan ${diffDays} días`;
             }
         }
 
-        function showUploadScreen(canCancel = true) {
-            dashboardLoader.classList.add('hidden');
-            dashboardContent.classList.add('hidden');
-            csvUploadScreen.classList.remove('hidden');
-            csvFileInput.value = '';
-            fileNameDisplay.textContent = '';
-            processCsvBtn.disabled = true;
-            uploadProgressContainer.classList.add('hidden');
-            
-            if (currentUserData.plan === 'gratis') uploadLimitWarning.classList.remove('hidden');
-            else uploadLimitWarning.classList.add('hidden');
-            if (canCancel) cancelUploadBtn.classList.remove('hidden');
-            else cancelUploadBtn.classList.add('hidden');
-        }
-
-        uploadMoreDataBtn.addEventListener('click', () => showUploadScreen(true));
-        cancelUploadBtn.addEventListener('click', () => {
-            csvUploadScreen.classList.add('hidden');
-            dashboardContent.classList.remove('hidden');
-        });
-
-        csvFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fileNameDisplay.textContent = `Archivo: ${file.name}`;
-                processCsvBtn.disabled = false;
-            }
-        });
-
-        processCsvBtn.addEventListener('click', async () => {
-            const file = csvFileInput.files[0];
-            if (!file) return;
-            processCsvBtn.disabled = true;
-            processCsvBtn.classList.add('hidden');
-            uploadProgressContainer.classList.remove('hidden');
-
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const csvText = event.target.result;
-                let data = parseCSV(csvText);
-                
-                // OPTIMIZACIÓN CRÍTICA: Cortar datos ANTES de subirlos si es gratis
-                if (currentUserData.plan === 'gratis' && data.length > 100) {
-                    data = data.slice(0, 100);
-                    alert("⚠️ Plan Gratis: Se han limitado los datos a las primeras 100 filas.");
-                }
-                await uploadDataToFirebase(data, file.name);
-            };
-            reader.readAsText(file);
-        });
-
-        async function uploadDataToFirebase(data, clientName) {
-            try {
-                const userId = auth.currentUser.uid;
-                const path = `business_data/${userId}`;
-                const colRef = collection(db, path, 'transactions');
-                
-                const batchSize = 400;
-                const totalBatches = Math.ceil(data.length / batchSize);
-                
-                for (let i = 0; i < data.length; i += batchSize) {
-                    const batch = writeBatch(db);
-                    data.slice(i, i + batchSize).forEach(row => batch.set(doc(colRef), row));
-                    await batch.commit();
-                    const currentBatch = Math.ceil((i + 1) / batchSize);
-                    const percent = Math.min(Math.round((currentBatch / totalBatches) * 100), 100);
-                    uploadProgressBar.style.width = `${percent}%`;
-                    uploadPercentage.textContent = `${percent}%`;
-                    uploadStatusText.textContent = `Subiendo lote ${currentBatch} de ${totalBatches}...`;
-                    await new Promise(resolve => setTimeout(resolve, 10)); 
-                }
-
-                await updateDoc(doc(db, "users", userId), {
-                    dataCollectionPath: path,
-                    clientName: clientName
-                });
-                
-                alert("¡Datos subidos exitosamente!");
-                csvUploadScreen.classList.add('hidden');
-                dashboardContent.classList.remove('hidden');
-                fetchAndAnalyze(path);
-            } catch (e) {
-                console.error(e);
-                alert("Error al subir datos: " + e.message);
-            } finally {
-                processCsvBtn.disabled = false;
-                processCsvBtn.classList.remove('hidden');
-                processCsvBtn.textContent = "Subir y Procesar";
-                uploadProgressContainer.classList.add('hidden');
-            }
-        }
+        // =========================================================
+        // 3. LÓGICA DE DASHBOARD (Visual)
+        // =========================================================
 
         function showDashboard() {
-            dashboardLoader.classList.add('hidden');
-            csvUploadScreen.classList.add('hidden');
-            dashboardContent.classList.remove('hidden');
+            document.getElementById('dashboard-loader').classList.add('hidden');
+            document.getElementById('csv-upload-screen').classList.add('hidden');
+            document.getElementById('dashboard-content').classList.remove('hidden');
 
-            const isPremium = currentUserData.plan === 'Plan Premium';
+            const isPremium = currentUserData && currentUserData.plan === 'Plan Premium';
             const aiButtonState = isPremium 
                 ? `<button id="openAssistantBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg><span>Consultar IA</span></button>`
                 : `<button disabled class="bg-slate-200 text-slate-400 font-semibold flex items-center justify-center gap-2 w-full py-3 rounded-xl cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg><span>IA Bloqueada (Solo Premium)</span></button>`;
 
-            dashboardContent.innerHTML = `
+            document.getElementById('dashboard-content').innerHTML = `
                 <div class="md:col-span-2 bento-card bg-gradient-to-br from-indigo-500 to-purple-600 text-white" style="animation-delay: 0.1s;">
                     <h3 id="client-name" class="text-2xl font-bold">¡Hola!</h3>
                     <p class="text-indigo-100">Aquí está el resumen de tu negocio.</p>
@@ -465,6 +365,7 @@
                     </div>
                     <p id="productosUnicos" class="text-4xl font-bold mt-auto">0</p>
                 </div>
+
                 <div class="md:col-span-4 md:row-span-2 bento-card" style="animation-delay: 0.4s;">
                     <h3 class="text-lg font-semibold mb-4">Inventario General</h3>
                     <div class="overflow-y-auto flex-grow" style="max-height: 400px;">
@@ -478,11 +379,15 @@
                     <h3 class="text-amber-600 font-medium text-sm">Alertas Stock Bajo</h3>
                     <p id="alertasStock" class="text-4xl font-bold text-amber-900 mt-auto">0</p>
                 </div>
+                
                 <div class="md:col-span-2 bento-card" style="animation-delay: 0.6s;">
                     <h3 class="text-slate-500 font-medium text-sm mb-2">Asistente Virtual</h3>
-                    <p class="text-lg font-semibold text-indigo-600 truncate mt-1">${isPremium ? "Tu consultor 24/7" : "Actualiza a Premium"}</p>
+                    <p class="text-lg font-semibold text-indigo-600 truncate mt-1">
+                        ${isPremium ? "Tu consultor 24/7" : "Actualiza a Premium"}
+                    </p>
                     <div class="mt-auto pt-4">${aiButtonState}</div>
                 </div>
+
                 <div class="md:col-span-4 bento-card" style="animation-delay: 0.7s;">
                     <h3 class="text-lg font-semibold mb-4">Ventas por Día</h3>
                     <div class="relative flex-grow h-64"><canvas id="salesByDayChart"></canvas></div>
@@ -495,8 +400,9 @@
 
             if (isPremium) {
                 document.getElementById('openAssistantBtn').addEventListener('click', () => {
-                    document.getElementById('assistantModal').classList.remove('hidden');
-                    document.getElementById('assistantModal').classList.add('flex');
+                    const modal = document.getElementById('assistantModal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
                     if (currentUserData && window.cachedDashboardData) {
                         askGemini(window.cachedDashboardData);
                     }
@@ -505,33 +411,51 @@
         }
 
         function initializeDashboard(collectionPath, clientName) {
-            const greetingName = currentUserData.nombre || clientName || "Usuario";
+            const greetingName = (currentUserData && currentUserData.nombre) || clientName || "Usuario";
             const clientNameEl = document.getElementById('client-name');
             if(clientNameEl) clientNameEl.textContent = `¡Hola, ${greetingName}!`;
             fetchAndAnalyze(collectionPath);
         }
 
         async function fetchAndAnalyze(collectionPath) {
-            if (!dashboardContent.classList.contains('hidden')) {
-               const clientNameEl = document.getElementById('client-name');
-               if(clientNameEl) clientNameEl.innerHTML += ' <span class="text-sm text-indigo-300 animate-pulse">(Actualizando...)</span>';
-            }
+            if (isDemoMode) { processAndDisplayData(getDummyData()); return; }
+
             try {
-                const querySnapshot = await getDocs(collection(db, `${collectionPath}/transactions`));
+                const querySnapshot = await raceWithTimeout(
+                    getDocs(collection(db, `${collectionPath}/transactions`)),
+                    15000,
+                    "Tiempo agotado."
+                );
+                
                 const data = querySnapshot.docs.map(doc => doc.data());
                 if (data.length > 0) processAndDisplayData(data);
-            } catch (error) { console.error(error); }
+                else showUploadScreen(false);
+
+            } catch (error) { 
+                console.error("Error fetching data:", error);
+                if (error.message.includes('Quota') || error.message.includes('Tiempo') || error.code === 'resource-exhausted') {
+                    activateDemoMode();
+                    processAndDisplayData(getDummyData());
+                    showAlert("Modo Demostración Activado", "Debido a límites de la cuenta gratuita, se han cargado datos de demostración.", "info");
+                } else {
+                    showAlert("Error", error.message, "error");
+                    document.getElementById('dashboard-loader').classList.add('hidden'); 
+                }
+            }
         }
 
         function processAndDisplayData(data) {
-            // Aquí NO cortamos de nuevo porque ya se cortó al subir, 
-            // esto permite que la carga sea rápida siempre.
-            
+            // Verificación CRÍTICA: Si el dashboard no se ha pintado, no intentar escribir
+            if (!document.getElementById('totalVentas')) return;
+
+            if (currentUserData && currentUserData.plan === 'gratis' && data.length > 100) {
+                data = data.slice(0, 100);
+            }
+
             const stock = {}; const productInfo = {}; const salesByProduct = {}; let totalVentas = 0;
-            const weeklySalesPattern = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
             const productWeeklyPattern = {}; 
             const salesByDate = {}; 
-            detailedSalesByDate = {};
+            detailedSalesByDate = {}; 
 
             data.forEach(row => {
                 const code = row.codigo_producto;
@@ -541,7 +465,7 @@
                     salesByProduct[code] = 0; productWeeklyPattern[code] = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
                 }
                 
-                if (row.tipo_transaccion.toLowerCase() === 'venta') {
+                if (row.tipo_transaccion && row.tipo_transaccion.toLowerCase() === 'venta') {
                     stock[code] -= row.cantidad;
                     totalVentas += row.cantidad;
                     salesByProduct[code] += row.cantidad;
@@ -551,7 +475,6 @@
                     if(!isNaN(date)) {
                         const dString = date.toISOString().split('T')[0];
                         salesByDate[dString] = (salesByDate[dString] || 0) + (row.precio_unitario * row.cantidad);
-                        weeklySalesPattern[date.getDay()] += row.cantidad;
                         productWeeklyPattern[code][date.getDay()] += row.cantidad;
 
                         if (!detailedSalesByDate[dString]) detailedSalesByDate[dString] = [];
@@ -566,13 +489,11 @@
                 }
             });
 
-            const totalVentasEl = document.getElementById('totalVentas');
-            if(totalVentasEl) totalVentasEl.textContent = totalVentas.toLocaleString('es-CL');
-            const unicosEl = document.getElementById('productosUnicos');
-            if(unicosEl) unicosEl.textContent = Object.keys(stock).length;
+            document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
+            document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
+            
             const lowStock = Object.entries(stock).filter(([_,q]) => q<=20);
-            const alertasEl = document.getElementById('alertasStock');
-            if(alertasEl) alertasEl.textContent = lowStock.length;
+            document.getElementById('alertasStock').textContent = lowStock.length;
 
             const tbody = document.getElementById('product-table-body');
             if(tbody) {
@@ -597,17 +518,9 @@
                 lowStockCount: lowStock.length,
                 lowStockItems: lowStock.slice(0,10).map(([code, qty]) => {
                     const info = productInfo[code] || { desc: "Producto Desconocido" };
-                    return {
-                        name: info.desc,
-                        qty: qty,
-                        salesPattern: productWeeklyPattern[code] || {}
-                    };
+                    return { name: info.desc, qty: qty, salesPattern: productWeeklyPattern[code] || {} };
                 }),
-                topSeller: topProd ? { 
-                    name: productInfo[topCode]?.desc || "Producto Top", 
-                    qty: salesByProduct[topCode],
-                    salesByDay: Object.entries(productWeeklyPattern[topCode] || {}).map(([d,q]) => `${daysMap[d]}: ${q}`)
-                } : null
+                topSeller: topProd ? { name: productInfo[topCode]?.desc || "Producto Top", qty: salesByProduct[topCode] } : null
             };
             
             const clientNameEl = document.getElementById('client-name');
@@ -659,6 +572,10 @@
         function showDailyDetails(dateString) {
             const sales = detailedSalesByDate[dateString] || [];
             const dateObj = new Date(dateString + 'T00:00:00');
+            const detailTitle = document.getElementById('detail-title');
+            const detailContent = document.getElementById('detail-content');
+            const section = document.getElementById('daily-detail-section');
+
             detailTitle.textContent = `Ventas del ${dateObj.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' })}`;
             
             if (sales.length === 0) {
@@ -691,54 +608,347 @@
                 detailContent.innerHTML = html;
             }
 
-            dailyDetailSection.classList.add('visible');
-            dailyDetailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            section.classList.add('visible');
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        closeDetailBtn.addEventListener('click', () => dailyDetailSection.classList.remove('visible'));
+        document.getElementById('close-detail-btn').addEventListener('click', () => document.getElementById('daily-detail-section').classList.remove('visible'));
 
+        // --- CSV PARSING & UPLOAD ---
         function parseCSV(text) {
             const lines = text.trim().split('\n');
-            const headers = lines[0].split(',').map(h => h.trim());
-            return lines.slice(1).map(line => {
-                const vals = line.split(',');
+            const validLines = lines.filter(l => l.trim() !== '');
+            if (validLines.length < 2) return [];
+
+            const firstLine = validLines[0];
+            const separator = (firstLine.match(/;/g) || []).length > (firstLine.match(/,/g) || []).length ? ';' : ',';
+            const headers = validLines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            return validLines.slice(1).map(line => {
+                const vals = line.split(separator);
                 let obj = {};
-                headers.forEach((h, i) => obj[h] = isNaN(Number(vals[i])) ? vals[i] : Number(vals[i]));
+                headers.forEach((h, i) => {
+                    let val = vals[i] ? vals[i].trim().replace(/^"|"$/g, '') : '';
+                    const numVal = Number(val);
+                    obj[h] = (val === '' || isNaN(numVal)) ? val : numVal;
+                });
                 return obj;
             });
+        }
+
+        async function uploadDataToFirebase(data, clientName) {
+            const els = {
+                csvScreen: document.getElementById('csv-upload-screen'),
+                content: document.getElementById('dashboard-content'),
+                processBtn: document.getElementById('process-csv-btn'),
+                progressCont: document.getElementById('upload-progress-container'),
+                progressBar: document.getElementById('upload-progress-bar'),
+                percent: document.getElementById('upload-percentage'),
+                statusText: document.getElementById('upload-status-text')
+            };
+
+            try {
+                if (isDemoMode) {
+                    setTimeout(() => {
+                        showAlert("Éxito (Modo Demo)", "Datos simulados correctamente.", "success");
+                        els.csvScreen.classList.add('hidden');
+                        els.content.classList.remove('hidden');
+                        processAndDisplayData(data.concat(getDummyData()));
+                        resetUploadUI();
+                    }, 1500);
+                    return;
+                }
+
+                if (!auth.currentUser) throw new Error("Sesión no válida.");
+                const userId = auth.currentUser.uid;
+                const path = `business_data/${userId}`;
+                const colRef = collection(db, path, 'transactions');
+                const batchSize = 100; 
+                const totalBatches = Math.ceil(data.length / batchSize);
+                
+                for (let i = 0; i < data.length; i += batchSize) {
+                    const batch = writeBatch(db);
+                    data.slice(i, i + batchSize).forEach(row => {
+                        const cleanRow = JSON.parse(JSON.stringify(row));
+                        batch.set(doc(colRef), cleanRow);
+                    });
+                    
+                    try {
+                        await raceWithTimeout(batch.commit(), 30000, "Timeout subiendo lote.");
+                    } catch (err) {
+                        if (err.message.includes('Quota') || err.code === 'resource-exhausted') {
+                            activateDemoMode();
+                            showAlert("Cuota Excedida", "Cambiando a Modo Demo para mostrar el dashboard.", "info");
+                            els.csvScreen.classList.add('hidden');
+                            els.content.classList.remove('hidden');
+                            processAndDisplayData(getDummyData());
+                            return; 
+                        }
+                        throw err;
+                    }
+                    
+                    const currentBatch = Math.ceil((i + 1) / batchSize);
+                    const percent = Math.min(Math.round((currentBatch / totalBatches) * 100), 100);
+                    els.progressBar.style.width = `${percent}%`;
+                    els.percent.textContent = `${percent}%`;
+                    els.statusText.textContent = `Subiendo lote ${currentBatch}...`;
+                    await new Promise(resolve => setTimeout(resolve, 200)); 
+                }
+
+                await raceWithTimeout(
+                    updateDoc(doc(db, "users", userId), { dataCollectionPath: path, clientName: clientName }),
+                    10000, "Error actualizando perfil."
+                );
+                
+                showAlert("¡Éxito!", "Datos subidos correctamente.", "success");
+                els.csvScreen.classList.add('hidden');
+                els.content.classList.remove('hidden');
+                fetchAndAnalyze(path);
+
+            } catch (e) {
+                console.error(e);
+                showAlert("Error", e.message, "error");
+                resetUploadUI();
+            } finally {
+                if (!isDemoMode) {
+                    els.processBtn.disabled = false;
+                    els.processBtn.textContent = "Subir y Procesar";
+                    if(els.progressBar.style.width === '100%') {
+                         els.progressCont.classList.add('hidden');
+                         els.processBtn.classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        function resetUploadUI() {
+            const els = {
+                processBtn: document.getElementById('process-csv-btn'),
+                progressCont: document.getElementById('upload-progress-container'),
+                progressBar: document.getElementById('upload-progress-bar')
+            };
+            els.processBtn.disabled = false;
+            els.processBtn.classList.remove('hidden');
+            els.processBtn.textContent = "Subir y Procesar";
+            els.progressCont.classList.add('hidden');
+            els.progressBar.style.width = '0%';
+        }
+
+        function showUploadScreen(canCancel = true) {
+            document.getElementById('dashboard-loader').classList.add('hidden');
+            document.getElementById('dashboard-content').classList.add('hidden');
+            document.getElementById('csv-upload-screen').classList.remove('hidden');
+            document.getElementById('csv-file-input').value = '';
+            document.getElementById('file-name-display').textContent = '';
+            resetUploadUI();
+            
+            if (currentUserData.plan === 'gratis') document.getElementById('upload-limit-warning').classList.remove('hidden');
+            else document.getElementById('upload-limit-warning').classList.add('hidden');
+
+            if (canCancel) document.getElementById('cancel-upload-btn').classList.remove('hidden');
+            else document.getElementById('cancel-upload-btn').classList.add('hidden');
         }
 
         async function askGemini(data) {
             const content = document.getElementById('assistantModalContent');
             content.innerHTML = '<div class="text-center py-10"><div class="ai-thinking text-4xl">🧠</div><p class="mt-4 text-slate-500">Analizando...</p></div>';
+            
+            if (isDemoMode) {
+                setTimeout(() => {
+                    content.innerHTML = `<div class="space-y-4 font-inter"><div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-5 rounded-2xl text-white shadow-md"><h3 class="font-bold text-lg flex items-center gap-2">🧠 Análisis Demo</h3><p class="text-indigo-100 mt-1">En modo demo, simulo que tu día fuerte es el Viernes.</p></div></div>`;
+                }, 1000);
+                return;
+            }
+
             try {
-                const res = await fetch('/api/consultar-ia', {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json', 'user-id': auth.currentUser.uid},
-                    body: JSON.stringify({ resumen: data })
-                });
+                const res = await raceWithTimeout(
+                    fetch('/api/consultar-ia', {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json', 'user-id': auth.currentUser.uid},
+                        body: JSON.stringify({ resumen: data })
+                    }),
+                    25000,
+                    "La IA tarda demasiado."
+                );
+
                 const json = await res.json();
-                
-                if (res.status === 429) {
-                    content.innerHTML = `
-                        <div class="p-6 bg-amber-50 border border-amber-200 rounded-xl text-center">
-                            <div class="text-3xl mb-3">⏳</div>
-                            <h3 class="text-amber-800 font-bold text-lg">IA Ocupada</h3>
-                            <p class="text-amber-700 text-sm mt-2">Hemos alcanzado el límite de consultas.</p>
-                        </div>
-                    `;
-                } else if(!res.ok) {
-                    throw new Error(json.error || "Error API");
-                } else {
-                    content.innerHTML = json.html;
-                }
+                if(!res.ok) throw new Error(json.error || "Error API");
+                content.innerHTML = json.html;
             } catch(e) {
-                content.innerHTML = '<p class="text-red-500 text-center">Error al consultar IA.</p>';
+                content.innerHTML = `<p class="text-red-500 text-center p-4">⚠️ ${e.message}</p>`;
             }
         }
 
+        // =========================================================
+        // 5. EVENT LISTENERS
+        // =========================================================
+        
+        document.getElementById('csv-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) { 
+                document.getElementById('file-name-display').textContent = `Archivo: ${file.name}`; 
+                document.getElementById('process-csv-btn').disabled = false; 
+            }
+        });
+
+        document.getElementById('process-csv-btn').addEventListener('click', async () => {
+            const file = document.getElementById('csv-file-input').files[0];
+            if (!file) return;
+            
+            const btn = document.getElementById('process-csv-btn');
+            btn.disabled = true;
+            btn.classList.add('hidden');
+            document.getElementById('upload-progress-container').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = parseCSV(event.target.result);
+                    if (data.length === 0) throw new Error("Archivo vacío o formato inválido.");
+                    if (currentUserData.plan === 'gratis' && data.length > 100) data.splice(100); 
+                    await uploadDataToFirebase(data, file.name);
+                } catch (error) {
+                    showAlert("Error CSV", error.message, "error");
+                    resetUploadUI();
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('uploadMoreDataBtn').addEventListener('click', () => showUploadScreen(true));
+        document.getElementById('cancel-upload-btn').addEventListener('click', () => { 
+            document.getElementById('csv-upload-screen').classList.add('hidden'); 
+            document.getElementById('dashboard-content').classList.remove('hidden'); 
+        });
+
         document.getElementById('closeAssistantBtn').onclick = () => document.getElementById('assistantModal').classList.add('hidden');
+        document.getElementById('closePlanModalBtn').onclick = () => document.getElementById('planSuccessModal').classList.add('hidden');
         document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
+        
+        // Borrado de Cuenta (Lógica Corregida)
+        document.getElementById('deleteAccountBtn').onclick = () => document.getElementById('deleteAccountModal').classList.remove('hidden');
+        document.getElementById('cancelDeleteBtn').onclick = () => document.getElementById('deleteAccountModal').classList.add('hidden');
+        
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if (!auth.currentUser) return;
+            const btn = document.getElementById('confirmDeleteBtn');
+            btn.disabled = true; btn.textContent = "Procesando...";
+            try {
+                // 1. Desconectar listener para evitar "Bienvenido de nuevo"
+                if (userDocUnsubscribe) userDocUnsubscribe();
+                
+                // 2. Ejecutar borrado
+                const userRef = doc(db, "users", auth.currentUser.uid);
+                const deletionDate = new Date(Date.now() + 30*24*60*60*1000);
+                
+                await raceWithTimeout(
+                    updateDoc(userRef, { deletionScheduledAt: deletionDate.toISOString(), status: 'pending_deletion' }),
+                    10000, "Tiempo agotado."
+                );
+                
+                // 3. Mostrar modal de despedida (Custom)
+                showAlert("Cuenta Programada", "Tu cuenta se eliminará en 30 días. ¡Hasta pronto!", "info");
+                
+                // 4. Salir después de que el usuario cierre el alert
+                setTimeout(async () => {
+                    await signOut(auth);
+                    window.location.href = getAbsoluteUrl('index.html');
+                }, 2000);
+
+            } catch (e) {
+                console.error("Delete Error:", e);
+                showAlert("Error", e.message, "error");
+                btn.disabled = false; btn.textContent = "Sí, eliminar";
+            }
+        };
+
+        // CORREGIDO: Lógica de Restauración y Carga Instantánea
+        document.getElementById('closeRestoreModalBtn').onclick = () => {
+            document.getElementById('restoreAccountModal').classList.add('hidden');
+            
+            // Forzar visualización inmediata
+            if (currentUserData) {
+                updatePlanStatus(currentUserData);
+                
+                // Si tenemos ruta de colección, cargamos todo de inmediato
+                if (!!currentUserData.dataCollectionPath || isDemoMode) {
+                    showDashboard();
+                    // Importante: No esperar a que fetchAndAnalyze termine para mostrar el esqueleto
+                    if (!document.getElementById('dashboard-content').dataset.initialized) {
+                        initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
+                        document.getElementById('dashboard-content').dataset.initialized = "true";
+                    }
+                } else {
+                    // Si no tiene datos, mostramos pantalla de carga de archivo
+                    showUploadScreen(false);
+                }
+            }
+        };
+
+        // =========================================================
+        // 6. LISTENER PRINCIPAL (AUTH)
+        // =========================================================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                if (userDocUnsubscribe) userDocUnsubscribe();
+                const userDocRef = doc(db, "users", user.uid);
+                
+                userDocUnsubscribe = onSnapshot(userDocRef, async (userDocSnap) => {
+                    if (userDocSnap.exists()) {
+                        const newUserData = userDocSnap.data();
+                        sessionStorage.setItem('loggedInUserId', user.uid);
+                        currentUserData = newUserData;
+
+                        // Cancelación de Borrado
+                        if (newUserData.deletionScheduledAt) {
+                            document.getElementById('restoreAccountModal').classList.remove('hidden');
+                            document.getElementById('dashboard-loader').classList.add('hidden');
+                            // Limpiar en background
+                            if (!isDemoMode) {
+                                updateDoc(userDocRef, { deletionScheduledAt: deleteField(), status: 'active' })
+                                    .catch(err => console.error("Error cancelando borrado:", err));
+                            }
+                            return; // Detener hasta que el usuario cierre el modal
+                        }
+                        
+                        // Si el modal de restauración está abierto, no hacemos nada más
+                        if (!document.getElementById('restoreAccountModal').classList.contains('hidden')) return;
+
+                        checkPlanChange(newUserData);
+                        updatePlanStatus(currentUserData);
+
+                        const hasData = !!currentUserData.dataCollectionPath;
+
+                        if (hasData) {
+                            if (!document.getElementById('dashboard-content').dataset.initialized) {
+                                showDashboard();
+                                initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
+                                document.getElementById('dashboard-content').dataset.initialized = "true";
+                            }
+                        } else {
+                            // Solo mostramos pantalla de carga si NO hay modal de restauración
+                            if (document.getElementById('restoreAccountModal').classList.contains('hidden')) {
+                                document.getElementById('dashboard-loader').classList.add('hidden');
+                                document.getElementById('dashboard-content').classList.add('hidden');
+                                showUploadScreen(false);
+                                document.getElementById('dashboard-content').dataset.initialized = "";
+                            }
+                        }
+                    } else {
+                        document.getElementById('dashboard-loader').innerHTML = '<div class="text-red-500 p-4">Error: Perfil no encontrado.</div>';
+                    }
+                }, (error) => {
+                    console.error("Snapshot error:", error);
+                    activateDemoMode();
+                    currentUserData = { nombre: "Usuario Demo", plan: "Plan Premium", planStartDate: new Date().toISOString() };
+                    updatePlanStatus(currentUserData);
+                    showDashboard();
+                    initializeDashboard(null, "Negocio Demo");
+                });
+            } else {
+                window.location.href = getAbsoluteUrl('index.html');
+            }
+        });
 
     </script>
 </body>

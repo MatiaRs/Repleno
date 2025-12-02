@@ -1,80 +1,168 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estado del Pago - Repleno</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center hidden" id="success-card">
-        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <!-- Tarjeta de Éxito -->
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center hidden fade-in" id="success-card">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
             <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Pago Exitoso!</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">¡Pago Exitoso!</h2>
         <p class="text-gray-600 mb-6">Tu suscripción está activa. Gracias por unirte a Repleno.</p>
         
-        <div class="bg-gray-50 rounded-xl p-4 text-left text-sm border border-gray-100 mb-6">
-            <div class="flex justify-between mb-2">
+        <div class="bg-gray-50 rounded-xl p-5 text-left text-sm border border-gray-100 mb-8 space-y-3">
+            <div class="flex justify-between items-center border-b border-gray-200 pb-2">
                 <span class="text-gray-500">Plan Contratado</span>
-                <span class="font-bold text-indigo-600" id="plan-name">...</span>
+                <span class="font-bold text-indigo-600 text-base" id="plan-name">...</span>
             </div>
-            <div class="flex justify-between mb-2">
-                <span class="text-gray-500">Cobro Mensual</span>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-500">Monto Pagado</span>
                 <span class="font-bold text-gray-800" id="amount">...</span>
             </div>
-            <div class="flex justify-between mb-2">
-                <span class="text-gray-500">Tarjeta</span>
-                <span class="font-bold text-gray-800" id="card-number">...</span>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-500">Método de Pago</span>
+                <span class="font-bold text-gray-800 font-mono" id="card-number">...</span>
             </div>
-            <div class="flex justify-between">
-                <span class="text-gray-500">Fecha de Pago</span>
-                <span class="font-bold text-gray-800" id="date">...</span>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span class="text-gray-500">Fecha</span>
+                <span class="font-medium text-gray-600 text-xs" id="date">...</span>
             </div>
         </div>
-        <a href="dashboard.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors">Ir a mi Dashboard</a>
+        
+        <a href="dashboard.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            Ir a mi Dashboard
+        </a>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center hidden" id="error-card">
-        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <!-- Tarjeta de Error / Rechazo -->
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center hidden fade-in" id="error-card">
+        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <svg id="error-icon" class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <!-- Icono Alternativo para Cancelación -->
+            <svg id="cancel-icon" class="w-10 h-10 text-amber-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Pago Rechazado</h2>
-        <p class="text-gray-600 mb-6">Hubo un problema al procesar tu pago. No se ha realizado ningún cargo.</p>
-        <a href="ejemplo.html" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition-colors">Intentar de nuevo</a>
+        
+        <h2 class="text-2xl font-bold text-gray-900 mb-2" id="error-title">Pago No Procesado</h2>
+        <p class="text-gray-600 mb-8 leading-relaxed" id="error-message">Hubo un problema al procesar tu pago. No se ha realizado ningún cargo a tu cuenta.</p>
+        
+        <div class="flex flex-col gap-3">
+            <a href="ejemplo.html" class="block w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
+                Intentar de nuevo
+            </a>
+            <a href="dashboard.html" class="block w-full bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 font-semibold py-3 rounded-xl transition-colors">
+                Volver al inicio
+            </a>
+        </div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const status = params.get('status');
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
 
-        if (status === 'success') {
-            document.getElementById('success-card').classList.remove('hidden');
-            document.getElementById('plan-name').textContent = params.get('plan') || 'Plan Premium';
+            const successCard = document.getElementById('success-card');
+            const errorCard = document.getElementById('error-card');
             
-            // Formatear Dinero
-            const amount = parseInt(params.get('amount')) || 0;
-            document.getElementById('amount').textContent = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(amount);
-            
-            // Formatear Tarjeta
-            document.getElementById('card-number').textContent = `**** **** **** ${params.get('card') || '****'}`;
+            // Elementos de error
+            const errorTitle = document.getElementById('error-title');
+            const errorMessage = document.getElementById('error-message');
+            const errorIcon = document.getElementById('error-icon');
+            const cancelIcon = document.getElementById('cancel-icon');
+            const errorIconContainer = errorIcon.parentElement;
 
-            // Formatear Fecha (Corrección 1969)
-            const dateParam = params.get('date');
-            let dateObj = new Date();
-            // Si Transbank envía fecha ISO, la usamos, si no, usamos fecha actual
-            if (dateParam && dateParam !== 'undefined') {
-                const parsedDate = new Date(dateParam);
-                if (!isNaN(parsedDate.getTime())) dateObj = parsedDate;
+            if (status === 'success') {
+                successCard.classList.remove('hidden');
+                
+                // 1. Nombre del Plan
+                const rawPlan = params.get('plan') || 'Plan Premium';
+                // Capitalizar primera letra por si acaso
+                document.getElementById('plan-name').textContent = rawPlan.charAt(0).toUpperCase() + rawPlan.slice(1);
+                
+                // 2. Formatear Dinero (Manejo seguro de NaN)
+                let amount = 0;
+                try {
+                    const rawAmount = params.get('amount');
+                    if (rawAmount && !isNaN(rawAmount)) {
+                        amount = parseInt(rawAmount, 10);
+                    }
+                } catch (e) { console.error("Error parsing amount", e); }
+                
+                document.getElementById('amount').textContent = new Intl.NumberFormat('es-CL', { 
+                    style: 'currency', 
+                    currency: 'CLP' 
+                }).format(amount);
+                
+                // 3. Formatear Tarjeta
+                const cardLast4 = params.get('card') || '****';
+                document.getElementById('card-number').textContent = `•••• •••• •••• ${cardLast4}`;
+
+                // 4. Formatear Fecha
+                const dateParam = params.get('date');
+                let dateObj = new Date();
+                
+                if (dateParam && dateParam !== 'undefined' && dateParam !== 'null') {
+                    const parsedDate = new Date(dateParam);
+                    if (!isNaN(parsedDate.getTime())) {
+                        dateObj = parsedDate;
+                    }
+                }
+                
+                document.getElementById('date').textContent = dateObj.toLocaleDateString('es-CL', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+            } else {
+                // Lógica de Errores Específicos
+                errorCard.classList.remove('hidden');
+                
+                if (status === 'cancelled') {
+                    // Estado: Cancelado por el usuario (TBK_TOKEN presente o abortado)
+                    errorTitle.textContent = 'Operación Cancelada';
+                    errorMessage.textContent = 'Has cancelado el proceso de pago. Tu suscripción no ha sido modificada.';
+                    
+                    // Cambiar estilo a Amarillo/Ámbar
+                    errorIconContainer.classList.remove('bg-red-100');
+                    errorIconContainer.classList.add('bg-amber-100');
+                    errorIcon.classList.add('hidden');
+                    cancelIcon.classList.remove('hidden');
+                    
+                } else if (status === 'rejected') {
+                    // Estado: Rechazado por Transbank (Fondos insuficientes, clave errónea, etc.)
+                    errorTitle.textContent = 'Pago Rechazado';
+                    errorMessage.textContent = 'El banco ha rechazado la transacción. Por favor, verifica tus fondos o intenta con otra tarjeta.';
+                    
+                } else if (status === 'invalid') {
+                    // Estado: Token inválido
+                    errorTitle.textContent = 'Sesión Expirada';
+                    errorMessage.textContent = 'La sesión de pago ha expirado o no es válida. Por favor, inicia el proceso nuevamente.';
+                    
+                } else {
+                    // Estado: Error genérico o desconocido
+                    errorTitle.textContent = 'Error Inesperado';
+                    errorMessage.textContent = 'Ocurrió un error de comunicación con el sistema de pagos. No se realizó ningún cargo.';
+                }
             }
-            document.getElementById('date').textContent = dateObj.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-        } else {
-            document.getElementById('error-card').classList.remove('hidden');
-        }
+        });
     </script>
 </body>
 </html>

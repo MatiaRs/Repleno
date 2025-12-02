@@ -15,12 +15,23 @@
         .btn-danger { background-color: #FFF1F2; color: #DC2626; border-color: #FECDD3;}
         .btn-danger:hover { background-color: #FEE2E2; }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem; border-radius: 0.5rem; color: white; z-index: 100; transform: translateX(120%); transition: transform 0.5s ease-in-out; }
+        
+        /* Notificaciones Toast */
+        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem; border-radius: 0.5rem; color: white; z-index: 100; transform: translateX(120%); transition: transform 0.5s ease-in-out; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .notification.show { transform: translateX(0); }
         .notification.error { background-color: #DC2626; }
         .notification.success { background-color: #16A34A; }
+        
         .fade-in { animation: fadeIn 0.8s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilos de Estado */
+        .status-pending-delete { color: #991B1B; font-weight: bold; font-size: 0.75rem; background: #FEF2F2; padding: 4px 10px; border-radius: 99px; border: 1px solid #FECACA; display: inline-flex; align-items: center; gap: 6px; }
+        .status-active { color: #166534; font-weight: bold; font-size: 0.75rem; background: #F0FDF4; padding: 4px 10px; border-radius: 99px; border: 1px solid #DCFCE7; }
+        
+        /* Animación pulso para indicador en vivo */
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+        .live-dot { animation: pulse-green 2s infinite; }
     </style>
 </head>
 <body>
@@ -29,51 +40,74 @@
     <div id="admin-panel" class="container mx-auto p-4 md:p-6 lg:p-8">
         <header class="flex justify-between items-center mb-8 pb-4 border-b border-slate-200">
             <div class="flex items-center gap-4">
+                <svg id="replenoLogo" width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:1" /><stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:1" /></linearGradient></defs>
+                    <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
                 <h1 class="text-2xl font-bold text-slate-800">Panel de Administrador</h1>
             </div>
-            <button id="logoutBtnAdmin" class="btn-secondary action-btn">Cerrar Sesión</button>
+            <button id="logoutBtnAdmin" class="btn-secondary action-btn flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Cerrar Sesión
+            </button>
         </header>
         
         <main class="card p-0 fade-in">
-             <div class="p-6">
-                <h2 class="text-xl font-semibold mb-1 text-slate-700">Gestionar Usuarios</h2>
-                <p class="text-slate-500">Asigna bases de datos y administra los usuarios del sistema.</p>
+             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-semibold mb-1 text-slate-700">Gestionar Usuarios</h2>
+                    <p class="text-slate-500 text-sm">Supervisa el estado de las cuentas y gestiona eliminaciones.</p>
+                </div>
+                <div id="live-indicator" class="flex items-center gap-2 text-xs text-green-700 font-bold bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full live-dot"></span> EN VIVO
+                </div>
              </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b border-t border-slate-200">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-500">
                         <tr>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Usuario</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Email</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600">Plan</th>
-                            <th class="p-4 text-sm font-semibold text-slate-600 text-right">Acciones</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-wider">Usuario</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-wider">Email</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-wider">Plan</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-wider">Estado</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-wider text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="user-list-body"></tbody>
+                    <tbody id="user-list-body" class="divide-y divide-slate-100">
+                        <!-- Se llena dinámicamente -->
+                        <tr class="text-center"><td colspan="5" class="p-10 text-slate-400">Cargando usuarios...</td></tr>
+                    </tbody>
                 </table>
                  <div id="no-users-message" class="hidden p-10 text-center text-slate-500">
-                    <p>No hay usuarios cliente creados todavía.</p>
+                    <div class="text-4xl mb-2">📭</div>
+                    <p>No se encontraron usuarios registrados.</p>
                 </div>
             </div>
         </main>
     </div>
     
-    <div id="confirmDeleteModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
-        <div class="card w-full max-w-sm text-center p-6 fade-in">
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Confirmar Eliminación</h3>
-            <p id="deleteModalText" class="text-slate-500 mb-6"></p>
-            <div class="flex justify-end gap-3">
-                <button id="cancelDeleteBtn" class="action-btn btn-secondary">Cancelar</button>
-                <button id="confirmDeleteBtn" class="btn-primary bg-red-600 border-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Confirmar</button>
+    <!-- Modal Confirmación de Eliminación -->
+    <div id="confirmDeleteModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-xl w-full max-w-md p-8 shadow-2xl transform scale-100 transition-transform">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-center text-slate-800 mb-2">¿Eliminación Forzada?</h3>
+            <p id="deleteModalText" class="text-slate-500 text-center mb-8 text-sm leading-relaxed"></p>
+            <div class="flex justify-center gap-3">
+                <button id="cancelDeleteBtn" class="px-6 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors">Cancelar</button>
+                <button id="confirmDeleteBtn" class="px-6 py-2.5 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 shadow-lg shadow-red-200 transition-all transform hover:-translate-y-0.5">Sí, eliminar ahora</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
             authDomain: "repleno-app.firebaseapp.com",
@@ -88,6 +122,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // DOM ELEMENTS
         const logoutBtnAdmin = document.getElementById('logoutBtnAdmin');
         const userListBody = document.getElementById('user-list-body');
         const noUsersMessage = document.getElementById('no-users-message');
@@ -96,89 +131,158 @@
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         const deleteModalText = document.getElementById('deleteModalText');
+        const liveIndicator = document.getElementById('live-indicator');
         
         let userToDelete = null;
+        let usersUnsubscribe = null; 
 
-        // Función robusta para obtener URL absoluta
+        // --- Helper: Timeout ---
+        function raceWithTimeout(promise, ms, errorMessage) {
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error(errorMessage)), ms)
+            );
+            return Promise.race([promise, timeout]);
+        }
+
         function getAbsoluteUrl(path) {
-            // Eliminar barra inicial si existe para evitar dobles barras
             const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-            // Asegurar que el origen no tenga barra final (aunque window.location.origin usualmente no la tiene)
             const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
             return `${origin}/${cleanPath}`;
         }
 
+        // --- AUTH CHECK ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists() && userSnap.data().role === 'admin') {
-                    await renderUserList();
-                } else {
-                    showNotification('Acceso denegado.');
-                    setTimeout(handleLogout, 1500);
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists() && userSnap.data().role === 'admin') {
+                        initRealtimeUsers(); 
+                    } else {
+                        showNotification('Acceso Denegado', 'Esta área es solo para administradores.');
+                        setTimeout(handleLogout, 1500);
+                    }
+                } catch (e) {
+                    console.error("Error auth check:", e);
+                    showNotification("Error verificando permisos.", "error");
                 }
             } else {
-                // FIX: Usar URL absoluta para evitar error de sintaxis en algunos entornos
                 window.location.href = getAbsoluteUrl('index.html');
             }
         });
         
+        // --- NOTIFICACIONES (Toast) ---
         function showNotification(message, type = 'error') {
             const notif = document.createElement('div');
-            notif.className = `notification ${type} show`;
-            notif.textContent = message;
+            notif.className = `notification ${type} show flex items-center gap-3`;
+            // Icono según tipo
+            const icon = type === 'success' 
+                ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+            
+            notif.innerHTML = `${icon} <span class="font-medium">${message}</span>`;
             notificationArea.appendChild(notif);
-            setTimeout(() => { notif.classList.remove('show'); setTimeout(() => notif.remove(), 500); }, 3000);
+            setTimeout(() => { notif.classList.remove('show'); setTimeout(() => notif.remove(), 500); }, 3500);
         }
 
         function handleLogout() {
+            if (usersUnsubscribe) usersUnsubscribe();
             signOut(auth).then(() => {
                 sessionStorage.removeItem('loggedInUserId');
-                // FIX: Usar URL absoluta
                 window.location.href = getAbsoluteUrl('index.html');
             });
         }
 
-        async function renderUserList() {
-            try {
+        // --- LOGICA TIEMPO REAL (El corazón del Admin) ---
+        function initRealtimeUsers() {
+            const usersQuery = query(collection(db, "users"), where("role", "==", "client"));
+            
+            usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
                 userListBody.innerHTML = '';
-                const usersQuery = query(collection(db, "users"), where("role", "==", "client"));
-                const querySnapshot = await getDocs(usersQuery);
-
-                if (querySnapshot.empty) {
+                
+                if (snapshot.empty) {
                     noUsersMessage.classList.remove('hidden');
                     return;
                 }
                 noUsersMessage.classList.add('hidden');
 
-                querySnapshot.forEach(doc => {
-                    const user = doc.data();
+                const users = [];
+                snapshot.forEach(doc => {
+                    users.push({ id: doc.id, ...doc.data() });
+                });
+
+                // ORDENAMIENTO CRÍTICO:
+                // 1. Usuarios con 'deletionScheduledAt' van PRIMERO.
+                // 2. Luego orden alfabético.
+                users.sort((a, b) => {
+                    const aPending = !!a.deletionScheduledAt;
+                    const bPending = !!b.deletionScheduledAt;
+                    if (aPending && !bPending) return -1; 
+                    if (!aPending && bPending) return 1;  
+                    return (a.nombre || "").localeCompare(b.nombre || ""); 
+                });
+
+                users.forEach(user => {
                     const displayName = user.nombre ? `${user.nombre} ${user.apellido}` : (user.username || 'Sin nombre');
                     
+                    let statusHtml = `<span class="status-active">Activo</span>`;
+                    let rowClass = 'hover:bg-slate-50 transition-colors duration-150 border-l-4 border-transparent';
+
+                    // LÓGICA DE BORRADO VISUAL (CORREGIDA)
+                    if (user.deletionScheduledAt) {
+                        let deletionDate;
+                        // Manejo robusto de fechas (Timestamp o String)
+                        if (user.deletionScheduledAt && typeof user.deletionScheduledAt.toDate === 'function') {
+                            deletionDate = user.deletionScheduledAt.toDate();
+                        } else {
+                            deletionDate = new Date(user.deletionScheduledAt);
+                        }
+
+                        const now = new Date();
+                        const diffTime = deletionDate - now;
+                        // Math.ceil para redondear hacia arriba (ej: 0.1 días = 1 día restante)
+                        const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24))); 
+                        
+                        if (diffDays > 0) {
+                             statusHtml = `<span class="status-pending-delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Se borra en ${diffDays} días</span>`;
+                             rowClass = 'bg-red-50 hover:bg-red-100 transition-colors duration-150 border-l-4 border-red-400';
+                        } else {
+                             statusHtml = `<span class="status-pending-delete">⚠️ Por borrar hoy</span>`;
+                             rowClass = 'bg-red-100 hover:bg-red-200 transition-colors duration-150 border-l-4 border-red-600';
+                        }
+                    }
+
                     const row = document.createElement('tr');
-                    row.className = 'border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150';
+                    row.className = rowClass;
                     row.innerHTML = `
-                        <td class="p-4 font-medium text-slate-800">${displayName}</td>
-                        <td class="p-4 text-slate-600">${user.email || '-'}</td>
-                        <td class="p-4"><span class="bg-indigo-100 text-indigo-700 py-1 px-2 rounded text-xs font-bold">${user.plan || 'Sin plan'}</span></td>
+                        <td class="p-4 font-medium text-slate-800">
+                            <div class="flex flex-col">
+                                <span>${displayName}</span>
+                                <span class="text-xs text-slate-400 font-normal">${user.rut || ''}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-slate-600 text-sm">${user.email || '-'}</td>
+                        <td class="p-4"><span class="bg-indigo-100 text-indigo-700 py-1 px-2 rounded-md text-xs font-bold tracking-wide uppercase">${user.plan || 'Sin plan'}</span></td>
+                        <td class="p-4">${statusHtml}</td>
                         <td class="p-4 text-right">
-                            <button data-id="${doc.id}" data-username="${displayName}" class="delete-btn btn-danger inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded">
-                                Eliminar
+                            <button data-id="${user.id}" data-username="${displayName}" class="delete-btn text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors border border-transparent hover:border-red-200" title="Eliminar inmediatamente">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </td>
                     `;
                     userListBody.appendChild(row);
                 });
-            } catch(error) {
-                console.error(error);
-                showNotification('Error al cargar usuarios.');
-            }
+            }, (error) => {
+                console.error("Error escuchando usuarios:", error);
+                liveIndicator.className = "flex items-center gap-2 text-xs text-red-600 font-bold bg-red-50 px-3 py-1 rounded-full border border-red-200";
+                liveIndicator.innerHTML = '<span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span> OFFLINE';
+                showNotification('Conexión perdida con la base de datos.', 'error');
+            });
         }
         
         function openDeleteModal(userId, username) {
             userToDelete = { userId, username };
-            deleteModalText.textContent = `¿Eliminar a "${username}"? Esto borrará su acceso, base de datos y permitirá reutilizar su correo.`;
+            deleteModalText.innerHTML = `Estás a punto de eliminar permanentemente a <b>${username}</b>.<br><br>Esta acción es irreversible: se borrará su acceso, historial y base de datos inmediatamente.`;
             confirmDeleteModal.classList.remove('hidden');
             confirmDeleteModal.classList.add('flex');
         }
@@ -194,30 +298,35 @@
                 confirmDeleteBtn.disabled = true;
                 confirmDeleteBtn.textContent = "Eliminando...";
                 try {
-                    // Llamada al servidor para eliminación completa (Auth + DB)
-                    const response = await fetch(`/api/admin/users/${userToDelete.userId}`, { method: 'DELETE' });
-                    
+                    // Timeout de 10s para evitar bloqueos
+                    const response = await raceWithTimeout(
+                        fetch(`/api/admin/users/${userToDelete.userId}`, { method: 'DELETE' }),
+                        10000,
+                        "El servidor no respondió a tiempo."
+                    );
+
                     if (response.ok) {
                         showNotification('Usuario eliminado completamente.', 'success');
-                        await renderUserList();
                     } else {
-                        throw new Error('Error en el servidor');
+                        const data = await response.json();
+                        throw new Error(data.error || 'Error en el servidor');
                     }
                 } catch(error) {
                     console.error(error);
-                    showNotification("Error al eliminar.");
+                    showNotification(`Error: ${error.message}`, 'error');
                 } finally {
                     confirmDeleteBtn.disabled = false;
-                    confirmDeleteBtn.textContent = "Confirmar";
+                    confirmDeleteBtn.textContent = "Sí, eliminar ahora";
                     closeDeleteModal();
                 }
             }
         }
 
         logoutBtnAdmin.addEventListener('click', handleLogout);
+        
         userListBody.addEventListener('click', (e) => {
-            if (e.target.closest('.delete-btn')) {
-                const btn = e.target.closest('.delete-btn');
+            const btn = e.target.closest('.delete-btn');
+            if (btn) {
                 openDeleteModal(btn.dataset.id, btn.dataset.username);
             }
         });

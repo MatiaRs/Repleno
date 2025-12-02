@@ -48,6 +48,7 @@
         .plan-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -77,7 +78,7 @@
                 <p id="client-name" class="text-sm text-slate-500">¡Bienvenido! Elige tu plan para continuar</p>
             </div>
         </div>
-        <!-- NUEVO: Botón Volver -->
+        <!-- Botón Volver -->
         <div class="flex items-center gap-3 mt-4 md:mt-0">
             <a href="dashboard.html" class="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors px-4 py-2 rounded-lg border border-slate-200 bg-white hover:border-indigo-200">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -92,6 +93,7 @@
 
     <div class="flex flex-wrap justify-center items-start gap-8 w-full max-w-7xl">
 
+        <!-- Plan Gratuito -->
         <div
             class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
@@ -109,26 +111,20 @@
 
             <ul class="space-y-3 text-left text-slate-600 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Acceso básico a la plataforma
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Gestión limitada del inventario
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Duración: 1 mes de prueba
                 </li>
@@ -140,6 +136,7 @@
             </button>
         </div>
 
+        <!-- Plan Estándar -->
         <div
             class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
 
@@ -159,26 +156,20 @@
 
             <ul class="space-y-3 text-left text-slate-600 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Gestión completa de inventario
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Alertas automáticas de stock bajo
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Recomendaciones de compra
                 </li>
@@ -190,6 +181,7 @@
             </button>
         </div>
 
+        <!-- Plan Premium -->
         <div
             class="card bg-gradient-to-br from-violet-600 to-indigo-700 text-white rounded-xl shadow-2xl p-8 w-full max-w-md md:max-w-sm flex flex-col relative transition-all duration-300 transform md:scale-105 hover:shadow-3xl text-center">
 
@@ -213,26 +205,20 @@
 
             <ul class="space-y-3 text-left text-indigo-50 mb-8">
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Gestión avanzada con IA
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Alertas inteligentes y predicciones
                 </li>
                 <li class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-5 h-5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Reportes detallados y métricas
                 </li>
@@ -300,20 +286,39 @@
             freeButton.textContent = isLoading ? 'Procesando...' : 'Seleccionar';
         }
 
+        // --- FUNCIÓN HELPER: TIMEOUT ROBUSTO ---
+        function raceWithTimeout(promise, ms, errorMessage) {
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error(errorMessage)), ms)
+            );
+            return Promise.race([promise, timeout]);
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUserId = user.uid;
                 sessionStorage.setItem('loggedInUserId', user.uid);
                 const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+                
+                try {
+                    // Timeout de 10s para cargar datos básicos
+                    const userDocSnap = await raceWithTimeout(
+                        getDoc(userDocRef),
+                        10000,
+                        "Conexión lenta al cargar perfil."
+                    );
 
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    document.getElementById('client-name').textContent = `¡Bienvenido, ${userData.nombre || 'usuario'}! Elige tu plan`;
-                } else {
-                    showNotification('Error: No se encontraron datos de usuario.');
-                    signOut(auth);
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        document.getElementById('client-name').textContent = `¡Bienvenido, ${userData.nombre || 'usuario'}! Elige tu plan`;
+                    } else {
+                         showNotification('Error al cargar datos del usuario.');
+                    }
+                } catch (e) {
+                     console.error("Error loading user:", e);
+                     showNotification(e.message || 'Error de conexión.');
                 }
+
             } else {
                 currentUserId = null;
                 sessionStorage.removeItem('loggedInUserId');
@@ -322,6 +327,7 @@
             }
         });
 
+        // --- LÓGICA PLAN GRATIS ---
         freeButton.addEventListener('click', async () => {
             if (!currentUserId) {
                 showNotification('Error de autenticación. Intenta recargar la página.');
@@ -331,22 +337,27 @@
             setButtonsLoading(true);
 
             try {
-                const userRef = doc(db, "users", currentUserId);
-                await updateDoc(userRef, {
-                    plan: 'gratis',
-                    subscriptionStatus: 'active',
-                    planStartDate: new Date().toISOString()
-                });
+                // Timeout de 15 segundos para asegurar respuesta
+                await raceWithTimeout(
+                    updateDoc(doc(db, "users", currentUserId), {
+                        plan: 'gratis',
+                        subscriptionStatus: 'active',
+                        planStartDate: new Date().toISOString()
+                    }),
+                    15000,
+                    "El servidor tardó demasiado. Verifica tu conexión."
+                );
 
                 window.location.href = getAbsoluteUrl('dashboard.html');
 
             } catch (error) {
                 console.error("Error al seleccionar plan gratis:", error);
-                showNotification('Error al guardar tu plan. Inténtalo de nuevo.');
-                setButtonsLoading(false);
+                showNotification(error.message || 'Error al guardar tu plan. Inténtalo de nuevo.');
+                setButtonsLoading(false); // Reactivar botones si falla
             }
         });
 
+        // --- LÓGICA PLANES DE PAGO ---
         paidButtons.forEach(button => {
             button.addEventListener('click', async () => {
                 const plan = button.dataset.plan;
@@ -360,6 +371,10 @@
 
                 setButtonsLoading(true);
 
+                // Controlador para abortar la petición fetch si tarda
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seg timeout
+
                 try {
                     const response = await fetch('/crear-transaccion', {
                         method: 'POST',
@@ -371,7 +386,10 @@
                             plan: plan,
                             userId: currentUserId
                         }),
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
 
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -387,9 +405,14 @@
                     }
 
                 } catch (error) {
+                    clearTimeout(timeoutId); // Limpiar timeout si falla por otra razón
                     console.error('Error:', error);
-                    showNotification('Error al iniciar el pago: ' + error.message);
-                    setButtonsLoading(false);
+                    let msg = error.message;
+                    if (error.name === 'AbortError') {
+                        msg = "El servidor de pagos no responde. Intenta más tarde.";
+                    }
+                    showNotification('Error: ' + msg);
+                    setButtonsLoading(false); // Reactivar botones si falla
                 }
             });
         });
