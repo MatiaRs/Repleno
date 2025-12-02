@@ -239,7 +239,6 @@
                  <p>Al registrarse, acceder o utilizar nuestro servicio de subscripcion (en adelante el "servicio"), usted ("Cliente") acepta plenamente estos Terminos y Condiciones de uso junto con la politica de Privacidad del proveedor.</p>
                  <h3 class="font-semibold text-slate-700">2. Descripcion del servicio</h3>
                  <p>El Servicio consiste en una plataforma de software como servicio (SaaS) basada en inteligencia artificial y machine learning, diseñada para predecir la demanda futura de productos y optimizar la gestión de inventario.</p>
-                 <!-- (Texto abreviado para optimización, el contenido es el mismo del original) -->
                  <p class="font-bold mt-4">Al registrarse, usted acepta nuestros términos de servicio y política de privacidad.</p>
             </div>
         </div>
@@ -287,39 +286,12 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- 4. Obtener Elementos del DOM ---
-        const loginBtn = document.getElementById('loginBtn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const notificationArea = document.getElementById('notification-area');
-
-        // Elementos del modal de Registro
-        const openRegisterBtn = document.getElementById('open-register-btn');
-        const closeRegisterBtn = document.getElementById('close-register-btn');
-        const registerModal = document.getElementById('register-modal');
-        const registerForm = document.getElementById('register-form');
-        const registerSubmitBtn = document.getElementById('registerSubmitBtn');
-
-        // Elementos del modal de Términos
-        const openTermsBtn = document.getElementById('open-terms-btn');
-        const closeTermsBtn = document.getElementById('close-terms-btn');
-        const termsModal = document.getElementById('terms-modal');
-
-        // Elementos del modal de Olvidar Contraseña
-        const openForgotBtn = document.getElementById('forgot-modal-btn');
-        const closeForgotBtn = document.getElementById('close-forgot-btn');
-        const forgotModal = document.getElementById('forgot-modal');
-        const forgotForm = document.getElementById('forgot-form');
-        const forgotEmailInput = document.getElementById('forgot-email');
-        const sendResetBtn = document.getElementById('send-reset-btn');
-
-
-        // --- 5. Funciones Auxiliares ---
+        // --- 4. Funciones Auxiliares ---
         function showNotification(message, type = 'error') {
             const notif = document.createElement('div');
             notif.className = `notification ${type} show`;
             notif.textContent = message;
-            notificationArea.appendChild(notif);
+            document.getElementById('notification-area').appendChild(notif);
 
             setTimeout(() => {
                 notif.classList.remove('show');
@@ -353,8 +325,7 @@
             }
         }
         
-        // --- FUNCIÓN HELPER: TIMEOUT ROBUSTO ---
-        // Esta función "carrera" fuerza un error si la promesa tarda más de 'ms' milisegundos
+        // Función de seguridad: Timeout para promesas
         function raceWithTimeout(promise, ms, errorMessage) {
             const timeout = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error(errorMessage)), ms)
@@ -362,17 +333,22 @@
             return Promise.race([promise, timeout]);
         }
 
-        // --- 6. Lógica de la Aplicación (Event Listeners) ---
+        // --- 5. Lógica de la Aplicación (Event Listeners) ---
 
-        // Limpiar sesión al cargar para evitar estados "zombies"
+        // Limpiar sesión al cargar
         document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.removeItem('loggedInUserId');
         });
 
         // --- Lógica de Login ---
         async function handleLogin() {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            
             const email = emailInput.value.trim();
             const password = passwordInput.value;
+            
             if (!email || !password) {
                 showNotification('Por favor, ingresa correo y contraseña.');
                 return;
@@ -382,7 +358,7 @@
             loginBtn.textContent = 'Ingresando...';
 
             try {
-                // Timeout de 15 segundos para el login. Si Firebase falla o internet es lento, se libera.
+                // Timeout de 15 segundos para el login
                 const userCredential = await raceWithTimeout(
                     signInWithEmailAndPassword(auth, email, password),
                     15000,
@@ -392,7 +368,7 @@
                 const user = userCredential.user;
                 const userDocRef = doc(db, "users", user.uid);
                 
-                // Timeout para la lectura de datos del usuario
+                // Timeout para la lectura de datos
                 const userDocSnap = await raceWithTimeout(
                      getDoc(userDocRef),
                      10000,
@@ -403,20 +379,16 @@
                     const userData = userDocSnap.data();
                     sessionStorage.setItem('loggedInUserId', user.uid);
 
-                    // Redirección inteligente según el rol
                     if (userData.role === 'admin') {
                         window.location.href = getAbsoluteUrl('admin.html');
                     } else if (userData.subscriptionStatus !== 'active') {
-                         // Si no tiene plan activo, enviarlo a elegir plan
                          window.location.href = getAbsoluteUrl('ejemplo.html');
                     } else {
-                        // Usuario normal con plan activo
                         window.location.href = getAbsoluteUrl('dashboard.html');
                     }
                 } else {
                     showNotification('No se encontraron datos asociados a esta cuenta.');
                     auth.signOut();
-                    // Importante: reactivar el botón manualmente aquí
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Iniciar Sesión';
                 }
@@ -424,7 +396,7 @@
                 console.error("Login Error:", error.code, error.message);
                 let msg = error.message; // Usar mensaje del timeout si existe
                 
-                // Traducción de errores comunes de Firebase
+                // Mensajes de Firebase
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email') {
                     msg = 'Correo o contraseña incorrectos.';
                 } else if (error.code && error.code.includes('auth/')) {
@@ -432,23 +404,23 @@
                 }
                 
                 showNotification(msg);
-                // Reactivar botón en caso de error
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Iniciar Sesión';
             }
         }
 
-        loginBtn.addEventListener('click', handleLogin);
-        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-        emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('email').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
 
         // --- Lógica del Modal de Registro ---
-        openRegisterBtn.addEventListener('click', () => showModal(registerModal));
-        closeRegisterBtn.addEventListener('click', () => hideModal(registerModal));
+        const registerModal = document.getElementById('register-modal');
+        document.getElementById('open-register-btn').addEventListener('click', () => showModal(registerModal));
+        document.getElementById('close-register-btn').addEventListener('click', () => hideModal(registerModal));
         registerModal.addEventListener('click', (e) => handleModalOverlayClick(e, registerModal));
 
-        registerForm.addEventListener('submit', async (e) => {
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const rut = document.getElementById('register-rut').value.trim();
             const nombre = document.getElementById('register-nombre').value.trim();
@@ -458,6 +430,7 @@
             const negocio = document.getElementById('register-negocio').value.trim();
             const password = document.getElementById('register-password').value;
             const termsAccepted = document.getElementById('accept-terms').checked;
+            const registerSubmitBtn = document.getElementById('registerSubmitBtn');
 
             if (!rut || !nombre || !apellido || !email || !phone || !negocio || !password) {
                 showNotification("Todos los campos son obligatorios.");
@@ -472,18 +445,17 @@
             registerSubmitBtn.textContent = 'Creando cuenta...';
 
             try {
-                // Timeout de 20 segundos para todo el proceso de registro (Auth + DB)
+                // Timeout de 20 segundos para todo el proceso de registro
                 const registrationPromise = async () => {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Crear perfil en Firestore
                     await setDoc(doc(db, "users", user.uid), {
                         rut, nombre, apellido, email, phone, negocio,
                         negocio_lowercase: negocio.toLowerCase(),
                         role: 'client',
                         plan: 'none',
-                        subscriptionStatus: 'pending' // Estado inicial clave
+                        subscriptionStatus: 'pending'
                     });
                     return user;
                 };
@@ -497,7 +469,6 @@
                 showNotification('¡Registro exitoso! Redirigiendo...', 'success');
                 sessionStorage.setItem('loggedInUserId', user.uid);
 
-                // Redirigir a selección de planes
                 setTimeout(() => {
                     window.location.href = getAbsoluteUrl('ejemplo.html');
                 }, 1500);
@@ -512,8 +483,6 @@
                 }
                 showNotification(msg);
             } finally {
-                // SIEMPRE reactivar el botón, falle o no
-                // (Excepto si redirigimos, pero no hace daño dejarlo activo por si el usuario cancela la carga)
                 registerSubmitBtn.disabled = false;
                 registerSubmitBtn.textContent = 'Crear mi cuenta';
             }
@@ -521,17 +490,23 @@
 
 
         // --- Lógica del Modal de Términos ---
-        openTermsBtn.addEventListener('click', (e) => {
+        const termsModal = document.getElementById('terms-modal');
+        document.getElementById('open-terms-btn').addEventListener('click', (e) => {
             e.preventDefault();
             showModal(termsModal);
         });
-        closeTermsBtn.addEventListener('click', () => hideModal(termsModal));
+        document.getElementById('close-terms-btn').addEventListener('click', () => hideModal(termsModal));
         termsModal.addEventListener('click', (e) => handleModalOverlayClick(e, termsModal));
 
 
         // --- Lógica del Modal de Olvidar Contraseña ---
-        openForgotBtn.addEventListener('click', () => showModal(forgotModal));
-        closeForgotBtn.addEventListener('click', () => hideModal(forgotModal));
+        const forgotModal = document.getElementById('forgot-modal');
+        const forgotForm = document.getElementById('forgot-form');
+        const forgotEmailInput = document.getElementById('forgot-email');
+        const sendResetBtn = document.getElementById('send-reset-btn');
+
+        document.getElementById('forgot-modal-btn').addEventListener('click', () => showModal(forgotModal));
+        document.getElementById('close-forgot-btn').addEventListener('click', () => hideModal(forgotModal));
         forgotModal.addEventListener('click', (e) => handleModalOverlayClick(e, forgotModal));
 
         forgotForm.addEventListener('submit', async (e) => {
@@ -546,9 +521,8 @@
             sendResetBtn.textContent = 'Enviando...';
 
             try {
-                // Timeout de 10s para enviar correo
                 await raceWithTimeout(sendPasswordResetEmail(auth, email), 10000, "Error de conexión al enviar correo.");
-                showNotification('Enlace enviado a tu correo.', 'success');
+                showNotification('Enlace enviado. Revisa tu bandeja (y spam).', 'success');
                 hideModal(forgotModal);
                 forgotForm.reset();
             } catch (error) {
@@ -559,7 +533,6 @@
                 }
                 showNotification(msg);
             } finally {
-                // Reactivar botón siempre
                 sendResetBtn.disabled = false;
                 sendResetBtn.textContent = 'Enviar enlace';
             }

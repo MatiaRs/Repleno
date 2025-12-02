@@ -92,6 +92,7 @@
             </div>
         </div>
 
+        <!-- PANTALLA ÚNICA DE CARGA -->
         <div id="csv-upload-screen" class="hidden">
             <div class="bento-card max-w-2xl mx-auto text-center border-dashed border-2 border-slate-300 bg-slate-50">
                 <h2 class="text-2xl font-bold text-slate-800">Gestión de Datos</h2>
@@ -122,7 +123,7 @@
         </div>
     </div>
 
-    <!-- Modales -->
+    <!-- MODAL GENÉRICO -->
     <div id="genericModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-[100]">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center transform transition-all scale-100">
             <div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div>
@@ -132,6 +133,7 @@
         </div>
     </div>
 
+    <!-- Modales -->
     <div id="assistantModal" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
         <div class="bento-card w-full max-w-3xl max-h-[90vh] flex flex-col bg-white">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -346,6 +348,10 @@
                 ? `<button id="openAssistantBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold flex items-center justify-center gap-2 relative w-full py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg><span>Consultar IA</span></button>`
                 : `<button disabled class="bg-slate-200 text-slate-400 font-semibold flex items-center justify-center gap-2 w-full py-3 rounded-xl cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg><span>IA Bloqueada (Solo Premium)</span></button>`;
 
+            // Lógica para el título de Ventas (Dinámico)
+            // Se calculará en processAndDisplayData, aquí ponemos un placeholder
+            const salesCardTitle = `<h3 id="sales-period-label" class="text-slate-500 font-medium text-sm">Ventas (Calculando...)</h3>`;
+
             document.getElementById('dashboard-content').innerHTML = `
                 <div class="md:col-span-2 bento-card bg-gradient-to-br from-indigo-500 to-purple-600 text-white" style="animation-delay: 0.1s;">
                     <h3 id="client-name" class="text-2xl font-bold">¡Hola!</h3>
@@ -353,7 +359,7 @@
                 </div>
                 <div class="md:col-span-2 bento-card" style="animation-delay: 0.2s;">
                     <div class="flex items-start justify-between">
-                        <h3 class="text-slate-500 font-medium text-sm">Ventas (3 meses)</h3>
+                        ${salesCardTitle}
                         <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">💰</div>
                     </div>
                     <p id="totalVentas" class="text-4xl font-bold mt-auto">0</p>
@@ -445,7 +451,6 @@
         }
 
         function processAndDisplayData(data) {
-            // Verificación CRÍTICA: Si el dashboard no se ha pintado, no intentar escribir
             if (!document.getElementById('totalVentas')) return;
 
             if (currentUserData && currentUserData.plan === 'gratis' && data.length > 100) {
@@ -456,6 +461,10 @@
             const productWeeklyPattern = {}; 
             const salesByDate = {}; 
             detailedSalesByDate = {}; 
+            
+            // Variables para calcular rango de fechas
+            let minDate = Infinity;
+            let maxDate = -Infinity;
 
             data.forEach(row => {
                 const code = row.codigo_producto;
@@ -473,6 +482,10 @@
                     
                     const date = new Date(row.fecha);
                     if(!isNaN(date)) {
+                        const time = date.getTime();
+                        if (time < minDate) minDate = time;
+                        if (time > maxDate) maxDate = time;
+
                         const dString = date.toISOString().split('T')[0];
                         salesByDate[dString] = (salesByDate[dString] || 0) + (row.precio_unitario * row.cantidad);
                         productWeeklyPattern[code][date.getDay()] += row.cantidad;
@@ -488,6 +501,21 @@
                     stock[code] += row.cantidad;
                 }
             });
+
+            // LÓGICA DE TIEMPO DINÁMICO
+            let timeLabel = "Ventas (Total)";
+            if (minDate !== Infinity && maxDate !== -Infinity) {
+                const diffTime = Math.abs(maxDate - minDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                if (diffDays <= 7) timeLabel = `Ventas (${diffDays} días)`;
+                else if (diffDays <= 60) timeLabel = `Ventas (${Math.round(diffDays/7)} semanas)`;
+                else if (diffDays <= 365) timeLabel = `Ventas (${Math.round(diffDays/30)} meses)`;
+                else timeLabel = `Ventas (${(diffDays/365).toFixed(1)} años)`;
+            }
+            
+            const periodLabel = document.getElementById('sales-period-label');
+            if(periodLabel) periodLabel.textContent = timeLabel;
 
             document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
             document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
@@ -510,7 +538,6 @@
 
             const topProd = Object.entries(salesByProduct).sort((a,b)=>b[1]-a[1])[0];
             const topCode = topProd ? topProd[0] : null;
-            const daysMap = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             
             window.cachedDashboardData = {
                 totalSales: totalVentas,
@@ -825,7 +852,7 @@
         document.getElementById('closePlanModalBtn').onclick = () => document.getElementById('planSuccessModal').classList.add('hidden');
         document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
         
-        // Borrado de Cuenta (Lógica Corregida)
+        // Borrado de Cuenta
         document.getElementById('deleteAccountBtn').onclick = () => document.getElementById('deleteAccountModal').classList.remove('hidden');
         document.getElementById('cancelDeleteBtn').onclick = () => document.getElementById('deleteAccountModal').classList.add('hidden');
         
@@ -834,10 +861,7 @@
             const btn = document.getElementById('confirmDeleteBtn');
             btn.disabled = true; btn.textContent = "Procesando...";
             try {
-                // 1. Desconectar listener para evitar "Bienvenido de nuevo"
                 if (userDocUnsubscribe) userDocUnsubscribe();
-                
-                // 2. Ejecutar borrado
                 const userRef = doc(db, "users", auth.currentUser.uid);
                 const deletionDate = new Date(Date.now() + 30*24*60*60*1000);
                 
@@ -846,10 +870,7 @@
                     10000, "Tiempo agotado."
                 );
                 
-                // 3. Mostrar modal de despedida (Custom)
                 showAlert("Cuenta Programada", "Tu cuenta se eliminará en 30 días. ¡Hasta pronto!", "info");
-                
-                // 4. Salir después de que el usuario cierre el alert
                 setTimeout(async () => {
                     await signOut(auth);
                     window.location.href = getAbsoluteUrl('index.html');
@@ -862,24 +883,18 @@
             }
         };
 
-        // CORREGIDO: Lógica de Restauración y Carga Instantánea
+        // Restauración
         document.getElementById('closeRestoreModalBtn').onclick = () => {
             document.getElementById('restoreAccountModal').classList.add('hidden');
-            
-            // Forzar visualización inmediata
             if (currentUserData) {
                 updatePlanStatus(currentUserData);
-                
-                // Si tenemos ruta de colección, cargamos todo de inmediato
                 if (!!currentUserData.dataCollectionPath || isDemoMode) {
                     showDashboard();
-                    // Importante: No esperar a que fetchAndAnalyze termine para mostrar el esqueleto
                     if (!document.getElementById('dashboard-content').dataset.initialized) {
                         initializeDashboard(currentUserData.dataCollectionPath, currentUserData.clientName || currentUserData.negocio);
                         document.getElementById('dashboard-content').dataset.initialized = "true";
                     }
                 } else {
-                    // Si no tiene datos, mostramos pantalla de carga de archivo
                     showUploadScreen(false);
                 }
             }
@@ -899,19 +914,15 @@
                         sessionStorage.setItem('loggedInUserId', user.uid);
                         currentUserData = newUserData;
 
-                        // Cancelación de Borrado
                         if (newUserData.deletionScheduledAt) {
                             document.getElementById('restoreAccountModal').classList.remove('hidden');
                             document.getElementById('dashboard-loader').classList.add('hidden');
-                            // Limpiar en background
                             if (!isDemoMode) {
-                                updateDoc(userDocRef, { deletionScheduledAt: deleteField(), status: 'active' })
-                                    .catch(err => console.error("Error cancelando borrado:", err));
+                                updateDoc(userDocRef, { deletionScheduledAt: deleteField(), status: 'active' }).catch(err => console.error("Error cancelando borrado:", err));
                             }
-                            return; // Detener hasta que el usuario cierre el modal
+                            return; 
                         }
                         
-                        // Si el modal de restauración está abierto, no hacemos nada más
                         if (!document.getElementById('restoreAccountModal').classList.contains('hidden')) return;
 
                         checkPlanChange(newUserData);
@@ -926,7 +937,6 @@
                                 document.getElementById('dashboard-content').dataset.initialized = "true";
                             }
                         } else {
-                            // Solo mostramos pantalla de carga si NO hay modal de restauración
                             if (document.getElementById('restoreAccountModal').classList.contains('hidden')) {
                                 document.getElementById('dashboard-loader').classList.add('hidden');
                                 document.getElementById('dashboard-content').classList.add('hidden');
