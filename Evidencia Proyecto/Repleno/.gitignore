@@ -1,23 +1,17 @@
-Dependencias de Node.js
+Dependencias del proyecto
 
 node_modules/
 npm-debug.log
 yarn-error.log
 
-Archivos de entorno y secretos (¡MUY IMPORTANTE!)
+Archivos de Entorno y Claves (CRÍTICO: No borrar de aquí)
 
-.env
 serviceAccountKey.json
-
-Archivos temporales de la aplicación
-
+.env
 transactions_temp.json
 
-Archivos del sistema operativo
+Archivos de sistema
 
 .DS_Store
 Thumbs.db
-
-Logs y archivos de debug
-
 *.log
