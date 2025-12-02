@@ -77,8 +77,12 @@
                 <p id="client-name" class="text-sm text-slate-500">¡Bienvenido! Elige tu plan para continuar</p>
             </div>
         </div>
+        <!-- NUEVO: Botón Volver -->
         <div class="flex items-center gap-3 mt-4 md:mt-0">
-            <p class="text-sm text-text-muted">Paso 1 de 2</p>
+            <a href="dashboard.html" class="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors px-4 py-2 rounded-lg border border-slate-200 bg-white hover:border-indigo-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Volver al Dashboard
+            </a>
         </div>
     </header>
 
@@ -91,7 +95,7 @@
         <div
             class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="https://placehold.co/64x64/E0E7FF/4338CA?text=R" alt="Icono Plan Gratuito"
+                <img src="/plan basico 1.png" alt="Icono Plan Gratuito"
                     class="w-16 h-16 rounded-full object-cover"
                     onerror="this.src='https://placehold.co/64x64/E0E7FF/4338CA?text=R'">
             </div>
@@ -140,7 +144,7 @@
             class="card bg-white rounded-xl shadow-lg p-8 w-full max-w-md md:max-w-sm flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl text-center">
 
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="https://placehold.co/64x64/C4B5FD/4338CA?text=R" alt="Icono Plan Básico"
+                <img src="/plan basico.webp" alt="Icono Plan Básico"
                     class="w-16 h-16 rounded-full object-cover"
                     onerror="this.src='https.placehold.co/64x64/C4B5FD/4338CA?text=R'">
             </div>
@@ -195,7 +199,7 @@
             </div>
 
             <div class="h-16 w-16 mb-4 mx-auto flex items-center justify-center">
-                <img src="https://placehold.co/64x64/A5B4FC/4338CA?text=R" alt="Icono Plan Premium"
+                <img src="/plan premium.webp" alt="Icono Plan Premium"
                     class="w-16 h-16 rounded-full object-cover"
                     onerror="this.src='https.placehold.co/64x64/A5B4FC/4338CA?text=R'">
             </div>
@@ -306,12 +310,6 @@
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
                     document.getElementById('client-name').textContent = `¡Bienvenido, ${userData.nombre || 'usuario'}! Elige tu plan`;
-                    
-                    /*
-                    if (userData.subscriptionStatus === 'active') {
-                        window.location.href = getAbsoluteUrl('dashboard.html');
-                    }
-                    */
                 } else {
                     showNotification('Error: No se encontraron datos de usuario.');
                     signOut(auth);
@@ -371,7 +369,7 @@
                         body: JSON.stringify({
                             monto: parseInt(monto, 10),
                             plan: plan,
-                            userId: currentUserId // <-- ¡AÑADIR ESTA LÍNEA!
+                            userId: currentUserId
                         }),
                     });
 

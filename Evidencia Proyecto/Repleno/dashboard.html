@@ -54,6 +54,10 @@
         .plan-days-warning { color: #f59e0b; font-weight: 500; }
         
         .locked-feature { filter: grayscale(1); opacity: 0.7; pointer-events: none; position: relative; }
+        
+        /* Estilos de la Barra de Progreso */
+        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 9999px; height: 8px; margin-top: 1rem; overflow: hidden; }
+        .progress-bar { height: 100%; background-color: var(--accent-primary); width: 0%; transition: width 0.3s ease; border-radius: 9999px; }
     </style>
 </head>
 
@@ -95,9 +99,9 @@
         <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6"></main>
 
         <div id="dashboard-loader" class="text-center py-20">
-             <div class="flex items-center justify-center gap-2 text-slate-500">
-                 <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="var(--accent-primary)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                 <span>Cargando tu panel...</span>
+             <div class="flex flex-col items-center justify-center gap-4 text-slate-500">
+                 <svg class="animate-spin h-8 w-8" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="var(--accent-primary)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                 <span id="loader-text">Cargando tu panel...</span>
              </div>
         </div>
 
@@ -116,12 +120,15 @@
             <div class="bento-card max-w-2xl mx-auto text-center border-dashed border-2 border-slate-300 bg-slate-50">
                 <h2 class="text-2xl font-bold text-slate-800">Gestión de Datos</h2>
                 <p class="text-slate-600 mt-2">Sube tu archivo CSV para analizar o actualizar tu inventario.</p>
+                
                 <div class="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 inline-block">
                     💡 <b>Nota:</b> Los nuevos datos se sumarán a los existentes.
                 </div>
+
                 <div id="upload-limit-warning" class="hidden mt-2 bg-amber-50 text-amber-800 p-2 rounded-lg text-sm border border-amber-100">
                     ⚠️ <b>Plan Gratis:</b> Solo se procesarán las primeras 100 filas de tu archivo.
                 </div>
+
                 <div class="mt-6 flex flex-col items-center justify-center">
                     <label for="csv-file-input" class="cursor-pointer bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl p-8 w-full transition-all shadow-sm group">
                         <div class="flex flex-col items-center">
@@ -132,6 +139,18 @@
                         <input type="file" id="csv-file-input" accept=".csv" class="hidden">
                     </label>
                     <div id="file-name-display" class="mt-4 text-sm font-semibold text-indigo-600 h-5"></div>
+                    
+                    <!-- Barra de Progreso -->
+                    <div id="upload-progress-container" class="hidden w-full mt-4">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1">
+                            <span id="upload-status-text">Procesando...</span>
+                            <span id="upload-percentage">0%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div id="upload-progress-bar" class="progress-bar"></div>
+                        </div>
+                    </div>
+
                     <button id="process-csv-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold w-full py-3 rounded-xl mt-4 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-md" disabled>Subir y Procesar</button>
                     <button id="cancel-upload-btn" class="mt-3 text-slate-500 hover:text-slate-700 text-sm hidden">Cancelar y volver al Dashboard</button>
                 </div>
@@ -155,21 +174,19 @@
         </div>
     </div>
 
-    <!-- Modal de Éxito de Plan (Nuevo) -->
+    <!-- Modal de Éxito de Plan -->
     <div id="planSuccessModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 hidden items-center justify-center p-4 z-[60] fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-50 rounded-full opacity-50"></div>
-            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-50 rounded-full opacity-50"></div>
             <div class="relative z-10">
                 <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div>
                 <h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Bienvenido a tu nuevo plan!</h2>
-                <p class="text-slate-600 mb-6">Gracias por confiar en Repleno. Has actualizado a <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p>
+                <p class="text-slate-600 mb-6">Has actualizado a <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p>
                 <div class="bg-slate-50 rounded-xl p-4 text-left mb-8 border border-slate-100">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Tus nuevos superpoderes:</h4>
                     <ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700"></ul>
                 </div>
-                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">¡Comenzar a explorar!</button>
+                <button id="closePlanModalBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md">¡Comenzar!</button>
             </div>
         </div>
     </div>
@@ -196,6 +213,7 @@
         // DOM Elements
         const dashboardContent = document.getElementById('dashboard-content');
         const dashboardLoader = document.getElementById('dashboard-loader');
+        const loaderText = document.getElementById('loader-text');
         
         const csvUploadScreen = document.getElementById('csv-upload-screen');
         const csvFileInput = document.getElementById('csv-file-input');
@@ -204,6 +222,12 @@
         const uploadLimitWarning = document.getElementById('upload-limit-warning');
         const cancelUploadBtn = document.getElementById('cancel-upload-btn');
         const uploadMoreDataBtn = document.getElementById('uploadMoreDataBtn');
+        
+        // Progress Bar Elements
+        const uploadProgressContainer = document.getElementById('upload-progress-container');
+        const uploadProgressBar = document.getElementById('upload-progress-bar');
+        const uploadStatusText = document.getElementById('upload-status-text');
+        const uploadPercentage = document.getElementById('upload-percentage');
 
         const planNameEl = document.getElementById('plan-name');
         const planDaysEl = document.getElementById('plan-days-remaining');
@@ -217,7 +241,7 @@
         
         let currentUserData = null;
         let salesByDayChart, stockByProductChart;
-        let detailedSalesByDate = {}; // Global para almacenar detalle
+        let detailedSalesByDate = {}; 
         let userDocUnsubscribe = null;
 
         function getAbsoluteUrl(filename) {
@@ -249,6 +273,8 @@
                                 dashboardContent.dataset.initialized = "true";
                             }
                         } else {
+                            dashboardLoader.classList.add('hidden');
+                            dashboardContent.classList.add('hidden');
                             showUploadScreen(false);
                             dashboardContent.dataset.initialized = "";
                         }
@@ -325,6 +351,8 @@
             csvFileInput.value = '';
             fileNameDisplay.textContent = '';
             processCsvBtn.disabled = true;
+            uploadProgressContainer.classList.add('hidden');
+            
             if (currentUserData.plan === 'gratis') uploadLimitWarning.classList.remove('hidden');
             else uploadLimitWarning.classList.add('hidden');
             if (canCancel) cancelUploadBtn.classList.remove('hidden');
@@ -349,11 +377,15 @@
             const file = csvFileInput.files[0];
             if (!file) return;
             processCsvBtn.disabled = true;
-            processCsvBtn.textContent = "Procesando...";
+            processCsvBtn.classList.add('hidden');
+            uploadProgressContainer.classList.remove('hidden');
+
             const reader = new FileReader();
             reader.onload = async (event) => {
                 const csvText = event.target.result;
                 let data = parseCSV(csvText);
+                
+                // OPTIMIZACIÓN CRÍTICA: Cortar datos ANTES de subirlos si es gratis
                 if (currentUserData.plan === 'gratis' && data.length > 100) {
                     data = data.slice(0, 100);
                     alert("⚠️ Plan Gratis: Se han limitado los datos a las primeras 100 filas.");
@@ -368,13 +400,27 @@
                 const userId = auth.currentUser.uid;
                 const path = `business_data/${userId}`;
                 const colRef = collection(db, path, 'transactions');
+                
                 const batchSize = 400;
+                const totalBatches = Math.ceil(data.length / batchSize);
+                
                 for (let i = 0; i < data.length; i += batchSize) {
                     const batch = writeBatch(db);
                     data.slice(i, i + batchSize).forEach(row => batch.set(doc(colRef), row));
                     await batch.commit();
+                    const currentBatch = Math.ceil((i + 1) / batchSize);
+                    const percent = Math.min(Math.round((currentBatch / totalBatches) * 100), 100);
+                    uploadProgressBar.style.width = `${percent}%`;
+                    uploadPercentage.textContent = `${percent}%`;
+                    uploadStatusText.textContent = `Subiendo lote ${currentBatch} de ${totalBatches}...`;
+                    await new Promise(resolve => setTimeout(resolve, 10)); 
                 }
-                await updateDoc(doc(db, "users", userId), { dataCollectionPath: path });
+
+                await updateDoc(doc(db, "users", userId), {
+                    dataCollectionPath: path,
+                    clientName: clientName
+                });
+                
                 alert("¡Datos subidos exitosamente!");
                 csvUploadScreen.classList.add('hidden');
                 dashboardContent.classList.remove('hidden');
@@ -384,7 +430,9 @@
                 alert("Error al subir datos: " + e.message);
             } finally {
                 processCsvBtn.disabled = false;
+                processCsvBtn.classList.remove('hidden');
                 processCsvBtn.textContent = "Subir y Procesar";
+                uploadProgressContainer.classList.add('hidden');
             }
         }
 
@@ -464,6 +512,10 @@
         }
 
         async function fetchAndAnalyze(collectionPath) {
+            if (!dashboardContent.classList.contains('hidden')) {
+               const clientNameEl = document.getElementById('client-name');
+               if(clientNameEl) clientNameEl.innerHTML += ' <span class="text-sm text-indigo-300 animate-pulse">(Actualizando...)</span>';
+            }
             try {
                 const querySnapshot = await getDocs(collection(db, `${collectionPath}/transactions`));
                 const data = querySnapshot.docs.map(doc => doc.data());
@@ -472,15 +524,14 @@
         }
 
         function processAndDisplayData(data) {
-            if (currentUserData.plan === 'gratis' && data.length > 100) {
-                data = data.slice(0, 100);
-            }
-
+            // Aquí NO cortamos de nuevo porque ya se cortó al subir, 
+            // esto permite que la carga sea rápida siempre.
+            
             const stock = {}; const productInfo = {}; const salesByProduct = {}; let totalVentas = 0;
             const weeklySalesPattern = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
             const productWeeklyPattern = {}; 
             const salesByDate = {}; 
-            detailedSalesByDate = {}; // Resetear global
+            detailedSalesByDate = {};
 
             data.forEach(row => {
                 const code = row.codigo_producto;
@@ -503,7 +554,6 @@
                         weeklySalesPattern[date.getDay()] += row.cantidad;
                         productWeeklyPattern[code][date.getDay()] += row.cantidad;
 
-                        // Llenar detalle
                         if (!detailedSalesByDate[dString]) detailedSalesByDate[dString] = [];
                         detailedSalesByDate[dString].push({
                             name: row.descripcion,
@@ -516,51 +566,64 @@
                 }
             });
 
-            document.getElementById('totalVentas').textContent = totalVentas.toLocaleString('es-CL');
-            document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
+            const totalVentasEl = document.getElementById('totalVentas');
+            if(totalVentasEl) totalVentasEl.textContent = totalVentas.toLocaleString('es-CL');
+            const unicosEl = document.getElementById('productosUnicos');
+            if(unicosEl) unicosEl.textContent = Object.keys(stock).length;
             const lowStock = Object.entries(stock).filter(([_,q]) => q<=20);
-            document.getElementById('alertasStock').textContent = lowStock.length;
+            const alertasEl = document.getElementById('alertasStock');
+            if(alertasEl) alertasEl.textContent = lowStock.length;
 
             const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = '';
-            Object.keys(productInfo).slice(0,50).forEach(code => {
-                const tr = document.createElement('tr');
-                tr.className = "border-b hover:bg-slate-50";
-                tr.innerHTML = `<td class="py-2">${productInfo[code].desc}</td><td class="font-bold">${stock[code]}</td><td>$${productInfo[code].price}</td><td>${salesByProduct[code]}</td>`;
-                tbody.appendChild(tr);
-            });
+            if(tbody) {
+                tbody.innerHTML = '';
+                Object.keys(productInfo).slice(0,50).forEach(code => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b hover:bg-slate-50";
+                    tr.innerHTML = `<td class="py-2">${productInfo[code].desc}</td><td class="font-bold">${stock[code]}</td><td>$${productInfo[code].price}</td><td>${salesByProduct[code]}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
 
             updateCharts(salesByDate, stock, productInfo);
 
             const topProd = Object.entries(salesByProduct).sort((a,b)=>b[1]-a[1])[0];
             const topCode = topProd ? topProd[0] : null;
-            
             const daysMap = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             
             window.cachedDashboardData = {
                 totalSales: totalVentas,
                 uniqueProducts: Object.keys(stock).length,
                 lowStockCount: lowStock.length,
-                weeklyPattern: Object.entries(weeklySalesPattern).map(([d, q]) => `${daysMap[d]}: ${q}`),
-                lowStockItems: lowStock.slice(0,5).map(([code, qty]) => ({
-                    name: productInfo[code].desc,
-                    qty: qty,
-                    salesPattern: productWeeklyPattern[code]
-                })),
+                lowStockItems: lowStock.slice(0,10).map(([code, qty]) => {
+                    const info = productInfo[code] || { desc: "Producto Desconocido" };
+                    return {
+                        name: info.desc,
+                        qty: qty,
+                        salesPattern: productWeeklyPattern[code] || {}
+                    };
+                }),
                 topSeller: topProd ? { 
-                    name: productInfo[topCode].desc, 
+                    name: productInfo[topCode]?.desc || "Producto Top", 
                     qty: salesByProduct[topCode],
-                    salesByDay: Object.entries(productWeeklyPattern[topCode]).map(([d,q]) => `${daysMap[d]}: ${q}`)
+                    salesByDay: Object.entries(productWeeklyPattern[topCode] || {}).map(([d,q]) => `${daysMap[d]}: ${q}`)
                 } : null
             };
+            
+            const clientNameEl = document.getElementById('client-name');
+            if(clientNameEl && clientNameEl.innerHTML.includes('Actualizando')) {
+                 clientNameEl.innerHTML = `¡Hola, ${currentUserData.nombre || 'Usuario'}!`;
+            }
         }
 
         function updateCharts(salesDate, stock, info) {
-            const ctx1 = document.getElementById('salesByDayChart').getContext('2d');
+            const ctx1 = document.getElementById('salesByDayChart');
+            if(!ctx1) return; 
+            const ctx1Context = ctx1.getContext('2d');
             const dates = Object.keys(salesDate).sort().slice(-7);
             
             if(salesByDayChart) salesByDayChart.destroy();
-            salesByDayChart = new Chart(ctx1, {
+            salesByDayChart = new Chart(ctx1Context, {
                 type: 'bar',
                 data: {
                     labels: dates,
@@ -578,9 +641,12 @@
                 }
             });
 
-            const ctx2 = document.getElementById('stockByProductChart').getContext('2d');
+            const ctx2 = document.getElementById('stockByProductChart');
+            if(!ctx2) return;
+            const ctx2Context = ctx2.getContext('2d');
+
             if(stockByProductChart) stockByProductChart.destroy();
-            stockByProductChart = new Chart(ctx2, {
+            stockByProductChart = new Chart(ctx2Context, {
                 type: 'doughnut',
                 data: {
                     labels: Object.values(info).slice(0,5).map(i=>i.desc),
@@ -598,7 +664,6 @@
             if (sales.length === 0) {
                 detailContent.innerHTML = '<p class="text-slate-500 col-span-2 text-center py-4">No hay ventas registradas.</p>';
             } else {
-                // Agrupar por producto
                 const summary = sales.reduce((acc, curr) => {
                     if (!acc[curr.name]) acc[curr.name] = { qty: 0, total: 0 };
                     acc[curr.name].qty += curr.qty;
@@ -606,7 +671,6 @@
                     return acc;
                 }, {});
 
-                // Total del día
                 const totalDay = Object.values(summary).reduce((sum, item) => sum + item.total, 0);
 
                 let html = `<div class="col-span-2 bg-indigo-50 p-3 rounded-lg text-center mb-2">
@@ -653,9 +717,21 @@
                     headers: {'Content-Type':'application/json', 'user-id': auth.currentUser.uid},
                     body: JSON.stringify({ resumen: data })
                 });
-                if(!res.ok) throw new Error("Error API");
                 const json = await res.json();
-                content.innerHTML = json.html;
+                
+                if (res.status === 429) {
+                    content.innerHTML = `
+                        <div class="p-6 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                            <div class="text-3xl mb-3">⏳</div>
+                            <h3 class="text-amber-800 font-bold text-lg">IA Ocupada</h3>
+                            <p class="text-amber-700 text-sm mt-2">Hemos alcanzado el límite de consultas.</p>
+                        </div>
+                    `;
+                } else if(!res.ok) {
+                    throw new Error(json.error || "Error API");
+                } else {
+                    content.innerHTML = json.html;
+                }
             } catch(e) {
                 content.innerHTML = '<p class="text-red-500 text-center">Error al consultar IA.</p>';
             }
