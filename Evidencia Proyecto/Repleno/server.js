@@ -5,20 +5,26 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, existsSync, writeFileSync } from 'fs';
-
-// --- FIREBASE ADMIN ---
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
-
-// --- IMPORTAR GEMINI ---
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const { WebpayPlus, IntegrationCommerceCodes, IntegrationApiKeys, Environment, Options } = pkg;
-
-// --- CONFIGURACIÓN DE RUTAS ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// --- SISTEMA ANTI-CRASH (NUEVO) ---
+// Evita que el servidor se apague si Firebase rechaza conexiones por cuota
+process.on('uncaughtException', (err) => {
+    console.error('⚠️ [CRITICAL] Error no capturado:', err.message);
+    // No salimos del proceso, lo mantenemos vivo
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('⚠️ [CRITICAL] Promesa rechazada sin manejo:', reason);
+    // Mantenemos el servidor vivo
+});
 
 // --- 1. INICIALIZACIÓN DE FIREBASE ---
 let db = null;
@@ -30,14 +36,12 @@ function initFirebase() {
         let serviceAccount;
         if (process.env.FIREBASE_SERVICE_ACCOUNT) {
             serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-            console.log("✅ [Firebase] Credenciales cargadas desde Variable de Entorno.");
         } else {
             const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
             if (existsSync(serviceAccountPath)) {
                 serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
-                console.log("✅ [Firebase] Credenciales cargadas desde 'serviceAccountKey.json'.");
             } else {
-                console.warn("⚠️ [Firebase] ADVERTENCIA: No se encontró 'serviceAccountKey.json'.");
+                console.warn("⚠️ No se encontró serviceAccountKey.json");
                 return;
             }
         }
@@ -49,10 +53,10 @@ function initFirebase() {
         db = getFirestore();
         adminAuth = getAuth();
         isFirebaseReady = true;
-        console.log("🔥 [Firebase] Admin SDK: Conectado.");
+        console.log("🔥 Firebase Admin SDK conectado.");
 
     } catch (error) {
-        console.error("❌ [Firebase] Error Fatal:", error.message);
+        console.error("❌ Error Fatal Firebase:", error.message);
     }
 }
 
@@ -67,10 +71,10 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors()); 
 app.use(express.json({ limit: '50mb' })); 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname))); 
 
 // --- 4. TRANSBANK SETUP ---
 const txOptions = new Options(
@@ -130,12 +134,22 @@ async function deleteQueryBatch(dbRef, query, resolve) {
     process.nextTick(() => deleteQueryBatch(dbRef, query, resolve));
 }
 
+// Middleware DB Check
 const requireDB = (req, res, next) => {
     if (!isFirebaseReady || !db) return res.status(503).json({ error: 'DB no disponible' });
     next();
 };
 
-// Limpieza automática
+// Middleware para manejo de errores de Cuota
+const handleQuotaError = (err, res) => {
+    console.error("🔥 Error Firebase:", err.message);
+    if (err.message && err.message.includes('Quota exceeded')) {
+        return res.status(429).json({ error: 'El servidor está saturado por hoy (Cuota Firebase). Intenta mañana.' });
+    }
+    return res.status(500).json({ error: 'Error interno del servidor.' });
+};
+
+// --- TAREA PROGRAMADA ---
 setInterval(async () => {
     if (!isFirebaseReady) return;
     const now = new Date().toISOString();
@@ -145,17 +159,21 @@ setInterval(async () => {
             for (const doc of snapshot.docs) {
                 const uid = doc.id;
                 try {
-                    await adminAuth.deleteUser(uid).catch(() => {});
+                    try { await adminAuth.deleteUser(uid); } catch (authErr) { }
                     await deleteCollection(db, `business_data/${uid}/transactions`, 500);
                     await db.collection('business_data').doc(uid).delete();
                     await db.collection('users').doc(uid).delete();
-                    console.log(`✅ Usuario ${uid} eliminado.`);
-                } catch (err) { console.error(`❌ Error borrando ${uid}:`, err.message); }
+                    console.log(`🗑️ Usuario ${uid} eliminado.`);
+                } catch (err) { console.error(err); }
             }
         }
-    } catch (error) { console.error("Error limpieza:", error.message); }
+    } catch (error) { 
+        // Silenciamos error de cuota en el background para no llenar la consola
+        if(!error.message.includes('Quota')) console.error(error); 
+    }
 }, 3600000); 
 
+// Helper IA
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 async function generateContentWithRetry(prompt) {
     let retries = 0;
@@ -169,7 +187,7 @@ async function generateContentWithRetry(prompt) {
     }
 }
 
-// ================= ENDPOINTS =================
+// ================= ENDPOINTS ADMIN =================
 
 app.delete('/api/admin/users/:uid', requireDB, async (req, res) => {
     try {
@@ -179,73 +197,159 @@ app.delete('/api/admin/users/:uid', requireDB, async (req, res) => {
         await db.collection('business_data').doc(uid).delete();
         await db.collection('users').doc(uid).delete();
         res.json({ success: true });
-    } catch (e) { res.status(500).json({ error: e.message }); }
+    } catch (e) { handleQuotaError(e, res); }
 });
 
-// CONSULTORÍA IA (PROMPT ESTRICTO)
-app.post('/api/consultar-ia', requireDB, async (req, res) => {
+app.get('/api/admin/tickets', requireDB, async (req, res) => {
     try {
-        if (!GEMINI_API_KEY) return res.status(500).json({ error: "Falta API Key" });
         const userId = req.headers['user-id'];
         if (!userId) return res.status(401).json({ error: 'No autorizado' });
 
         const userDoc = await db.collection('users').doc(userId).get();
-        if (!userDoc.exists || userDoc.data().plan !== 'Plan Premium') return res.status(403).json({ html: `<div>Solo Premium</div>` });
+        if (!userDoc.exists || userDoc.data().role !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado' });
+        }
+
+        const snapshot = await db.collection('support_tickets')
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .get();
+
+        const tickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.json({ tickets });
+    } catch (error) {
+        handleQuotaError(error, res);
+    }
+});
+
+app.post('/api/admin/tickets/:id/responder', requireDB, async (req, res) => {
+    try {
+        const ticketId = req.params.id;
+        const { response } = req.body;
+        const userId = req.headers['user-id'];
+
+        if (!userId || !response) return res.status(400).json({ error: "Datos incompletos" });
+
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists || userDoc.data().role !== 'admin') {
+            return res.status(403).json({ error: 'No autorizado' });
+        }
+
+        await db.collection('support_tickets').doc(ticketId).update({
+            response: response,
+            status: 'resolved',
+            respondedAt: new Date().toISOString(),
+            adminResponderId: userId
+        });
+
+        res.json({ success: true, message: "Respuesta enviada." });
+    } catch (error) {
+        handleQuotaError(error, res);
+    }
+});
+
+// ================= ENDPOINTS CLIENTE =================
+
+app.post('/api/crear-ticket', requireDB, async (req, res) => {
+    try {
+        const { ticketData } = req.body;
+        const userId = req.headers['user-id'];
+
+        if (!userId || !ticketData) return res.status(400).json({ error: "Datos incompletos" });
+
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) return res.status(404).json({ error: "Usuario no encontrado" });
+
+        const finalTicketData = {
+            ...ticketData,
+            topic: ticketData.topic || "Consulta General",
+            createdAt: new Date().toISOString(),
+            status: 'open',
+            serverReceived: true
+        };
+
+        await db.collection('support_tickets').add(finalTicketData);
+        res.json({ success: true });
+    } catch (error) {
+        handleQuotaError(error, res);
+    }
+});
+
+app.get('/api/mis-tickets', requireDB, async (req, res) => {
+    try {
+        const userId = req.headers['user-id'];
+        if (!userId) return res.status(401).json({ error: 'No autorizado' });
+
+        const snapshot = await db.collection('support_tickets')
+            .where('userId', '==', userId)
+            .get();
+
+        const tickets = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
+            .slice(0, 10); 
+
+        res.json({ tickets });
+    } catch (error) {
+        handleQuotaError(error, res);
+    }
+});
+
+app.post('/api/consultar-ia', requireDB, async (req, res) => {
+    try {
+        if (!GEMINI_API_KEY) return res.status(500).json({ error: "Falta API Key." });
+        
+        const userId = req.headers['user-id'];
+        if (!userId) return res.status(401).json({ error: 'No autorizado' });
+
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists || userDoc.data().plan !== 'Plan Premium') {
+            return res.status(403).json({ html: `<div class="text-center p-4 text-slate-500">🔒 Función Premium.</div>` });
+        }
 
         const { resumen } = req.body;
-        if (!resumen) return res.status(400).json({ error: 'Faltan datos' });
+        if (!resumen) return res.status(400).json({ error: 'Faltan datos.' });
+
+        // Lógica simplificada IA
+        const daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+        const getPeakDayAndAdvice = (item) => {
+            const pattern = item.salesPattern || {};
+            if (Object.keys(pattern).length === 0) return null;
+            let peakQty = 0, peakDayIndex = -1;
+            Object.entries(pattern).forEach(([d, q]) => { if (q > peakQty) { peakQty = q; peakDayIndex = parseInt(d); } });
+            if (peakDayIndex === -1) return null;
+            return {
+                peakDay: daysOfWeek[peakDayIndex],
+                peakQty: peakQty,
+                suggestedRepurchaseQty: Math.ceil(peakQty * 1.20), 
+                repurchaseDay: daysOfWeek[(peakDayIndex + 7 - 3) % 7],
+                maxOverstockLimit: Math.ceil((Object.values(pattern).reduce((a, b) => a + b, 0) / 7) * 21), 
+            };
+        };
+
+        const topSellerAdvice = resumen.topSeller ? getPeakDayAndAdvice(resumen.topSeller) : null;
+        const criticalItemsAdvice = resumen.lowStockItems.map(item => ({...item, advice: getPeakDayAndAdvice(item)})).filter(item => item.advice);
+        const topSellerAnalysis = resumen.topSeller || {}; 
 
         const prompt = `
-            Eres un Gerente de Logística Experto. Analiza los datos REALES proporcionados.
-            NO inventes datos. Si falta información, indícalo.
-            
-            DATOS: ${JSON.stringify(resumen)}
-
-            Tu respuesta debe ser un HTML (sin markdown) usando estas clases Tailwind. Estructura:
+            Eres "Repleno AI". Genera reporte HTML Tailwind.
+            DATOS: Top: ${JSON.stringify(resumen.topSeller)}, Advice: ${JSON.stringify(topSellerAdvice)}, Critical: ${JSON.stringify(criticalItemsAdvice)}.
             
             <div class="space-y-6 font-inter text-slate-700">
-                <!-- Header -->
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
-                    <h2 class="text-2xl font-bold">📊 Análisis Estratégico</h2>
-                    <p class="opacity-90 mt-1">Basado estrictamente en tus datos actuales.</p>
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+                    <h2 class="text-2xl font-bold">🎯 Estrategia Logística Detallada</h2>
+                    <p class="opacity-90 mt-1 text-indigo-100 text-sm">Instrucciones precisas para optimizar tu inventario.</p>
                 </div>
-
-                <!-- Análisis Producto Estrella -->
                 <div class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm">
-                    <h3 class="font-bold text-indigo-700 mb-2 flex items-center gap-2">🏆 Producto Estrella: [Nombre Real]</h3>
-                    <ul class="text-sm space-y-2">
-                        <li>📦 <b>Ventas Totales:</b> [Cantidad Real] unidades.</li>
-                        <li>📅 <b>Día de Mayor Venta:</b> [Día calculado de los datos, ej: Viernes].</li>
-                        <li>💰 <b>Ingresos Generados:</b> [Calcula: Cantidad * Precio. Si no hay precio, di "No disponible"].</li>
-                        <li>📈 <b>Por qué es estrella:</b> [Breve razón basada en volumen comparado con otros].</li>
-                    </ul>
+                    <h3 class="font-bold text-indigo-700 mb-4">🏆 Producto Estrella: ${resumen.topSeller?.name || 'N/A'}</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div><p class="text-slate-500">Ventas:</p><p class="font-bold">${topSellerAnalysis.qty || 0} un.</p></div>
+                        <div><p class="text-slate-500">Día Peak:</p><p class="font-bold text-red-500">${topSellerAdvice?.peakDay || 'N/A'}</p></div>
+                    </div>
                 </div>
-
-                <!-- Alerta de Stock (CRÍTICO) -->
-                <div class="bg-white p-5 rounded-2xl border border-red-100 shadow-sm">
-                    <h3 class="font-bold text-red-600 mb-2 flex items-center gap-2">🚨 Alerta de Stock</h3>
-                    <!-- Si lowStockCount > 0: -->
-                    <p class="text-sm mb-2">Tienes <b>[lowStockCount]</b> productos con stock crítico:</p>
-                    <ul class="list-disc list-inside text-xs text-slate-600 mb-3">
-                        <li>[Nombre Producto Bajo Stock] (Quedan: [Cantidad])</li>
-                        <!-- Listar máximo 3 -->
-                    </ul>
-                    <!-- Si lowStockCount == 0: -->
-                    <p class="text-sm text-green-600 font-medium">✅ Tu inventario está saludable. No hay alertas críticas.</p>
-                </div>
-
-                <!-- Plan de Reposición (Lógica Pura) -->
-                <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100">
-                    <h3 class="font-bold text-blue-800 mb-2">🚚 Plan de Reabastecimiento</h3>
-                    <p class="text-sm text-slate-700 leading-relaxed">
-                        Para tu producto estrella, el pico de demanda es el <b>[Día Peak]</b>.
-                        Te sugiero comprar el <b>[Día Peak - 3 días]</b> para evitar quiebres.
-                        <br><br>
-                        <b>Compra Sugerida:</b> [Venta Promedio Semanal del producto] unidades.
-                        <br>
-                        <span class="text-xs text-slate-500">Evita el sobre-stock: No superes las [Venta Promedio * 2] unidades si no hay promociones.</span>
-                    </p>
-                </div>
+                ${criticalItemsAdvice.length > 0 ? `<div class="space-y-3">${criticalItemsAdvice.map(i => `
+                    <div class="bg-red-50 p-4 rounded-xl border border-red-100"><p class="font-bold text-red-700">${i.name}</p><p class="text-xs">Pedir: ${i.advice.suggestedRepurchaseQty} un. el ${i.advice.repurchaseDay}</p></div>
+                `).join('')}</div>` : '<div class="bg-green-50 p-4 rounded-xl text-green-700">Inventario saludable.</div>'}
             </div>
         `;
 
@@ -255,10 +359,11 @@ app.post('/api/consultar-ia', requireDB, async (req, res) => {
 
     } catch (error) {
         if (error.message.includes('403')) return res.status(403).json({ error: 'Llave de IA revocada.' });
-        res.status(status).json({ error: 'IA ocupada.' });
+        handleQuotaError(error, res);
     }
 });
 
+// Transbank
 app.post('/crear-transaccion', async (req, res) => {
   try {
     if (!isFirebaseReady) return res.status(503).json({ error: 'Mantenimiento DB' });
@@ -271,25 +376,22 @@ app.post('/crear-transaccion', async (req, res) => {
     const tx = new WebpayPlus.Transaction(txOptions);
     const response = await tx.create(buyOrder, sessionId, monto, returnUrl);
     res.json({ url: response.url, token: response.token });
-  } catch (error) { res.status(500).json({ error: 'Error Webpay' }); }
+  } catch (error) { res.status(500).json({ error: 'Error Transbank.' }); }
 });
 
 app.get('/retorno', async (req, res) => {
   try {
     const { token_ws, TBK_TOKEN } = req.query;
-    if (TBK_TOKEN && !token_ws) return res.redirect(`/retorno.html?status=cancelled`);
-    if (token_ws) {
-      const tx = new WebpayPlus.Transaction(txOptions);
-      const result = await tx.commit(token_ws);
-      const sessionData = obtenerYBorrarTransaccion(result.session_id);
-      if (result.status === 'AUTHORIZED' && result.response_code === 0 && sessionData.userId) {
-        if (isFirebaseReady) await db.collection('users').doc(sessionData.userId).update({ plan: sessionData.plan, planStartDate: new Date().toISOString(), subscriptionStatus: 'active' });
-        const params = new URLSearchParams({ status: 'success', amount: result.amount, plan: sessionData.plan, card: result.card_detail?.card_number || "XXXX", date: result.transaction_date || new Date().toISOString() });
+    if (!token_ws) return res.redirect(`/retorno.html?status=cancelled`);
+    const tx = new WebpayPlus.Transaction(txOptions);
+    const result = await tx.commit(token_ws);
+    const sessionData = obtenerYBorrarTransaccion(result.session_id);
+    if (result.status === 'AUTHORIZED' && sessionData.userId && isFirebaseReady) {
+        await db.collection('users').doc(sessionData.userId).update({ plan: sessionData.plan, planStartDate: new Date().toISOString(), subscriptionStatus: 'active' });
+        const params = new URLSearchParams({ status: 'success', amount: result.amount, plan: sessionData.plan });
         return res.redirect(`/retorno.html?${params.toString()}`);
-      }
-      return res.redirect(`/retorno.html?status=rejected`);
     }
-    res.redirect('/retorno.html?status=invalid');
+    return res.redirect(`/retorno.html?status=rejected`);
   } catch (error) { res.redirect('/retorno.html?status=error'); }
 });
 

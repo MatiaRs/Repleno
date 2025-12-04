@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="icon" href="/icon.png">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repleno - Panel de Administrador</title>
@@ -11,138 +11,142 @@
         :root { --bg-light: #F8FAFC; --bg-card: #FFFFFF; --border-color: #E2E8F0; --accent-primary: #4338CA; --accent-secondary: #7C3AED; --text-dark: #1E293B; --text-muted: #64748B; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 1.5rem; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); }
-        
-        /* Botones */
         .btn-secondary { background-color: white; color: var(--text-muted); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 0.75rem; font-weight: 600; transition: all 0.2s ease; }
         .btn-secondary:hover { background-color: #F1F5F9; color: var(--text-dark); border-color: #CBD5E1; }
-        .btn-danger { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); }
-        .btn-danger:hover { box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3); transform: translateY(-1px); }
-        
-        /* Notificaciones */
-        .notification { position: fixed; top: 24px; right: 24px; padding: 1rem 1.5rem; border-radius: 1rem; color: white; z-index: 100; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
+        .btn-danger { background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; padding: 0.6rem 1.2rem; border-radius: 0.75rem; font-weight: bold; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); transition: all 0.3s; }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3); }
+        .notification { position: fixed; top: 24px; right: 24px; padding: 1rem 1.5rem; border-radius: 1rem; color: white; z-index: 100; transform: translateX(150%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15); display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
         .notification.show { transform: translateX(0); }
         .notification.error { background: #EF4444; }
         .notification.success { background: #10B981; }
-        
         .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Badges */
-        .status-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.025em; }
+        .status-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
         .status-pending-delete { background-color: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
         .status-active { background-color: #F0FDF4; color: #166534; border: 1px solid #DCFCE7; }
-        
+        .status-resolved { background-color: #F0FDF4; color: #15803d; border: 1px solid #DCFCE7; }
+        .status-open { background-color: #FEF9C3; color: #854D0E; border: 1px solid #FEF08A; }
+        .priority-badge { background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 2px 5px rgba(217, 119, 6, 0.3); }
         .live-dot { animation: pulse-green 2s infinite; }
         @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
-        
-        /* Modales */
-        .modal { transition: opacity 0.2s ease-in-out; }
-        .modal-content { transition: transform 0.2s ease-in-out; }
-        .modal-hidden { opacity: 0; pointer-events: none; }
-        .modal-hidden .modal-content { transform: scale(0.95); }
-        .modal-visible { opacity: 1; pointer-events: auto; }
-        .modal-visible .modal-content { transform: scale(1); }
+        .modal { transition: opacity 0.2s ease-in-out; opacity: 0; pointer-events: none; }
+        .modal-content { transition: transform 0.2s ease-in-out; transform: scale(0.95); }
+        .modal.modal-visible { opacity: 1; pointer-events: auto; }
+        .modal.modal-visible .modal-content { transform: scale(1); }
+        .modal-hidden { display: none; }
+        .ticket-card { border: 1px solid #E2E8F0; transition: all 0.3s ease; }
+        .ticket-card.premium { border: 1px solid #C7D2FE; background: linear-gradient(to bottom right, #ffffff, #EEF2FF); box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1); }
+        .ticket-card:hover { transform: translateY(-2px); }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen relative">
+<body class="p-4 md:p-8 min-h-screen relative flex flex-col">
+    <div class="bg-decoration"><div class="blob blob-1 rounded-full"></div><div class="blob blob-2 rounded-full"></div></div>
     <div id="notification-area"></div>
 
-    <div id="admin-panel" class="max-w-7xl mx-auto fade-in">
+    <div id="admin-panel" class="max-w-7xl mx-auto w-full fade-in flex-grow">
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div class="flex items-center gap-4">
-                <div class="bg-white p-2 rounded-2xl shadow-sm border border-indigo-50">
-                    <svg id="replenoLogo" width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" /><stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" /></linearGradient></defs>
-                        <path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                        <path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" />
-                    </svg>
+                <div class="bg-white p-2 rounded-xl shadow-sm border border-white/50">
+                    <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" /><stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" /></linearGradient></defs><path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M45,50 H80 V80 H45 Z" stroke="url(#logoGradient)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M55,60 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" /><path d="M68,55 V70" stroke="url(#logoGradient)" stroke-width="6" fill="none" stroke-linecap="round" /></svg>
                 </div>
                 <div>
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Administración</h1>
-                    <p class="text-slate-500 text-sm font-medium">Control total de la plataforma</p>
+                    <p class="text-slate-500 text-sm font-medium">Panel de Control Central</p>
                 </div>
             </div>
             <button id="logoutBtnAdmin" class="btn-secondary flex items-center gap-2 shadow-sm group">
-                <svg class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                Cerrar Sesión
+                <svg class="w-5 h-5 text-slate-400 group-hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Cerrar Sesión
             </button>
         </header>
         
+        <!-- SECCIÓN TICKETS -->
+        <div class="glass-card mb-8 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-white/50 flex justify-between items-center">
+                 <div>
+                     <h2 class="text-lg font-bold text-indigo-900 flex items-center gap-2"><span class="text-2xl">🎧</span> Soporte & Tickets</h2>
+                     <p class="text-xs text-slate-500 mt-1">Solicitudes de ayuda recientes.</p>
+                 </div>
+                 <div class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">TIEMPO REAL</div>
+            </div>
+            <div class="p-6" id="tickets-container">
+                <div class="text-center py-8 text-slate-400"><p>Cargando tickets...</p></div>
+            </div>
+        </div>
+        
+        <!-- SECCIÓN USUARIOS -->
         <main class="glass-card overflow-hidden">
              <div class="p-6 md:p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/50">
                 <div>
                     <h2 class="text-xl font-bold text-slate-800">Usuarios Registrados</h2>
-                    <p class="text-slate-500 text-sm mt-1">Monitoreo de actividad y gestión de cuentas.</p>
+                    <p class="text-slate-500 text-sm mt-1">Gestión de cuentas y eliminaciones.</p>
                 </div>
                 <div id="live-indicator" class="flex items-center gap-2 text-xs text-green-700 font-bold bg-green-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
-                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full live-dot"></span> SISTEMA ONLINE
+                    <span class="w-2.5 h-2.5 bg-green-500 rounded-full live-dot"></span> CONECTADO
                 </div>
              </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-xs uppercase font-bold tracking-wider">
                         <tr>
                             <th class="p-5 pl-8">Cliente</th>
                             <th class="p-5">Contacto</th>
-                            <th class="p-5">Plan Actual</th>
+                            <th class="p-5">Plan</th>
                             <th class="p-5">Estado</th>
-                            <th class="p-5 pr-8 text-right">Gestión</th>
+                            <th class="p-5 pr-8 text-right">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="user-list-body" class="divide-y divide-slate-100 bg-white">
-                        <!-- Loading State -->
-                        <tr><td colspan="5" class="p-12 text-center text-slate-400"><div class="animate-pulse flex flex-col items-center"><div class="h-2 w-24 bg-slate-200 rounded mb-2"></div><div class="h-2 w-16 bg-slate-100 rounded"></div></div></td></tr>
+                        <tr><td colspan="5" class="p-12 text-center text-slate-400">Conectando...</td></tr>
                     </tbody>
                 </table>
                  <div id="no-users-message" class="hidden p-16 text-center text-slate-400">
                     <div class="text-6xl mb-4 opacity-20">📂</div>
-                    <p class="text-lg font-medium">No hay usuarios registrados aún.</p>
+                    <p class="text-lg font-medium">Base de datos vacía.</p>
                 </div>
             </div>
         </main>
     </div>
     
-    <!-- Modal Confirmación (Diseño Amigable) -->
-    <div id="confirmDeleteModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true">
+    <!-- Modal Confirmación -->
+    <div id="confirmDeleteModal" class="modal fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
         <div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden">
-            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </div>
-            
-            <h3 class="text-2xl font-bold text-slate-900 mb-3">¿Eliminar Usuario?</h3>
-            
+            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-3xl">🗑️</div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-3">¿Eliminación Forzada?</h3>
             <div class="bg-red-50 p-4 rounded-xl border border-red-100 mb-6 text-left">
                 <p id="deleteModalText" class="text-red-800 text-sm leading-relaxed font-medium"></p>
             </div>
-            
             <div class="flex flex-col-reverse md:flex-row justify-center gap-3">
                 <button id="cancelDeleteBtn" class="btn-secondary w-full md:w-auto py-3 px-6">Cancelar</button>
-                <button id="confirmDeleteBtn" class="btn-danger w-full md:w-auto py-3 px-6 rounded-xl font-bold transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                    <span>Sí, eliminar datos</span>
-                </button>
+                <button id="confirmDeleteBtn" class="btn-danger w-full md:w-auto">Sí, borrar todo</button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts Lógicos -->
+    <!-- Modal Respuesta Ticket -->
+    <div id="replyModal" class="modal fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 hidden">
+        <div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 relative">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">💬 Responder Ticket</h3>
+                <button id="closeReplyBtn" class="text-slate-400 hover:text-slate-600">✕</button>
+            </div>
+            <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm">
+                <p class="text-xs text-slate-400 font-bold uppercase mb-1">Consulta del usuario:</p>
+                <p id="ticketPreviewText" class="text-slate-600 italic">...</p>
+            </div>
+            <textarea id="replyText" rows="5" class="w-full p-4 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none shadow-sm" placeholder="Escribe tu respuesta aquí..."></textarea>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="cancelReplyBtn" class="btn-secondary">Cancelar</button>
+                <button id="sendReplyBtn" class="btn-primary bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">Enviar Respuesta</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, deleteDoc, query, where, updateDoc, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8",
-            authDomain: "repleno-app.firebaseapp.com",
-            projectId: "repleno-app",
-            storageBucket: "repleno-app.firebasestorage.app",
-            messagingSenderId: "705634142025",
-            appId: "1:705634142025:web:206f1a905f41ad79143c98",
-            measurementId: "G-FLTS8BFB46"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8", authDomain: "repleno-app.firebaseapp.com", projectId: "repleno-app", storageBucket: "repleno-app.firebasestorage.app", messagingSenderId: "705634142025", appId: "1:705634142025:web:206f1a905f41ad79143c98", measurementId: "G-FLTS8BFB46" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -151,184 +155,276 @@
         const userListBody = document.getElementById('user-list-body');
         const noUsersMessage = document.getElementById('no-users-message');
         const notificationArea = document.getElementById('notification-area');
+        
+        // Modals
         const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const replyModal = document.getElementById('replyModal');
+        
+        // Buttons & Elements
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         const deleteModalText = document.getElementById('deleteModalText');
         const liveIndicator = document.getElementById('live-indicator');
+        const ticketsContainer = document.getElementById('tickets-container');
+        
+        const replyText = document.getElementById('replyText');
+        const ticketPreviewText = document.getElementById('ticketPreviewText');
+        const sendReplyBtn = document.getElementById('sendReplyBtn');
+        const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+        const closeReplyBtn = document.getElementById('closeReplyBtn');
         
         let userToDelete = null;
-        let usersUnsubscribe = null; 
+        let usersUnsubscribe = null;
+        let ticketsInterval = null;
+        let currentTicketId = null;
 
-        // Helpers UI
+        // DICCIONARIO DE TEMAS PARA TÍTULOS LEGIBLES
+        const topicMap = {
+            'ia': '✨ Inteligencia Artificial',
+            'data': '📊 Datos de Empresa',
+            'account': '💳 Cuenta y Pagos',
+            'other': '📬 Otro asunto'
+        };
+
         function showNotification(message, type = 'error') {
             const notif = document.createElement('div');
-            notif.className = `notification ${type} show`;
+            notif.className = `notification ${type} show flex items-center gap-3`;
             const icon = type === 'success' ? '✅' : '⚠️';
-            notif.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+            notif.innerHTML = `${icon} <span class="font-medium">${message}</span>`;
             notificationArea.appendChild(notif);
             setTimeout(() => { notif.classList.remove('show'); setTimeout(() => notif.remove(), 500); }, 3500);
         }
 
-        function showModal(modal) { if(modal) { modal.classList.remove('modal-hidden'); modal.classList.add('modal-visible'); modal.setAttribute('aria-hidden', 'false'); } }
-        function hideModal(modal) { if(modal) { modal.classList.add('modal-hidden'); modal.classList.remove('modal-visible'); modal.setAttribute('aria-hidden', 'true'); } }
-        function handleModalOverlayClick(e, modal) { if (e.target === modal) hideModal(modal); }
+        function showModal(modal) { 
+            if(modal) {
+                modal.classList.remove('hidden'); 
+                modal.classList.remove('modal-hidden'); 
+                modal.classList.add('modal-visible'); 
+            }
+        }
         
-        function raceWithTimeout(promise, ms, errorMessage) {
-            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(errorMessage)), ms));
-            return Promise.race([promise, timeout]);
+        function hideModal(modal) { 
+            if(modal) {
+                modal.classList.add('modal-hidden'); 
+                modal.classList.remove('modal-visible'); 
+                setTimeout(() => modal.classList.add('hidden'), 200); // Wait for transition
+            }
         }
+        
+        function raceWithTimeout(promise, ms, errorMessage) { return Promise.race([promise, new Promise((_, r) => setTimeout(() => r(new Error(errorMessage)), ms))]); }
+        function getAbsoluteUrl(f) { return `${window.location.origin.endsWith('/') ? window.location.origin.slice(0,-1) : window.location.origin}/${f}`; }
 
-        function getAbsoluteUrl(path) {
-            const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-            const origin = window.location.origin.endsWith('/') ? window.location.origin.slice(0, -1) : window.location.origin;
-            return `${origin}/${cleanPath}`;
-        }
-
-        // Auth Check
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const userRef = doc(db, "users", user.uid);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists() && userSnap.data().role === 'admin') {
-                        initRealtimeUsers(); 
+                    const userDoc = await raceWithTimeout(getDoc(doc(db, "users", user.uid)), 10000, "Error conexión.");
+                    if (userDoc.exists() && userDoc.data().role === 'admin') {
+                        initRealtimeUsers();
+                        fetchTickets(); 
+                        ticketsInterval = setInterval(fetchTickets, 15000); 
                     } else {
-                        showNotification('Acceso solo para administradores.', 'error');
+                        showNotification('Acceso Denegado.', 'error');
                         setTimeout(handleLogout, 1500);
                     }
-                } catch (e) {
-                    console.error("Auth Check Error:", e);
-                    showNotification("Error verificando permisos.", "error");
-                }
-            } else {
-                window.location.href = getAbsoluteUrl('index.html');
-            }
+                } catch (e) { showNotification(e.message, "error"); setTimeout(handleLogout, 2000); }
+            } else { window.location.href = getAbsoluteUrl('index.html'); }
         });
         
         function handleLogout() {
             if (usersUnsubscribe) usersUnsubscribe();
-            signOut(auth).then(() => {
-                sessionStorage.removeItem('loggedInUserId');
-                window.location.href = getAbsoluteUrl('index.html');
-            });
+            if (ticketsInterval) clearInterval(ticketsInterval);
+            signOut(auth).then(() => { sessionStorage.removeItem('loggedInUserId'); window.location.href = getAbsoluteUrl('index.html'); });
         }
 
-        // Realtime Logic
-        function initRealtimeUsers() {
-            const usersQuery = query(collection(db, "users"), where("role", "==", "client"));
-            
-            usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
-                userListBody.innerHTML = '';
-                if (snapshot.empty) {
-                    noUsersMessage.classList.remove('hidden');
-                    userListBody.parentElement.classList.add('hidden');
+        // --- TICKETS (MODO FETCH ROBUSTO) ---
+        async function fetchTickets() {
+            if(!ticketsContainer) return;
+            try {
+                const res = await fetch('/api/admin/tickets', {
+                    headers: { 'user-id': auth.currentUser.uid }
+                });
+                
+                if(!res.ok) throw new Error("Error cargando tickets");
+                const { tickets } = await res.json();
+
+                ticketsContainer.innerHTML = '';
+                if(!tickets || tickets.length === 0) {
+                    ticketsContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">No hay tickets pendientes.</div>';
                     return;
                 }
-                noUsersMessage.classList.add('hidden');
-                userListBody.parentElement.classList.remove('hidden');
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+                
+                tickets.forEach(ticket => {
+                    const isPremium = ticket.plan === 'Plan Premium';
+                    const isResolved = ticket.status === 'resolved';
+                    const date = new Date(ticket.createdAt).toLocaleDateString('es-CL', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+                    
+                    // Usar el mapa de temas para un título legible
+                    const displayTopic = topicMap[ticket.topic] || ticket.topic || 'Consulta General';
+
+                    const card = document.createElement('div');
+                    const borderClass = isResolved ? 'border-green-200 bg-green-50/30' : (isPremium ? 'border-indigo-300 shadow-indigo-100 ring-1 ring-indigo-100' : 'border-slate-200');
+                    const statusBadge = isResolved 
+                        ? '<span class="status-badge status-resolved">Resuelto</span>' 
+                        : '<span class="status-badge status-open">Abierto</span>';
+
+                    card.className = `p-5 rounded-2xl border ${borderClass} shadow-sm hover:shadow-md transition-all relative ticket-card ${isPremium ? 'premium' : ''} bg-white`;
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded-md border border-slate-200">${displayTopic}</span>
+                            <div class="flex gap-2">
+                                ${isPremium ? '<span class="priority-badge">★</span>' : ''}
+                                ${statusBadge}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="font-bold text-slate-800 text-sm">${ticket.userName}</h4>
+                            <p class="text-xs text-slate-400">${ticket.userEmail}</p>
+                        </div>
+                        <p class="text-slate-600 text-sm bg-white/60 p-3 rounded-xl border border-slate-100 mb-3 italic leading-relaxed text-ellipsis overflow-hidden line-clamp-3">"${ticket.description}"</p>
+                        ${ticket.response ? `<div class="bg-green-100/50 p-2 rounded-lg mb-3 text-xs text-green-800 border border-green-100"><b>Respuesta:</b> ${ticket.response}</div>` : ''}
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                            <span class="text-xs text-slate-400 font-medium">${date}</span>
+                            ${!isResolved ? `<button data-id="${ticket.id}" data-desc="${ticket.description}" class="reply-btn text-xs text-indigo-600 font-bold hover:text-indigo-800 px-3 py-1.5 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors cursor-pointer">Responder</button>` : ''}
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                ticketsContainer.appendChild(grid);
+            } catch(e) {
+                console.error("Error fetching tickets:", e);
+            }
+        }
+
+        // DETECCIÓN DE CLICK PARA RESPONDER (ROBUSTA)
+        ticketsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reply-btn'); // Busca el botón aunque clickees un icono dentro
+            if(btn) {
+                currentTicketId = btn.dataset.id;
+                ticketPreviewText.textContent = `"${btn.dataset.desc}"`;
+                replyText.value = ''; 
+                showModal(replyModal);
+            }
+        });
+
+        // ENVÍO DE RESPUESTA
+        sendReplyBtn.addEventListener('click', async () => {
+            if(!currentTicketId || !replyText.value.trim()) {
+                showNotification('Escribe una respuesta.', 'error');
+                return;
+            }
+            
+            const originalText = sendReplyBtn.textContent;
+            sendReplyBtn.textContent = 'Enviando...';
+            sendReplyBtn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/admin/tickets/${currentTicketId}/responder`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'user-id': auth.currentUser.uid 
+                    },
+                    body: JSON.stringify({ response: replyText.value })
+                });
+
+                if(res.ok) {
+                    showNotification('Respuesta enviada correctamente.', 'success');
+                    hideModal(replyModal);
+                    fetchTickets(); // Actualizar lista inmediatamente
+                } else {
+                    throw new Error('Error del servidor');
+                }
+            } catch(e) {
+                showNotification('No se pudo enviar la respuesta.', 'error');
+            } finally {
+                sendReplyBtn.textContent = originalText;
+                sendReplyBtn.disabled = false;
+            }
+        });
+
+        [cancelReplyBtn, closeReplyBtn].forEach(btn => btn.addEventListener('click', () => hideModal(replyModal)));
+
+        // --- USUARIOS ---
+        function initRealtimeUsers() {
+            if(!userListBody) return; 
+            const usersQuery = query(collection(db, "users"), where("role", "==", "client"));
+            usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
+                userListBody.innerHTML = '';
+                if (snapshot.empty) { noUsersMessage.classList.remove('hidden'); userListBody.parentElement.classList.add('hidden'); return; }
+                noUsersMessage.classList.add('hidden'); userListBody.parentElement.classList.remove('hidden');
 
                 const users = [];
                 snapshot.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
-
-                // Ordenar: Prioridad a borrados pendientes
                 users.sort((a, b) => {
-                    const aPending = !!a.deletionScheduledAt;
-                    const bPending = !!b.deletionScheduledAt;
-                    if (aPending && !bPending) return -1; 
-                    if (!aPending && bPending) return 1;  
+                    if (!!a.deletionScheduledAt !== !!b.deletionScheduledAt) return !!a.deletionScheduledAt ? -1 : 1;
                     return (a.nombre || "").localeCompare(b.nombre || ""); 
                 });
 
                 users.forEach(user => {
                     const displayName = user.nombre ? `${user.nombre} ${user.apellido}` : (user.username || 'Sin nombre');
                     let statusHtml = `<span class="status-badge status-active">Activo</span>`;
-                    let rowClass = 'hover:bg-slate-50/80 transition-colors duration-150 group border-b last:border-0 border-slate-50';
+                    let rowClass = 'hover:bg-slate-50/80 transition-colors duration-150 group border-b border-slate-50 last:border-0';
 
                     if (user.deletionScheduledAt) {
-                        let deletionDate = user.deletionScheduledAt.toDate ? user.deletionScheduledAt.toDate() : new Date(user.deletionScheduledAt);
-                        const diffDays = Math.max(0, Math.ceil((deletionDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))); 
-                        
+                        let dDate = user.deletionScheduledAt.toDate ? user.deletionScheduledAt.toDate() : new Date(user.deletionScheduledAt);
+                        const diffDays = Math.max(0, Math.ceil((dDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))); 
                         if (diffDays > 0) {
-                             statusHtml = `<span class="status-badge status-pending-delete">⏳ Se borra en ${diffDays} días</span>`;
-                             rowClass = 'bg-red-50/40 hover:bg-red-50 transition-colors duration-150';
+                             statusHtml = `<span class="status-badge status-pending-delete">⏳ Borra en ${diffDays} días</span>`;
+                             rowClass = 'bg-red-50/40 hover:bg-red-50';
                         } else {
-                             statusHtml = `<span class="status-badge status-pending-delete">⚠️ Por borrar hoy</span>`;
-                             rowClass = 'bg-red-50 hover:bg-red-100 transition-colors duration-150';
+                             statusHtml = `<span class="status-badge status-pending-delete">⚠️ Borrar Hoy</span>`;
+                             rowClass = 'bg-red-100/50';
                         }
                     }
 
-                    const row = document.createElement('tr');
-                    row.className = rowClass;
-                    row.innerHTML = `
-                        <td class="p-5 pl-8 font-bold text-slate-800">
-                            <div class="flex flex-col">
-                                <span class="group-hover:text-indigo-600 transition-colors">${displayName}</span>
-                                <span class="text-xs text-slate-400 font-normal mt-0.5 tracking-wide">${user.rut || 'Sin RUT'}</span>
-                            </div>
-                        </td>
-                        <td class="p-5 text-slate-600 text-sm font-medium">${user.email || '-'}</td>
-                        <td class="p-5"><span class="bg-indigo-50 text-indigo-700 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wide uppercase border border-indigo-100">${user.plan || 'Sin plan'}</span></td>
-                        <td class="p-5">${statusHtml}</td>
-                        <td class="p-5 pr-8 text-right">
-                            <button data-id="${user.id}" data-username="${displayName}" class="delete-btn text-slate-400 hover:text-red-600 hover:bg-red-50 p-2.5 rounded-xl transition-all transform hover:scale-105 border border-transparent hover:border-red-100 shadow-sm" title="Eliminar cuenta">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </td>
-                    `;
-                    userListBody.appendChild(row);
+                    userListBody.innerHTML += `
+                        <tr class="${rowClass}">
+                            <td class="p-5 pl-8 font-bold text-slate-800"><div class="flex flex-col"><span>${displayName}</span><span class="text-xs text-slate-400 font-normal mt-0.5 tracking-wide">${user.rut || ''}</span></div></td>
+                            <td class="p-5 text-slate-600 text-sm font-medium">${user.email || '-'}</td>
+                            <td class="p-5"><span class="bg-indigo-50 text-indigo-700 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wide uppercase border border-indigo-100">${user.plan || 'Sin plan'}</span></td>
+                            <td class="p-5">${statusHtml}</td>
+                            <td class="p-5 pr-8 text-right">
+                                <button data-id="${user.id}" data-username="${displayName}" class="delete-btn text-slate-400 hover:text-red-600 hover:bg-red-50 p-2.5 rounded-xl transition-all transform hover:scale-105 border border-transparent hover:border-red-100 shadow-sm" title="Eliminar cuenta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                            </td>
+                        </tr>`;
                 });
             }, (error) => {
                 console.error("Error:", error);
                 liveIndicator.className = "flex items-center gap-2 text-xs text-red-700 font-bold bg-red-50 px-3 py-1.5 rounded-full border border-red-200";
                 liveIndicator.innerHTML = '<span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span> DESCONECTADO';
-                showNotification('Conexión perdida.', 'error');
             });
         }
         
         function openDeleteModal(userId, username) {
             userToDelete = { userId, username };
-            deleteModalText.innerHTML = `Vas a eliminar definitivamente a <b class="text-slate-900">${username}</b>. <br><br>Esta acción borrará su historial, inventario y acceso de inmediato. <b>No se puede deshacer.</b>`;
+            if(deleteModalText) deleteModalText.innerHTML = `Estás a punto de eliminar permanentemente a <b class="text-slate-900">${username}</b>.<br><br>Esta acción borrará su acceso, historial y datos. <b>No se puede deshacer.</b>`;
             showModal(confirmDeleteModal);
         }
 
         async function confirmDelete() {
             if (!userToDelete) return;
-            const originalContent = confirmDeleteBtn.innerHTML;
-            confirmDeleteBtn.disabled = true;
-            confirmDeleteBtn.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-            
+            const original = confirmDeleteBtn.innerHTML;
+            confirmDeleteBtn.disabled = true; confirmDeleteBtn.innerHTML = '...';
             try {
-                const response = await raceWithTimeout(
-                    fetch(`/api/admin/users/${userToDelete.userId}`, { method: 'DELETE' }),
-                    15000, "El servidor tardó demasiado."
-                );
-
-                if (response.ok) {
-                    showNotification(`Usuario eliminado con éxito.`, 'success');
-                    hideModal(confirmDeleteModal);
-                } else {
-                    const data = await response.json();
-                    throw new Error(data.error || 'Error del servidor');
-                }
-            } catch(error) {
-                console.error(error);
-                showNotification(error.message, 'error');
-            } finally {
-                confirmDeleteBtn.disabled = false;
-                confirmDeleteBtn.innerHTML = originalContent;
-            }
+                const res = await raceWithTimeout(fetch(`/api/admin/users/${userToDelete.userId}`, { method: 'DELETE' }), 15000, "Timeout.");
+                if (res.ok) { showNotification(`Usuario eliminado.`, 'success'); hideModal(confirmDeleteModal); } 
+                else throw new Error((await res.json()).error || 'Error servidor');
+            } catch(e) { showNotification(e.message, 'error'); } 
+            finally { confirmDeleteBtn.disabled = false; confirmDeleteBtn.innerHTML = original; }
         }
 
-        // Event Listeners
-        logoutBtnAdmin.addEventListener('click', handleLogout);
-        userListBody.addEventListener('click', (e) => {
+        if(logoutBtnAdmin) logoutBtnAdmin.addEventListener('click', handleLogout);
+        
+        if(userListBody) userListBody.addEventListener('click', (e) => {
             const btn = e.target.closest('.delete-btn');
             if (btn) openDeleteModal(btn.dataset.id, btn.dataset.username);
         });
-        cancelDeleteBtn.addEventListener('click', () => hideModal(confirmDeleteModal));
-        confirmDeleteBtn.addEventListener('click', confirmDelete);
-        confirmDeleteModal.addEventListener('click', (e) => handleModalOverlayClick(e, confirmDeleteModal));
+        
+        if(cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', () => hideModal(confirmDeleteModal));
+        if(confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDelete);
     </script>
 </body>
 </html>

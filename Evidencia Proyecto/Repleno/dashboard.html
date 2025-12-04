@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%237C3AED;stop-opacity:1' /><stop offset='100%' style='stop-color:%234338CA;stop-opacity:1' /></linearGradient></defs><path d='M20,80 V40 C20,25 30,20 45,20 H70' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M45,50 H80 V80 H45 Z' stroke='url(%23g)' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round' /><path d='M55,60 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /><path d='M68,55 V70' stroke='url(%23g)' stroke-width='6' fill='none' stroke-linecap='round' /></svg>">
     <meta charset="UTF-8">
@@ -37,34 +36,38 @@
         .demo-badge { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); background: #FFFBEB; color: #D97706; padding: 0.5rem 1.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; border: 1px solid #FCD34D; z-index: 100; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2); letter-spacing: 0.05em; text-transform: uppercase; }
         .table-row { transition: background-color 0.2s; }
         .table-row:hover { background-color: rgba(241, 245, 249, 0.5); }
-        .modal { transition: opacity 0.2s ease-in-out; }
-        .modal-content { transition: transform 0.2s ease-in-out; }
-        .modal-hidden { opacity: 0; pointer-events: none; }
-        .modal-hidden .modal-content { transform: scale(0.95); }
-        .modal-visible { opacity: 1; pointer-events: auto; }
-        .modal-visible .modal-content { transform: scale(1); }
+        .modal { transition: opacity 0.2s ease-in-out; opacity: 0; pointer-events: none; }
+        .modal-content { transition: transform 0.2s ease-in-out; transform: scale(0.95); }
+        .modal.modal-visible { opacity: 1; pointer-events: auto; }
+        .modal.modal-visible .modal-content { transform: scale(1); }
+        .modal-hidden { display: none; }
         .progress-bar-bg { background: #E2E8F0; border-radius: 999px; overflow: hidden; height: 0.5rem; }
         .progress-bar-fill { background: linear-gradient(90deg, #4F46E5, #7C3AED); height: 100%; width: 0%; transition: width 0.4s ease; }
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 20px; }
     </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
     <div class="bg-decoration"><div class="blob blob-1 rounded-full"></div><div class="blob blob-2 rounded-full"></div></div>
     <div id="notification-area"></div>
-    <div id="demo-indicator" class="demo-badge hidden">⚠️ Modo Demostración</div>
+    
+    <div id="demo-indicator" class="demo-badge hidden">⚠️ Conexión Bloqueada (Modo Demo)</div>
 
-    <!-- Navbar -->
     <nav class="w-full max-w-7xl mx-auto p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 z-10">
         <div class="flex items-center gap-3">
             <div class="bg-white p-2 rounded-xl shadow-sm"><svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="navLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" /><stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" /></linearGradient></defs><path d="M20,80 V40 C20,25 30,20 45,20 H70" stroke="url(#navLogoGrad)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M45,50 H80 V80 H45 Z" stroke="url(#navLogoGrad)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M55,60 V70" stroke="url(#navLogoGrad)" stroke-width="6" fill="none" stroke-linecap="round" /><path d="M68,55 V70" stroke="url(#navLogoGrad)" stroke-width="6" fill="none" stroke-linecap="round" /></svg></div>
             <span class="text-xl font-bold text-slate-800 tracking-tight">Repleno</span>
         </div>
+
         <div class="flex items-center gap-3 bg-white/60 backdrop-blur-md p-1.5 rounded-2xl border border-white shadow-sm">
              <div class="flex items-center gap-3 px-3 border-r border-slate-200 pr-4">
                 <div class="text-right"><p id="plan-name" class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Cargando...</p><p id="plan-days-remaining" class="text-[10px] text-slate-500 font-medium">...</p></div>
                 <a href="ejemplo.html" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 p-2 rounded-lg transition-colors" title="Cambiar Plan"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></a>
              </div>
              <div class="flex items-center gap-1">
+                 <button id="openSupportBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Ayuda y Soporte"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></button>
                  <button id="uploadMoreDataBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Subir CSV"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></button>
                  <button id="deleteAccountBtn" class="btn-danger-soft p-2 rounded-lg" title="Eliminar Cuenta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                  <button id="logoutBtnUser" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100 transition-colors" title="Salir"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
@@ -74,89 +77,11 @@
 
     <div class="w-full max-w-7xl mx-auto p-4 md:p-6 flex-grow">
         <div id="dashboard-loader" class="flex flex-col items-center justify-center py-20 text-slate-400">
-            <svg class="animate-spin h-10 w-10 mb-4 text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-sm font-medium">Cargando tu negocio...</span>
+            <svg class="animate-spin h-10 w-10 mb-4 text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span class="text-sm font-medium">Cargando tu negocio...</span>
         </div>
         
-        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6 pb-20">
-            
-            <!-- 1. Tarjeta de Bienvenida -->
-            <div class="md:col-span-2 glass-card bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 fade-in" style="animation-delay: 0.1s;">
-                <h3 id="client-name" class="text-2xl font-bold tracking-tight mb-1">¡Hola! 👋</h3>
-                <p class="text-indigo-100 text-sm opacity-90">Aquí tienes el resumen de tu negocio.</p>
-            </div>
-
-            <!-- 2. Ventas Totales -->
-            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.2s;">
-                <div class="flex justify-between items-start mb-4">
-                    <h3 id="sales-period-label" class="text-slate-400 font-bold text-xs uppercase tracking-wider">Ventas Totales</h3>
-                    <div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg">💰</div>
-                </div>
-                <p id="totalVentas" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
-            </div>
-
-            <!-- 3. Productos Únicos -->
-            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.3s;">
-                <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider">Productos</h3>
-                    <div class="bg-purple-50 text-purple-600 p-2 rounded-lg">📦</div>
-                </div>
-                <p id="productosUnicos" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
-            </div>
-
-            <!-- 4. Tabla de Inventario -->
-            <div class="md:col-span-4 md:row-span-2 glass-card p-6 fade-in" style="animation-delay: 0.4s;">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Inventario General</h3>
-                <div class="overflow-y-auto flex-grow h-64 md:h-auto scrollbar-thin">
-                    <table class="w-full text-sm text-left text-slate-600">
-                        <thead class="text-xs text-slate-400 uppercase bg-slate-50/50 sticky top-0">
-                            <tr>
-                                <th class="px-4 py-3 rounded-l-lg">Producto</th>
-                                <th class="px-4 py-3">Stock</th>
-                                <th class="px-4 py-3">Precio</th>
-                                <th class="px-4 py-3 rounded-r-lg">Ventas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="product-table-body">
-                            <tr class="text-center"><td colspan="4" class="py-8 text-slate-400">Cargando datos...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 5. Alertas de Stock -->
-            <div class="md:col-span-2 glass-card p-6 border-l-4 border-amber-400 fade-in" style="animation-delay: 0.5s;">
-                <h3 class="text-amber-600 font-bold text-sm uppercase tracking-wider mb-1">Stock Bajo</h3>
-                <p id="alertasStock" class="text-4xl font-extrabold text-slate-800">0</p>
-                <p class="text-xs text-slate-400 mt-2">Productos requieren atención</p>
-            </div>
-            
-            <!-- 6. Tarjeta IA -->
-            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.6s;">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">✨</div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">Asistente IA</h3>
-                        <p class="text-xs text-slate-400">Análisis inteligente</p>
-                    </div>
-                </div>
-                <div id="ai-button-container" class="mt-auto">
-                    <!-- Button injected here -->
-                </div>
-            </div>
-
-            <!-- 7. Gráfico Ventas -->
-            <div class="md:col-span-4 glass-card p-6 fade-in" style="animation-delay: 0.7s;">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Tendencia de Ventas</h3>
-                <div class="relative h-64 w-full"><canvas id="salesByDayChart"></canvas></div>
-            </div>
-
-            <!-- 8. Gráfico Composición -->
-            <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.8s;">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">Composición</h3>
-                <div class="relative h-48 w-full flex justify-center"><canvas id="stockByProductChart"></canvas></div>
-            </div>
-
-        </main>
+        <main id="dashboard-content" class="hidden grid grid-cols-1 md:grid-cols-6 gap-6 pb-20"></main>
 
         <div id="csv-upload-screen" class="hidden fade-in">
             <div class="glass-card max-w-2xl mx-auto text-center p-10 border-dashed border-2 border-slate-300 bg-white/50">
@@ -181,16 +106,35 @@
     </div>
 
     <!-- MODALES -->
-    <div id="genericModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center"><div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div><h3 id="genericModalTitle" class="text-xl font-bold text-slate-900 mb-2">Mensaje</h3><p id="genericModalMessage" class="text-slate-600 text-sm mb-6 leading-relaxed">...</p><button id="genericModalBtn" class="btn-primary w-full py-2.5 rounded-xl font-bold text-sm">Entendido</button></div></div>
-    <div id="assistantModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-hidden="true"><div class="modal-content glass-card w-full max-w-3xl max-h-[85vh] flex flex-col bg-white shadow-2xl border-0"><div class="flex justify-between items-center p-5 border-b border-slate-100"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><h2 class="text-lg font-bold text-slate-800">Repleno AI</h2></div><button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-50 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="assistantModalContent" class="overflow-y-auto p-6 flex-grow bg-slate-50/50"></div></div></div>
+    <div id="genericModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 text-center"><div id="genericModalIcon" class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl bg-indigo-100 text-indigo-600">ℹ️</div><h3 id="genericModalTitle" class="text-xl font-bold text-slate-900 mb-2">Mensaje</h3><p id="genericModalMessage" class="text-slate-600 text-sm mb-6 leading-relaxed">...</p><button id="genericModalBtn" class="btn-primary w-full py-2.5 rounded-xl font-bold text-sm">Entendido</button></div></div>
+    
+    <div id="assistantModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="modal-content glass-card w-full max-w-3xl max-h-[85vh] flex flex-col bg-white shadow-2xl border-0"><div class="flex justify-between items-center p-5 border-b border-slate-100"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><h2 class="text-lg font-bold text-slate-800">Repleno AI</h2></div><button id="closeAssistantBtn" class="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-50 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="assistantModalContent" class="overflow-y-auto p-6 flex-grow bg-slate-50/50"></div></div></div>
+    
     <div id="daily-detail-section" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 z-40 transition-all duration-500 translate-y-full opacity-0 pointer-events-none"><div class="glass-card p-6 shadow-2xl border-indigo-100 bg-white/95"><div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3"><h3 id="detail-title" class="text-lg font-bold text-slate-800">Detalle</h3><button id="close-detail-btn" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div><div id="detail-content" class="max-h-60 overflow-y-auto pr-2"></div></div></div>
-    <div id="planSuccessModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-600"></div><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Mejoraste tu plan!</h2><p class="text-slate-600 mb-6">Ahora disfrutas de <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p><div class="bg-slate-50 rounded-xl p-5 text-left mb-6 border border-slate-100"><ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700 font-medium"></ul></div><button id="closePlanModalBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">¡Genial!</button></div></div>
-    <div id="deleteAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[70] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center"><div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">⚠️</div><h3 class="text-xl font-bold text-slate-900 mb-2">¿Eliminar Cuenta?</h3><p class="text-slate-600 text-sm mb-8 leading-relaxed">Esto programará el borrado de todos tus datos en <b>30 días</b>. <br>Si cambias de opinión, solo inicia sesión de nuevo.</p><div class="flex gap-3"><button id="cancelDeleteBtn" class="btn-white w-full py-3 rounded-xl font-bold">Cancelar</button><button id="confirmDeleteBtn" class="btn-danger-soft w-full py-3 rounded-xl font-bold border-none bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200">Sí, eliminar</button></div></div></div>
-    <div id="restoreAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md flex items-center justify-center z-[80] p-4" aria-hidden="true"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative border border-green-100"><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">👋</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Te extrañamos!</h2><p class="text-slate-600 mb-6">Vimos que tu cuenta estaba por borrarse.</p><div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-8"><p class="text-green-800 font-bold text-sm flex items-center justify-center gap-2">✅ Eliminación cancelada</p><p class="text-green-700 text-xs mt-1">Tus datos están seguros y activos.</p></div><button id="closeRestoreModalBtn" class="btn-primary w-full py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 from-green-500 to-emerald-600">Ir a mi Dashboard</button></div></div>
+    
+    <div id="planSuccessModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-600"></div><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">🎉</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Mejoraste tu plan!</h2><p class="text-slate-600 mb-6">Ahora disfrutas de <span id="new-plan-name" class="font-bold text-indigo-600"></span>.</p><div class="bg-slate-50 rounded-xl p-5 text-left mb-6 border border-slate-100"><ul id="plan-benefits-list" class="space-y-3 text-sm text-slate-700 font-medium"></ul></div><button id="closePlanModalBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">¡Genial!</button></div></div>
+    
+    <div id="deleteAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[70] p-4"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center"><div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">⚠️</div><h3 class="text-xl font-bold text-slate-900 mb-2">¿Eliminar Cuenta?</h3><p class="text-slate-600 text-sm mb-8 leading-relaxed">Esto programará el borrado de todos tus datos en <b>30 días</b>. <br>Si cambias de opinión, solo inicia sesión de nuevo.</p><div class="flex gap-3"><button id="cancelDeleteBtn" class="btn-white w-full py-3 rounded-xl font-bold">Cancelar</button><button id="confirmDeleteBtn" class="btn-danger-soft w-full py-3 rounded-xl font-bold border-none bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200">Sí, eliminar</button></div></div></div>
+    
+    <div id="restoreAccountModal" class="modal modal-hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md flex items-center justify-center z-[80] p-4"><div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center relative border border-green-100"><div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">👋</div><h2 class="text-2xl font-extrabold text-slate-900 mb-2">¡Te extrañamos!</h2><p class="text-slate-600 mb-6">Vimos que tu cuenta estaba por borrarse.</p><div class="bg-green-50 p-4 rounded-xl border border-green-200 mb-8"><p class="text-green-800 font-bold text-sm flex items-center justify-center gap-2">✅ Eliminación cancelada</p><p class="text-green-700 text-xs mt-1">Tus datos están seguros y activos.</p></div><button id="closeRestoreModalBtn" class="btn-primary w-full py-3.5 rounded-xl font-bold shadow-lg shadow-green-200 from-green-500 to-emerald-600">Ir a mi Dashboard</button></div></div>
+    
+    <!-- MODAL SOPORTE Y RESPUESTAS -->
+    <div id="supportModal" class="modal modal-hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[80] p-4">
+        <div class="modal-content bg-white rounded-3xl shadow-2xl w-full max-w-md p-0 overflow-hidden max-h-[85vh] flex flex-col">
+             <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white relative flex-shrink-0">
+                 <button id="closeSupportBtn" class="absolute top-4 right-4 text-white/70 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                 <h3 class="text-xl font-bold flex items-center gap-2">🎧 Centro de Ayuda</h3>
+                 <p class="text-indigo-100 text-sm mt-1">¿En qué podemos ayudarte hoy?</p>
+             </div>
+             <div class="p-6 overflow-y-auto flex-grow bg-slate-50/50" id="support-content"></div>
+        </div>
+    </div>
 
     <script type="module">
+        const API_URL = 'http://localhost:3000'; 
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, writeBatch, onSnapshot, deleteField, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDxfrtCe1RQpFWHewa_kg1WAUmhtifNmI8", authDomain: "repleno-app.firebaseapp.com", projectId: "repleno-app", storageBucket: "repleno-app.firebasestorage.app", messagingSenderId: "705634142025", appId: "1:705634142025:web:206f1a905f41ad79143c98", measurementId: "G-FLTS8BFB46" };
@@ -199,6 +143,14 @@
         const auth = getAuth(app);
 
         let currentUserData = null, salesByDayChart, stockByProductChart, detailedSalesByDate = {}, userDocUnsubscribe = null, isDemoMode = false;
+
+        // DICCIONARIO DE TEMAS (Para visualización enriquecida)
+        const topicMap = {
+            'ia': { label: '✨ Inteligencia Artificial', bg: 'bg-indigo-50', text: 'text-indigo-700' },
+            'data': { label: '📊 Datos de Empresa', bg: 'bg-blue-50', text: 'text-blue-700' },
+            'account': { label: '💳 Cuenta y Pagos', bg: 'bg-purple-50', text: 'text-purple-700' },
+            'other': { label: '📬 Otro asunto', bg: 'bg-slate-100', text: 'text-slate-700' }
+        };
 
         function showAlert(title, message, type = 'info') {
             const modal = document.getElementById('genericModal');
@@ -209,57 +161,52 @@
         }
         document.getElementById('genericModalBtn').onclick = () => { document.getElementById('genericModal').classList.add('modal-hidden'); document.getElementById('genericModal').classList.remove('modal-visible'); };
 
+        setTimeout(() => {
+            const loader = document.getElementById('dashboard-loader');
+            if(!loader.classList.contains('hidden') && !document.querySelector('.modal.modal-visible')) {
+                loader.classList.add('hidden');
+                if(!document.getElementById('dashboard-content').dataset.initialized) {
+                    document.getElementById('csv-upload-screen').classList.remove('hidden');
+                    showAlert("Conexión Lenta o Bloqueada", "Revisa tu conexión o desactiva AdBlock.", "error");
+                }
+            }
+        }, 8000);
+
         function raceWithTimeout(promise, ms, msg) { return Promise.race([promise, new Promise((_, r) => setTimeout(() => r(new Error(msg)), ms))]); }
         function getAbsoluteUrl(f) { return `${window.location.origin.endsWith('/') ? window.location.origin.slice(0,-1) : window.location.origin}/${f}`; }
         function activateDemoMode() { isDemoMode = true; document.getElementById('demo-indicator').classList.remove('hidden'); }
         function getDummyData() { return [{codigo_producto:"P1",descripcion:"Demo 1",cantidad:10,precio_unitario:5000,tipo_transaccion:"Venta",fecha:new Date().toISOString()}]; }
 
-        // --- HELPERS: UI RESET ---
         function resetUploadUI() {
             const processBtn = document.getElementById('process-csv-btn');
             const progressCont = document.getElementById('upload-progress-container');
             const progressBar = document.getElementById('upload-progress-bar');
-            
-            processBtn.disabled = false;
-            processBtn.classList.remove('hidden');
-            processBtn.textContent = "Subir y Analizar";
-            progressCont.classList.add('hidden');
-            progressBar.style.width = '0%';
+            processBtn.disabled = false; processBtn.classList.remove('hidden'); processBtn.textContent = "Subir y Analizar";
+            progressCont.classList.add('hidden'); progressBar.style.width = '0%';
         }
 
         function showUploadScreen(canCancel = true) {
             document.getElementById('dashboard-loader').classList.add('hidden');
             document.getElementById('dashboard-content').classList.add('hidden');
             document.getElementById('csv-upload-screen').classList.remove('hidden');
-            
             document.getElementById('csv-file-input').value = '';
             document.getElementById('file-name-display').textContent = '';
             resetUploadUI();
-
             if (currentUserData && currentUserData.plan === 'gratis') document.getElementById('upload-limit-warning').classList.remove('hidden');
             else document.getElementById('upload-limit-warning').classList.add('hidden');
-
             if (canCancel) document.getElementById('cancel-upload-btn').classList.remove('hidden');
             else document.getElementById('cancel-upload-btn').classList.add('hidden');
         }
 
-        // --- MANEJO DE PLANES ---
         function showPlanSuccessModal(plan) {
             const modal = document.getElementById('planSuccessModal');
             document.getElementById('new-plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
             const listEl = document.getElementById('plan-benefits-list');
             listEl.innerHTML = '';
-            let benefits = [];
-            if (plan === 'gratis') benefits = ['Acceso básico', 'Carga limitada', 'Sin costo'];
-            else if (plan === 'Plan Estándar') benefits = ['Carga ilimitada', 'Alertas stock', 'Soporte'];
+            let benefits = ['Acceso básico', 'Carga limitada', 'Sin costo'];
+            if (plan === 'Plan Estándar') benefits = ['Carga ilimitada', 'Alertas stock', 'Soporte'];
             else if (plan === 'Plan Premium') benefits = ['✨ Asistente IA', 'Predicciones', 'Soporte VIP'];
-            
-            benefits.forEach(b => {
-                const li = document.createElement('li');
-                li.className = "flex items-start gap-3";
-                li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`;
-                listEl.appendChild(li);
-            });
+            benefits.forEach(b => { const li = document.createElement('li'); li.className = "flex items-start gap-3"; li.innerHTML = `<svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${b}</span>`; listEl.appendChild(li); });
             modal.classList.remove('modal-hidden'); modal.classList.add('modal-visible');
         }
 
@@ -278,48 +225,65 @@
             elDays.textContent = diffDays <= 0 ? "Expirado" : `Quedan ${diffDays} días`;
         }
 
-        // --- CORE LOGIC ---
+        function initializeDashboard(path, name) { fetchAndAnalyze(path); }
+
         function showDashboard() {
             document.getElementById('dashboard-loader').classList.add('hidden');
             document.getElementById('csv-upload-screen').classList.add('hidden');
-            document.getElementById('dashboard-content').classList.remove('hidden');
+            const container = document.getElementById('dashboard-content');
+            container.classList.remove('hidden');
             
             const isPremium = currentUserData && currentUserData.plan === 'Plan Premium';
             const btnAI = isPremium 
                 ? `<button id="openAssistantBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">Consultar IA</button>` 
                 : `<button disabled class="w-full py-3 rounded-xl font-bold bg-slate-100 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2">IA Bloqueada</button>`;
             
-            document.getElementById('ai-button-container').innerHTML = btnAI;
-            if(isPremium) document.getElementById('openAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-hidden'); document.getElementById('assistantModal').classList.add('modal-visible'); if(currentUserData && window.cachedDashboardData) askGemini(window.cachedDashboardData); };
+            container.innerHTML = `
+                <div class="md:col-span-2 glass-card bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 fade-in" style="animation-delay: 0.1s;"><h3 id="client-name" class="text-2xl font-bold tracking-tight mb-1">¡Hola, ${currentUserData.nombre || 'Usuario'}! 👋</h3><p class="text-indigo-100 text-sm opacity-90">Aquí tienes el resumen de tu negocio.</p></div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.2s;"><div class="flex justify-between items-start mb-4"><h3 id="sales-period-label" class="text-slate-400 font-bold text-xs uppercase tracking-wider">Ventas Totales</h3><div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg">💰</div></div><p id="totalVentas" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p></div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.3s;"><div class="flex justify-between items-start mb-4"><h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider">Productos</h3><div class="bg-purple-50 text-purple-600 p-2 rounded-lg">📦</div></div><p id="productosUnicos" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p></div>
+                <div class="md:col-span-4 md:row-span-2 glass-card p-6 fade-in" style="animation-delay: 0.4s;"><h3 class="text-lg font-bold text-slate-800 mb-4">Inventario General</h3><div class="overflow-y-auto flex-grow h-64 md:h-[26rem] scrollbar-thin"><table class="w-full text-sm text-left text-slate-600"><thead class="text-xs text-slate-400 uppercase bg-slate-50/50 sticky top-0"><tr><th class="px-4 py-3 rounded-l-lg">Producto</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Precio</th><th class="px-4 py-3 rounded-r-lg">Ventas</th></tr></thead><tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-8 text-slate-400">Cargando datos...</td></tr></tbody></table></div></div>
+                <div class="md:col-span-2 glass-card p-6 border-l-4 border-amber-400 fade-in" style="animation-delay: 0.5s;"><h3 class="text-amber-600 font-bold text-sm uppercase tracking-wider mb-1">Stock Bajo</h3><p id="alertasStock" class="text-4xl font-extrabold text-slate-800">0</p><p class="text-xs text-slate-400 mt-2">Productos requieren atención</p></div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.6s;"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">✨</div><div><h3 class="font-bold text-slate-800">Asistente IA</h3><p class="text-xs text-slate-400">Análisis inteligente</p></div></div><div id="ai-button-container" class="mt-auto">${btnAI}</div></div>
+                <div class="md:col-span-4 glass-card p-6 fade-in" style="animation-delay: 0.7s;"><h3 class="text-lg font-bold text-slate-800 mb-4">Tendencia de Ventas</h3><div class="relative h-64 w-full"><canvas id="salesByDayChart"></canvas></div></div>
+                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.8s;"><h3 class="text-lg font-bold text-slate-800 mb-4">Composición</h3><div class="relative h-48 w-full flex justify-center"><canvas id="stockByProductChart"></canvas></div></div>
+            `;
             
-            document.getElementById('client-name').textContent = `¡Hola, ${currentUserData.nombre || 'Usuario'}! 👋`;
-        }
-
-        function initializeDashboard(path, name) {
-            fetchAndAnalyze(path);
+            if(isPremium) {
+                setTimeout(() => {
+                    const aiBtn = document.getElementById('openAssistantBtn');
+                    if(aiBtn) aiBtn.onclick = () => { document.getElementById('assistantModal').classList.remove('modal-hidden'); document.getElementById('assistantModal').classList.add('modal-visible'); if(currentUserData && window.cachedDashboardData) askGemini(window.cachedDashboardData); };
+                }, 0);
+            }
         }
 
         async function fetchAndAnalyze(path) {
             if (isDemoMode) { processAndDisplayData(getDummyData()); return; }
             try {
+                try { await fetch('https://firestore.googleapis.com', { mode: 'no-cors' }); } 
+                catch(e) { throw new Error("Blocked:Network"); }
+
                 const qs = await raceWithTimeout(getDocs(collection(db, `${path}/transactions`)), 15000, "Tiempo agotado.");
-                const data = qs.docs.map(d => d.data());
+                document.getElementById('dashboard-loader').classList.add('hidden');
+                const data = qs.docs.map(doc => doc.data());
                 if(data.length > 0) processAndDisplayData(data);
                 else showUploadScreen(false);
             } catch(e) { 
                 console.error(e);
-                if(e.message.includes('Quota') || e.code==='resource-exhausted') { activateDemoMode(); processAndDisplayData(getDummyData()); showAlert("Demo", "Cuota excedida.", "info"); }
-                else showAlert("Error", e.message, "error");
+                if (e.message.includes('Quota') || e.code === 'resource-exhausted') { activateDemoMode(); processAndDisplayData(getDummyData()); showAlert("Demo", "Cuota excedida.", "info"); }
+                else if (e.message.includes('Blocked') || e.message.includes('Failed to fetch')) {
+                    showAlert("Conexión Bloqueada", "Un bloqueador de anuncios o antivirus impide cargar tus datos. Desactívalo.", "error");
+                    document.getElementById('dashboard-loader').classList.add('hidden'); 
+                }
+                else { showAlert("Error", e.message, "error"); document.getElementById('dashboard-loader').classList.add('hidden'); }
             }
         }
 
         function processAndDisplayData(data) {
             if (!document.getElementById('totalVentas')) return;
             if (currentUserData.plan === 'gratis' && data.length > 100) data = data.slice(0, 100);
-
             const stock={}, pInfo={}, sales={}, pDate={}, pWeekly={}; 
             let total=0, minDate=Infinity, maxDate=-Infinity; detailedSalesByDate={};
-
             data.forEach(r => {
                 const c = r.codigo_producto; if(!c) return;
                 if(!stock[c]) { stock[c]=0; pInfo[c]={desc:r.descripcion, price:0}; sales[c]=0; pWeekly[c] = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}; }
@@ -337,7 +301,6 @@
                     }
                 } else stock[c] += r.cantidad;
             });
-
             let timeLabel = "Ventas (Total)";
             if (minDate !== Infinity && maxDate !== -Infinity) {
                 const diffDays = Math.ceil(Math.abs(maxDate - minDate) / (1000 * 60 * 60 * 24)); 
@@ -350,24 +313,23 @@
             document.getElementById('productosUnicos').textContent = Object.keys(stock).length;
             const low = Object.entries(stock).filter(([_,q])=>q<=20);
             document.getElementById('alertasStock').textContent = low.length;
-            
             const tbody = document.getElementById('product-table-body'); tbody.innerHTML = '';
             Object.keys(pInfo).slice(0,50).forEach(c => {
                 tbody.innerHTML += `<tr class="table-row border-b border-slate-50 last:border-0"><td class="px-4 py-3 font-medium text-slate-700">${pInfo[c].desc}</td><td class="px-4 py-3 font-bold">${stock[c]}</td><td class="px-4 py-3">$${pInfo[c].price}</td><td class="px-4 py-3">${sales[c]}</td></tr>`;
             });
-            
             updateCharts(pDate, stock, pInfo);
-            
             const top = Object.entries(sales).sort((a,b)=>b[1]-a[1])[0];
-            window.cachedDashboardData = { totalSales: total, uniqueProducts: Object.keys(stock).length, lowStockCount: low.length, lowStockItems: low.slice(0,10).map(([c,q])=>({name:pInfo[c]?.desc, qty:q})), topSeller: top ? {name:pInfo[top[0]]?.desc, qty:sales[top[0]], price:pInfo[top[0]]?.price, salesPattern:pWeekly[top[0]]} : null };
+            window.cachedDashboardData = { 
+                totalSales: total, uniqueProducts: Object.keys(stock).length, lowStockCount: low.length, 
+                lowStockItems: low.slice(0,10).map(([c,q])=>({name:pInfo[c]?.desc, qty:q, price:pInfo[c]?.price, salesPattern:pWeekly[c]})), 
+                topSeller: top ? {name:pInfo[top[0]]?.desc, qty:sales[top[0]], price:pInfo[top[0]]?.price, salesPattern:pWeekly[top[0]]} : null 
+            };
         }
-
         function updateCharts(sDate, stock, info) {
             const c1=document.getElementById('salesByDayChart'), c2=document.getElementById('stockByProductChart');
             if(c1) { if(salesByDayChart) salesByDayChart.destroy(); salesByDayChart=new Chart(c1.getContext('2d'), { type:'bar', data:{labels:Object.keys(sDate).sort().slice(-7), datasets:[{label:'Ventas',data:Object.values(sDate).slice(-7),backgroundColor:'#6366F1',borderRadius:6}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{display:false}},x:{grid:{display:false}}},onClick:(e,el)=>{if(el.length>0)showDetails(Object.keys(sDate).sort().slice(-7)[el[0].index])}} }); }
             if(c2) { if(stockByProductChart) stockByProductChart.destroy(); stockByProductChart=new Chart(c2.getContext('2d'), { type:'doughnut', data:{labels:Object.values(info).slice(0,5).map(i=>i.desc),datasets:[{data:Object.values(stock).slice(0,5),backgroundColor:['#4F46E5','#7C3AED','#A78BFA','#C4B5FD','#E0E7FF'],borderWidth:0}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{position:'right',labels:{usePointStyle:true,boxWidth:8}}}} }); }
         }
-        
         function showDetails(ds) {
             document.getElementById('detail-title').textContent = `Ventas ${ds}`;
             const d = detailedSalesByDate[ds] || [];
@@ -380,132 +342,54 @@
             document.getElementById('daily-detail-section').classList.remove('translate-y-full','opacity-0','pointer-events-none');
         }
         document.getElementById('close-detail-btn').onclick = () => document.getElementById('daily-detail-section').classList.add('translate-y-full','opacity-0','pointer-events-none');
-
-        // --- CSV PARSING & UPLOAD ---
         function parseCSV(text) {
             const lines = text.trim().split('\n');
             const validLines = lines.filter(l => l.trim() !== '');
             if (validLines.length < 2) return [];
-
             const firstLine = validLines[0];
             const separator = (firstLine.match(/;/g) || []).length > (firstLine.match(/,/g) || []).length ? ';' : ',';
             const headers = validLines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
-            
             return validLines.slice(1).map(line => {
                 const vals = line.split(separator);
                 let obj = {};
-                headers.forEach((h, i) => {
-                    let val = vals[i] ? vals[i].trim().replace(/^"|"$/g, '') : '';
-                    const numVal = Number(val);
-                    obj[h] = (val === '' || isNaN(numVal)) ? val : numVal;
-                });
+                headers.forEach((h, i) => { let val = vals[i] ? vals[i].trim().replace(/^"|"$/g, '') : ''; const numVal = Number(val); obj[h] = (val === '' || isNaN(numVal)) ? val : numVal; });
                 return obj;
             });
         }
-
         async function uploadDataToFirebase(data, clientName) {
-            const els = {
-                csvScreen: document.getElementById('csv-upload-screen'),
-                content: document.getElementById('dashboard-content'),
-                processBtn: document.getElementById('process-csv-btn'),
-                progressCont: document.getElementById('upload-progress-container'),
-                progressBar: document.getElementById('upload-progress-bar'),
-                percent: document.getElementById('upload-percentage'),
-                statusText: document.getElementById('upload-status-text')
-            };
-
+            const els = { csvScreen: document.getElementById('csv-upload-screen'), content: document.getElementById('dashboard-content'), processBtn: document.getElementById('process-csv-btn'), progressCont: document.getElementById('upload-progress-container'), progressBar: document.getElementById('upload-progress-bar'), percent: document.getElementById('upload-percentage'), statusText: document.getElementById('upload-status-text') };
             try {
-                if (isDemoMode) {
-                    setTimeout(() => {
-                        showAlert("Éxito (Modo Demo)", "Datos simulados correctamente.", "success");
-                        els.csvScreen.classList.add('hidden');
-                        els.content.classList.remove('hidden');
-                        processAndDisplayData(data.concat(getDummyData()));
-                        resetUploadUI();
-                    }, 1500);
-                    return;
-                }
-
+                if (isDemoMode) { setTimeout(() => { showAlert("Éxito (Modo Demo)", "Datos simulados correctamente.", "success"); els.csvScreen.classList.add('hidden'); els.content.classList.remove('hidden'); processAndDisplayData(data.concat(getDummyData())); resetUploadUI(); }, 1500); return; }
                 if (!auth.currentUser) throw new Error("Sesión no válida.");
                 const userId = auth.currentUser.uid;
                 const path = `business_data/${userId}`;
                 const colRef = collection(db, path, 'transactions');
                 const batchSize = 100; 
                 const totalBatches = Math.ceil(data.length / batchSize);
-                
                 for (let i = 0; i < data.length; i += batchSize) {
                     const batch = writeBatch(db);
-                    data.slice(i, i + batchSize).forEach(row => {
-                        const cleanRow = JSON.parse(JSON.stringify(row));
-                        batch.set(doc(colRef), cleanRow);
-                    });
-                    
-                    try {
-                        await raceWithTimeout(batch.commit(), 30000, "Timeout subiendo lote.");
-                    } catch (err) {
-                        if (err.message.includes('Quota') || err.code === 'resource-exhausted') {
-                            activateDemoMode();
-                            showAlert("Cuota Excedida", "Cambiando a Modo Demo para mostrar el dashboard.", "info");
-                            els.csvScreen.classList.add('hidden');
-                            els.content.classList.remove('hidden');
-                            processAndDisplayData(getDummyData());
-                            return; 
-                        }
+                    data.slice(i, i + batchSize).forEach(row => { const cleanRow = JSON.parse(JSON.stringify(row)); batch.set(doc(colRef), cleanRow); });
+                    try { await raceWithTimeout(batch.commit(), 30000, "Timeout subiendo lote."); } catch (err) {
+                        if (err.message.includes('Quota') || err.code === 'resource-exhausted') { activateDemoMode(); showAlert("Cuota Excedida", "Cambiando a Modo Demo para mostrar el dashboard.", "info"); els.csvScreen.classList.add('hidden'); els.content.classList.remove('hidden'); processAndDisplayData(getDummyData()); return; }
                         throw err;
                     }
-                    
-                    const currentBatch = Math.ceil((i + 1) / batchSize);
-                    const percent = Math.min(Math.round((currentBatch / totalBatches) * 100), 100);
-                    els.progressBar.style.width = `${percent}%`;
-                    els.percent.textContent = `${percent}%`;
-                    els.statusText.textContent = `Subiendo lote ${currentBatch}...`;
+                    const percent = Math.min(Math.round((Math.ceil((i + 1) / batchSize) / totalBatches) * 100), 100);
+                    els.progressBar.style.width = `${percent}%`; els.percent.textContent = `${percent}%`; els.statusText.textContent = `Subiendo lote...`;
                     await new Promise(resolve => setTimeout(resolve, 200)); 
                 }
-
-                await raceWithTimeout(
-                    updateDoc(doc(db, "users", userId), { dataCollectionPath: path, clientName: clientName }),
-                    10000, "Error actualizando perfil."
-                );
-                
+                await raceWithTimeout(updateDoc(doc(db, "users", userId), { dataCollectionPath: path, clientName: clientName }), 10000, "Error actualizando perfil.");
                 showAlert("¡Éxito!", "Datos subidos correctamente.", "success");
-                els.csvScreen.classList.add('hidden');
-                els.content.classList.remove('hidden');
-                fetchAndAnalyze(path);
-
-            } catch (e) {
-                console.error(e);
-                showAlert("Error", e.message, "error");
-                resetUploadUI();
-            } finally {
-                if (!isDemoMode) {
-                    els.processBtn.disabled = false;
-                    els.processBtn.textContent = "Subir y Procesar";
-                    if(els.progressBar.style.width === '100%') {
-                         els.progressCont.classList.add('hidden');
-                         els.processBtn.classList.remove('hidden');
-                    }
-                }
-            }
+                els.csvScreen.classList.add('hidden'); els.content.classList.remove('hidden'); fetchAndAnalyze(path);
+            } catch (e) { console.error(e); showAlert("Error", e.message, "error"); resetUploadUI(); } finally { if (!isDemoMode) { els.processBtn.disabled = false; els.processBtn.textContent = "Subir y Analizar"; if(els.progressBar.style.width === '100%') { els.progressCont.classList.add('hidden'); els.processBtn.classList.remove('hidden'); } } }
         }
-
-        // --- EVENT LISTENERS ---
-        document.getElementById('csv-file-input').onchange = (e) => { if(e.target.files[0]) { document.getElementById('file-name-display').textContent = e.target.files[0].name; document.getElementById('process-csv-btn').disabled = false; } };
+        document.getElementById('csv-file-input').onchange = (e) => { if(e.target.files[0]) { document.getElementById('file-name-display').textContent = `Archivo: ${e.target.files[0].name}`; document.getElementById('process-csv-btn').disabled = false; } };
         document.getElementById('process-csv-btn').onclick = async () => {
             const f = document.getElementById('csv-file-input').files[0]; if(!f) return;
             const btn = document.getElementById('process-csv-btn'); btn.disabled = true; btn.textContent = 'Procesando...';
             const r = new FileReader();
-            r.onload = async (e) => {
-                try {
-                    const lines = e.target.result.trim().split('\n').filter(l=>l.trim()!=='');
-                    const sep = (lines[0].match(/;/g)||[]).length > (lines[0].match(/,/g)||[]).length ? ';' : ',';
-                    const h = lines[0].split(sep).map(x=>x.trim().replace(/^"|"$/g,''));
-                    const data = lines.slice(1).map(l=>{ const v=l.split(sep); let o={}; h.forEach((k,i)=>{let val=v[i]?v[i].trim().replace(/^"|"$/g,''):''; o[k]=(val===''||isNaN(Number(val)))?val:Number(val)}); return o; });
-                    await uploadDataToFirebase(data, f.name);
-                } catch(err) { showAlert("Error CSV", err.message, "error"); resetUploadUI(); }
-            };
+            r.onload = async (e) => { try { const data = parseCSV(e.target.result); if (data.length === 0) throw new Error("Archivo vacío o formato inválido."); if (currentUserData.plan === 'gratis' && data.length > 100) data.splice(100); await uploadDataToFirebase(data, f.name); } catch(err) { showAlert("Error CSV", err.message, "error"); resetUploadUI(); } };
             r.readAsText(f);
         };
-        
         document.getElementById('uploadMoreDataBtn').onclick = () => showUploadScreen(true);
         document.getElementById('cancel-upload-btn').onclick = () => { document.getElementById('csv-upload-screen').classList.add('hidden'); document.getElementById('dashboard-content').classList.remove('hidden'); };
         document.getElementById('closeAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-visible'); document.getElementById('assistantModal').classList.add('modal-hidden'); };
@@ -513,162 +397,181 @@
         document.getElementById('deleteAccountBtn').onclick = () => { document.getElementById('deleteAccountModal').classList.remove('modal-hidden'); document.getElementById('deleteAccountModal').classList.add('modal-visible'); };
         document.getElementById('cancelDeleteBtn').onclick = () => { document.getElementById('deleteAccountModal').classList.remove('modal-visible'); document.getElementById('deleteAccountModal').classList.add('modal-hidden'); };
         document.getElementById('confirmDeleteBtn').onclick = async () => {
-             try {
-                 // CRITICAL FIX: Set the flag BEFORE updating the DB and redirecting
-                 sessionStorage.setItem('isDeleting', 'true');
-                 
-                 await updateDoc(doc(db,"users",auth.currentUser.uid), {deletionScheduledAt: new Date(Date.now()+30*24*60*60*1000).toISOString(), status: 'pending_deletion'});
-                 showAlert("Cuenta Programada", "Adios.", "info");
-                 
-                 setTimeout(async () => {
-                    await signOut(auth);
-                    window.location.href = getAbsoluteUrl('index.html');
-                 }, 2000);
-
-             } catch(e) { showAlert("Error", e.message, "error"); }
+             try { sessionStorage.setItem('isDeleting', 'true'); await updateDoc(doc(db,"users",auth.currentUser.uid), {deletionScheduledAt: new Date(Date.now()+30*24*60*60*1000).toISOString(), status: 'pending_deletion'}); showAlert("Cuenta Programada", "Adios.", "info"); setTimeout(async () => { await signOut(auth); window.location.href = getAbsoluteUrl('index.html'); }, 2000); } catch(e) { showAlert("Error", e.message, "error"); }
         };
         document.getElementById('logoutBtnUser').onclick = () => signOut(auth);
         document.getElementById('closeRestoreModalBtn').onclick = () => {
-            document.getElementById('restoreAccountModal').classList.remove('modal-visible');
-            document.getElementById('restoreAccountModal').classList.add('modal-hidden');
+            document.getElementById('restoreAccountModal').classList.remove('modal-visible'); document.getElementById('restoreAccountModal').classList.add('modal-hidden');
             if(currentUserData) updateUI(currentUserData);
         };
+        
+        document.getElementById('openSupportBtn').onclick = async () => {
+            const m = document.getElementById('supportModal');
+            const c = document.getElementById('support-content');
+            const isFree = currentUserData.plan === 'gratis';
+            
+            let formHtml = '';
+            if(isFree) {
+                formHtml = `<div class="text-center py-6 border-b border-slate-100 mb-6"><div class="text-4xl mb-3">🔒</div><h4 class="font-bold text-slate-800 mb-2">Soporte Exclusivo</h4><p class="text-sm text-slate-500 mb-4">Actualiza tu plan para crear tickets.</p><a href="ejemplo.html" class="btn-primary inline-block px-6 py-2 rounded-xl font-bold text-sm">Ver Planes</a></div>`;
+            } else {
+                formHtml = `
+                    <form id="supportForm" class="space-y-4 mb-8 border-b border-slate-100 pb-8">
+                        <div><label class="text-xs font-bold text-slate-500 uppercase ml-1">Tema</label><select id="ticketTopic" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-indigo-500 text-slate-600"><option value="ia">Sobre la Inteligencia Artificial</option><option value="data">Sobre los datos de mi empresa</option><option value="account">Sobre mi cuenta</option><option value="other">Otro</option></select></div>
+                        <div><label class="text-xs font-bold text-slate-500 uppercase ml-1">Descripción</label><textarea id="ticketDesc" rows="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-indigo-500" placeholder="Detalla tu problema..." required></textarea></div>
+                        <button type="submit" class="btn-primary w-full py-3 rounded-xl font-bold text-sm shadow-lg">Enviar Ticket</button>
+                    </form>`;
+            }
 
-        async function askGemini(data) {
-             const c = document.getElementById('assistantModalContent');
-             c.innerHTML = '<div class="text-center py-10 text-4xl animate-pulse">🧠</div><p class="text-center text-slate-500">Analizando tus datos...</p>';
-             try {
-                 const r = await raceWithTimeout(
-                    fetch('/api/consultar-ia', { method:'POST', headers:{'Content-Type':'application/json','user-id':auth.currentUser.uid}, body:JSON.stringify({resumen:data}) }),
-                    25000,
-                    "La IA tardó demasiado en responder."
-                 );
-                 const j = await r.json();
-                 if(!r.ok) throw new Error(j.error);
-                 c.innerHTML = j.html;
-             } catch(e) { c.innerHTML = `<p class="text-red-500 text-center p-6 bg-red-50 rounded-xl border border-red-100 font-medium">⚠️ ${e.message}</p>`; }
+            c.innerHTML = `
+                ${formHtml}
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">📂 Mis Tickets Recientes</h4>
+                    <div id="myTicketsList" class="space-y-4 pb-4">
+                        <div class="text-center py-4 text-slate-400 text-sm animate-pulse">Cargando historial...</div>
+                    </div>
+                </div>
+            `;
+            
+            // Lógica del Formulario
+            if(!isFree) {
+                document.getElementById('supportForm').onsubmit = async (e) => {
+                    e.preventDefault(); 
+                    const btn = e.target.querySelector('button'); 
+                    btn.disabled = true; btn.textContent = 'Enviando...';
+                    
+                    const ticketData = {
+                        userId: auth.currentUser.uid, 
+                        userName: currentUserData.nombre || 'Usuario', 
+                        userEmail: currentUserData.email, 
+                        plan: currentUserData.plan, 
+                        topic: document.getElementById('ticketTopic').value, 
+                        description: document.getElementById('ticketDesc').value
+                    };
+
+                    try {
+                        const response = await fetch(`${API_URL}/api/crear-ticket`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'user-id': auth.currentUser.uid },
+                            body: JSON.stringify({ ticketData })
+                        });
+                        if (!response.ok) throw new Error("Error servidor");
+                        showAlert('Ticket Enviado', 'Te contactaremos pronto.', 'success');
+                        loadMyTickets(); // Recargar lista
+                        document.getElementById('ticketDesc').value = ''; // Limpiar
+                    } catch(err) {
+                        console.error(err);
+                        showAlert('Error', 'No se pudo enviar el ticket.', 'error');
+                    } finally {
+                        btn.disabled = false; btn.textContent = 'Enviar Ticket';
+                    }
+                };
+            }
+
+            // Cargar Tickets
+            loadMyTickets();
+            m.classList.remove('modal-hidden'); m.classList.add('modal-visible');
+        };
+
+        async function loadMyTickets() {
+            const list = document.getElementById('myTicketsList');
+            if(!list) return;
+            try {
+                const res = await fetch(`${API_URL}/api/mis-tickets`, { headers: { 'user-id': auth.currentUser.uid } });
+                
+                // MÁS ROBUSTO: Chequear estado HTTP antes de parsear JSON
+                if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+
+                const { tickets } = await res.json();
+                
+                if(!tickets || tickets.length === 0) {
+                    list.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm bg-slate-50/50 rounded-xl border border-dashed border-slate-200">No tienes tickets activos.</div>';
+                    return;
+                }
+
+                list.innerHTML = tickets.map(t => {
+                    const isResolved = t.status === 'resolved';
+                    const date = new Date(t.createdAt).toLocaleDateString('es-CL', { month: 'short', day: 'numeric' });
+                    
+                    // Visuales del Tema
+                    const topicInfo = topicMap[t.topic] || { label: t.topic || 'Consulta General', bg: 'bg-slate-100', text: 'text-slate-600' };
+
+                    return `
+                        <div class="bg-white border ${isResolved ? 'border-green-200 ring-1 ring-green-50' : 'border-slate-200'} rounded-2xl p-5 shadow-sm transition-all hover:shadow-md">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${topicInfo.bg} ${topicInfo.text}">${topicInfo.label}</span>
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-full ${isResolved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700 border border-yellow-200'}">
+                                    ${isResolved ? '✓ Resuelto' : '⏳ Pendiente'}
+                                </span>
+                            </div>
+                            
+                            <p class="text-slate-600 text-sm mb-4 leading-relaxed">"${t.description}"</p>
+                            
+                            ${t.response ? `
+                                <div class="bg-gradient-to-br from-indigo-50 to-white p-4 rounded-xl border border-indigo-100 relative mt-4">
+                                    <div class="absolute -top-3 left-4 bg-white p-1 rounded-full border border-indigo-100 shadow-sm">
+                                        <div class="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-white text-[10px] font-bold">R</div>
+                                    </div>
+                                    <p class="text-xs font-bold text-indigo-900 mb-1 pl-1">Respuesta de Repleno:</p>
+                                    <p class="text-slate-700 text-sm leading-relaxed">${t.response}</p>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="text-right mt-3 pt-2 border-t border-slate-50">
+                                <span class="text-[10px] text-slate-400 font-medium">${date}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error(e);
+                list.innerHTML = '<div class="text-center text-red-400 text-sm py-4 bg-red-50 rounded-lg">Error al cargar historial. Intenta recargar.</div>';
+            }
         }
 
+        document.getElementById('closeSupportBtn').onclick = () => { document.getElementById('supportModal').classList.remove('modal-visible'); document.getElementById('supportModal').classList.add('modal-hidden'); };
+
+        async function askGemini(data) {
+             const c = document.getElementById('assistantModalContent'); c.innerHTML = '<div class="text-center py-10 text-4xl animate-pulse">🧠</div><p class="text-center text-slate-500">Analizando tus datos...</p>';
+             try { 
+                 const r = await raceWithTimeout(fetch(`${API_URL}/api/consultar-ia`, { method:'POST', headers:{'Content-Type':'application/json','user-id':auth.currentUser.uid}, body:JSON.stringify({resumen:data}) }), 25000, "La IA tardó demasiado en responder."); 
+                 const j = await r.json(); 
+                 if(!r.ok) {
+                     if (r.status === 500) throw new Error("Servidor en mantenimiento (500). Intenta más tarde.");
+                     throw new Error(j.error); 
+                 }
+                 c.innerHTML = j.html; 
+             } catch(e) { 
+                 let msg = e.message;
+                 if(e.message.includes('Failed to fetch')) msg = "No se pudo conectar con el servidor de IA. Revisa si tienes AdBlock activo o si el servidor está caído.";
+                 c.innerHTML = `<p class="text-red-500 text-center p-6 bg-red-50 rounded-xl border border-red-100 font-medium">⚠️ ${msg}</p>`; 
+             }
+        }
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 const ref = doc(db,"users",user.uid);
                 userDocUnsubscribe = onSnapshot(ref, (s) => {
                     if(s.exists()) {
                         const newUserData = s.data();
-                        
-                        // FIX: Check if the 'isDeleting' flag exists first.
                         const isDeleting = sessionStorage.getItem('isDeleting');
-                        
-                        if (newUserData.deletionScheduledAt && isDeleting !== 'true') {
-                            document.getElementById('restoreAccountModal').classList.remove('modal-hidden');
-                            document.getElementById('restoreAccountModal').classList.add('modal-visible');
-                            document.getElementById('dashboard-loader').classList.add('hidden');
-                            updateDoc(ref, {deletionScheduledAt: deleteField(), status: 'active'}).catch(()=>{});
-                            sessionStorage.removeItem('isDeleting'); // Clear flag after modal is shown
-                            return;
-                        }
-                        
-                        // Clear the flag if the user is now authenticated and deleting is not pending
-                        if (isDeleting === 'true' && !newUserData.deletionScheduledAt) {
-                            sessionStorage.removeItem('isDeleting');
-                        }
-                        
+                        if (newUserData.deletionScheduledAt && isDeleting !== 'true') { document.getElementById('restoreAccountModal').classList.remove('modal-hidden'); document.getElementById('restoreAccountModal').classList.add('modal-visible'); document.getElementById('dashboard-loader').classList.add('hidden'); updateDoc(ref, {deletionScheduledAt: deleteField(), status: 'active'}).catch(()=>{}); sessionStorage.removeItem('isDeleting'); return; }
+                        if (isDeleting === 'true' && !newUserData.deletionScheduledAt) sessionStorage.removeItem('isDeleting');
                         currentUserData = newUserData;
                         if(document.getElementById('restoreAccountModal').classList.contains('modal-hidden')) updateUI(currentUserData);
                     }
                 });
-            } else {
-                 // Clear flag on exit
-                 sessionStorage.removeItem('isDeleting');
-                 window.location.href = getAbsoluteUrl('index.html');
-            }
+            } else { sessionStorage.removeItem('isDeleting'); window.location.href = getAbsoluteUrl('index.html'); }
         });
-
         function updateUI(u) {
             updatePlanStatus(u);
             if(u.plan) checkPlanChange(u);
-            
-            // Render the full Dashboard Structure (Ensures IDs exist)
-            const container = document.getElementById('dashboard-content');
-            container.innerHTML = `
-                <div class="md:col-span-2 glass-card bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 fade-in" style="animation-delay: 0.1s;">
-                    <h3 id="client-name" class="text-2xl font-bold tracking-tight mb-1">¡Hola, ${u.nombre || 'Usuario'}! 👋</h3>
-                    <p class="text-indigo-100 text-sm opacity-90">Aquí tienes el resumen de tu negocio.</p>
-                </div>
-                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.2s;">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 id="sales-period-label" class="text-slate-400 font-bold text-xs uppercase tracking-wider">Ventas Totales</h3>
-                        <div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg">💰</div>
-                    </div>
-                    <p id="totalVentas" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
-                </div>
-                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.3s;">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider">Productos</h3>
-                        <div class="bg-purple-50 text-purple-600 p-2 rounded-lg">📦</div>
-                    </div>
-                    <p id="productosUnicos" class="text-4xl font-extrabold text-slate-800 mt-auto">0</p>
-                </div>
-
-                <div class="md:col-span-4 md:row-span-2 glass-card p-6 fade-in" style="animation-delay: 0.4s;">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4">Inventario General</h3>
-                    <div class="overflow-y-auto flex-grow h-64 md:h-auto scrollbar-thin">
-                        <table class="w-full text-sm text-left text-slate-600">
-                            <thead class="text-xs text-slate-400 uppercase bg-slate-50/50 sticky top-0"><tr><th class="px-4 py-3 rounded-l-lg">Producto</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Precio</th><th class="px-4 py-3 rounded-r-lg">Ventas</th></tr></thead>
-                            <tbody id="product-table-body"><tr class="text-center"><td colspan="4" class="py-8 text-slate-400">Cargando datos...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="md:col-span-2 glass-card p-6 border-l-4 border-amber-400 fade-in" style="animation-delay: 0.5s;">
-                    <h3 class="text-amber-600 font-bold text-sm uppercase tracking-wider mb-1">Stock Bajo</h3>
-                    <p id="alertasStock" class="text-4xl font-extrabold text-slate-800">0</p>
-                    <p class="text-xs text-slate-400 mt-2">Productos requieren atención</p>
-                </div>
-                
-                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.6s;">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">✨</div>
-                        <div>
-                            <h3 class="font-bold text-slate-800">Asistente IA</h3>
-                            <p class="text-xs text-slate-400">Análisis inteligente</p>
-                        </div>
-                    </div>
-                    <div id="ai-button-container" class="mt-auto">
-                         <!-- Button injected here -->
-                    </div>
-                </div>
-
-                <div class="md:col-span-4 glass-card p-6 fade-in" style="animation-delay: 0.7s;">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4">Tendencia de Ventas</h3>
-                    <div class="relative h-64 w-full"><canvas id="salesByDayChart"></canvas></div>
-                </div>
-                <div class="md:col-span-2 glass-card p-6 fade-in" style="animation-delay: 0.8s;">
-                    <h3 class="text-lg font-bold text-slate-800 mb-4">Composición</h3>
-                    <div class="relative h-48 w-full flex justify-center"><canvas id="stockByProductChart"></canvas></div>
-                </div>
-            `;
-            
-            // Re-bind AI button
-            const isPremium = u && u.plan === 'Plan Premium';
-            const btnAI = isPremium 
-                ? `<button id="openAssistantBtn" class="btn-primary w-full py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">Consultar IA</button>` 
-                : `<button disabled class="w-full py-3 rounded-xl font-bold bg-slate-100 text-slate-400 cursor-not-allowed flex items-center justify-center gap-2">IA Bloqueada</button>`;
-            
-            document.getElementById('ai-button-container').innerHTML = btnAI;
-            if(isPremium) document.getElementById('openAssistantBtn').onclick = () => { document.getElementById('assistantModal').classList.remove('modal-hidden'); document.getElementById('assistantModal').classList.add('modal-visible'); if(currentUserData && window.cachedDashboardData) askGemini(window.cachedDashboardData); };
-
-
+            showDashboard();
+            document.getElementById('dashboard-content').classList.add('hidden');
             if(u.dataCollectionPath || isDemoMode) {
                 document.getElementById('csv-upload-screen').classList.add('hidden');
                 document.getElementById('dashboard-content').classList.remove('hidden');
-                if(!document.getElementById('dashboard-content').dataset.initialized) {
-                    initializeDashboard(u.dataCollectionPath, u.clientName);
-                    document.getElementById('dashboard-content').dataset.initialized="true";
-                }
-            } else {
-                showUploadScreen(false);
-            }
+                document.getElementById('dashboard-loader').classList.add('hidden');
+                initializeDashboard(u.dataCollectionPath, u.clientName);
+            } else { showUploadScreen(false); }
         }
     </script>
 </body>
