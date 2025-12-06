@@ -24,9 +24,9 @@
 
         .floating-card {
             backdrop-filter: blur(8px);
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             animation: float 6s ease-in-out infinite;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
         }
         .float-delay-1 { animation-delay: 0s; }
         .float-delay-2 { animation-delay: 3s; }
@@ -68,7 +68,6 @@
 
         /* Estilos Tarjetas Laterales */
         .side-card {
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
         }
         .side-card:hover { transform: scale(1.02) translateY(-5px); }
@@ -84,18 +83,18 @@
         
         <!-- COLUMNA IZQUIERDA: Beneficios -->
         <div class="hidden lg:flex lg:col-span-4 flex-col gap-6 relative z-0">
-            <!-- Tarjeta 1 -->
-            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-2 hover:rotate-0">
-                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm">🚀</div>
-                <h3 class="font-bold text-slate-800 text-lg">Gestión Integral</h3>
-                <p class="text-slate-500 text-sm mt-2 leading-relaxed">Centraliza tu inventario, ventas y clientes en una sola plataforma fácil de usar.</p>
+            <!-- Tarjeta 1: Gestión (Azul/Índigo) -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-2 hover:rotate-0 bg-gradient-to-br from-blue-50 to-indigo-100 border-indigo-200">
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm text-indigo-600">🚀</div>
+                <h3 class="font-bold text-indigo-900 text-lg">¿Buscas control total?</h3>
+                <p class="text-indigo-800/80 text-sm mt-2 leading-relaxed">Deja de sufrir con hojas de cálculo desordenadas. <b>Centraliza todo tu inventario</b> hoy mismo y recupera tu tranquilidad.</p>
             </div>
             
-            <!-- Tarjeta 2 -->
-            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-1 hover:rotate-0 translate-x-4">
-                <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm">🤖</div>
-                <h3 class="font-bold text-slate-800 text-lg">Inteligencia Artificial</h3>
-                <p class="text-slate-500 text-sm mt-2 leading-relaxed">Nuestro asistente analiza tus datos para darte consejos estratégicos de venta.</p>
+            <!-- Tarjeta 2: IA (Púrpura/Rosa) -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-1 hover:rotate-0 translate-x-4 bg-gradient-to-br from-purple-50 to-fuchsia-100 border-purple-200">
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-4 text-2xl shadow-sm text-purple-600">🔮</div>
+                <h3 class="font-bold text-purple-900 text-lg">Tu Asistente IA 24/7</h3>
+                <p class="text-purple-800/80 text-sm mt-2 leading-relaxed">¿Te gustaría predecir el futuro? Nuestra IA analiza tus datos para decirte <b>qué comprar y cuándo</b>. ¡Vende más sin esfuerzo!</p>
             </div>
         </div>
 
@@ -139,35 +138,35 @@
                         <button id="forgot-modal-btn" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors">¿Olvidaste tu contraseña?</button>
                     </div>
 
-                    <button id="loginBtn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-indigo-200/50 hover:shadow-indigo-300/50">
+                    <button id="loginBtn" class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg shadow-indigo-200/50 hover:shadow-indigo-300/50 transform hover:scale-[1.02] transition-transform">
                         Iniciar Sesión
                     </button>
                 </div>
 
                 <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-                    <p class="text-slate-500 text-sm font-medium">¿Aún no tienes cuenta? <button id="open-register-btn" class="font-bold text-indigo-600 hover:text-indigo-800 ml-1 transition-colors">Regístrate gratis</button></p>
+                    <p class="text-slate-500 text-sm font-medium">¿Aún no tienes cuenta? <button id="open-register-btn" class="font-bold text-indigo-600 hover:text-indigo-800 ml-1 transition-colors underline decoration-2 decoration-indigo-200 hover:decoration-indigo-500">Regístrate gratis</button></p>
                 </div>
             </div>
         </div>
 
         <!-- COLUMNA DERECHA: Propuestas de Valor -->
         <div class="hidden lg:flex lg:col-span-4 flex-col gap-6 relative z-0 items-end">
-            <!-- Tarjeta 3 -->
-            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-2 hover:rotate-0 -translate-x-4 w-72">
+            <!-- Tarjeta 3: Datos (Verde/Esmeralda) -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-2 transform rotate-2 hover:rotate-0 -translate-x-4 w-72 bg-gradient-to-br from-emerald-50 to-teal-100 border-emerald-200">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">📊</div>
-                    <h3 class="font-bold text-slate-800 text-lg">Datos Reales</h3>
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm text-emerald-600">📊</div>
+                    <h3 class="font-bold text-emerald-900 text-lg">Toma Decisiones Reales</h3>
                 </div>
-                <p class="text-slate-500 text-sm leading-relaxed">Visualiza el estado de tu negocio en tiempo real para tomar decisiones informadas al instante.</p>
+                <p class="text-emerald-800/80 text-sm leading-relaxed">No adivines. Visualiza el pulso de tu negocio en tiempo real. <b>Toma el control</b> y haz crecer tus ganancias.</p>
             </div>
 
-            <!-- Tarjeta 4 -->
-            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-1 hover:rotate-0 w-72">
+            <!-- Tarjeta 4: Eficiencia (Naranja/Ámbar) -->
+            <div class="floating-card side-card p-6 rounded-2xl float-delay-1 transform -rotate-1 hover:rotate-0 w-72 bg-gradient-to-br from-amber-50 to-orange-100 border-orange-200">
                 <div class="flex items-center gap-4 mb-3">
-                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">⏰</div>
-                    <h3 class="font-bold text-slate-800 text-lg">Eficiencia</h3>
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm text-orange-500">⏳</div>
+                    <h3 class="font-bold text-orange-900 text-lg">¿Cansado de perder tiempo?</h3>
                 </div>
-                <p class="text-slate-500 text-sm leading-relaxed">Automatiza tareas repetitivas y ahorra horas de trabajo administrativo cada semana.</p>
+                <p class="text-orange-900/80 text-sm leading-relaxed">Automatiza lo aburrido y enfócate en lo importante: tus clientes. <b class="block mt-1">¡Regístrate gratis ahora!</b></p>
             </div>
         </div>
 
@@ -416,7 +415,7 @@
                 if (error.code === 'auth/email-already-in-use') msg = 'Este correo ya existe.';
                 if (error.code === 'auth/weak-password') msg = 'Contraseña muy débil.';
                 showNotification(msg);
-                btn.disabled = false; btn.textContent = 'Comenzar Gratis';
+                btn.disabled = false; btn.textContent = 'Registrarme Ahora';
             }
         });
 

@@ -68,6 +68,7 @@
              </div>
              <div class="flex items-center gap-1">
                  <button id="openSupportBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Ayuda y Soporte"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></button>
+                 <button id="exportDataBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Exportar CSV"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg></button>
                  <button id="uploadMoreDataBtn" class="btn-white p-2 rounded-lg text-slate-600 hover:text-indigo-600" title="Subir CSV"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></button>
                  <button id="deleteAccountBtn" class="btn-danger-soft p-2 rounded-lg" title="Eliminar Cuenta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                  <button id="logoutBtnUser" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg hover:bg-slate-100 transition-colors" title="Salir"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
@@ -324,6 +325,26 @@
                 lowStockItems: low.slice(0,10).map(([c,q])=>({name:pInfo[c]?.desc, qty:q, price:pInfo[c]?.price, salesPattern:pWeekly[c]})), 
                 topSeller: top ? {name:pInfo[top[0]]?.desc, qty:sales[top[0]], price:pInfo[top[0]]?.price, salesPattern:pWeekly[top[0]]} : null 
             };
+
+            // DATA GLOBAL PARA EXPORTAR (NUEVO)
+            const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+            window.fullInventoryData = Object.keys(stock).map(c => {
+                const weekly = pWeekly[c] || {};
+                let peakQty = 0, peakDayIdx = -1;
+                Object.entries(weekly).forEach(([d, q]) => { if(q > peakQty) { peakQty=q; peakDayIdx=parseInt(d); } });
+                
+                return {
+                    code: c,
+                    name: pInfo[c].desc,
+                    stock: stock[c],
+                    price: pInfo[c].price,
+                    sales: sales[c],
+                    shouldBuy: stock[c] <= 20 ? "Si" : "No",
+                    peakDay: peakDayIdx >= 0 ? days[peakDayIdx] : "N/A",
+                    recDay: peakDayIdx >= 0 ? days[(peakDayIdx + 7 - 3) % 7] : "N/A",
+                    recQty: peakQty > 0 ? Math.ceil(peakQty * 1.2) : 0
+                };
+            });
         }
         function updateCharts(sDate, stock, info) {
             const c1=document.getElementById('salesByDayChart'), c2=document.getElementById('stockByProductChart');
@@ -405,6 +426,55 @@
             if(currentUserData) updateUI(currentUserData);
         };
         
+        // --- LÓGICA DE EXPORTACIÓN CSV ---
+        document.getElementById('exportDataBtn').onclick = () => {
+            if(!window.fullInventoryData || window.fullInventoryData.length === 0) {
+                showAlert("Sin datos", "No hay datos para exportar.", "error");
+                return;
+            }
+            
+            const isBasic = currentUserData.plan === 'gratis';
+            const isAdvanced = currentUserData.plan === 'Plan Estándar' || currentUserData.plan === 'Plan Premium';
+            
+            // BOM para que Excel abra bien los caracteres especiales (tildes, ñ)
+            let csvContent = "\uFEFF"; 
+            
+            // Definir encabezados según el plan
+            let headers = ["Codigo", "Producto", "Stock Actual", "Precio", "Ventas Totales", "Recomendacion Comprar"];
+            if(isAdvanced) {
+                headers.push("Dia Recomendado Compra", "Cantidad Recomendada", "Dia Peak Venta");
+            }
+            
+            csvContent += headers.join(",") + "\r\n";
+            
+            window.fullInventoryData.forEach(item => {
+                let row = [
+                    item.code, 
+                    `"${item.name}"`, // Comillas para evitar problemas con comas en el nombre
+                    item.stock, 
+                    item.price, 
+                    item.sales, 
+                    item.shouldBuy
+                ];
+                
+                if(isAdvanced) {
+                    row.push(item.recDay, item.recQty, item.peakDay);
+                }
+                
+                csvContent += row.join(",") + "\r\n";
+            });
+            
+            // Crear Blob y link de descarga
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `inventario_repleno_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
         document.getElementById('openSupportBtn').onclick = async () => {
             const m = document.getElementById('supportModal');
             const c = document.getElementById('support-content');

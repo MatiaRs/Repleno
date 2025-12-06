@@ -14,16 +14,13 @@ const { WebpayPlus, IntegrationCommerceCodes, IntegrationApiKeys, Environment, O
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- SISTEMA ANTI-CRASH (NUEVO) ---
-// Evita que el servidor se apague si Firebase rechaza conexiones por cuota
+// --- SISTEMA ANTI-CRASH ---
 process.on('uncaughtException', (err) => {
     console.error('⚠️ [CRITICAL] Error no capturado:', err.message);
-    // No salimos del proceso, lo mantenemos vivo
 });
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error('⚠️ [CRITICAL] Promesa rechazada sin manejo:', reason);
-    // Mantenemos el servidor vivo
 });
 
 // --- 1. INICIALIZACIÓN DE FIREBASE ---
@@ -168,7 +165,6 @@ setInterval(async () => {
             }
         }
     } catch (error) { 
-        // Silenciamos error de cuota en el background para no llenar la consola
         if(!error.message.includes('Quota')) console.error(error); 
     }
 }, 3600000); 
@@ -332,9 +328,10 @@ app.post('/api/consultar-ia', requireDB, async (req, res) => {
         const topSellerAnalysis = resumen.topSeller || {}; 
 
         const prompt = `
-            Eres "Repleno AI". Genera reporte HTML Tailwind.
+            Eres "Repleno AI". Genera ÚNICAMENTE código HTML puro. NO agregues texto antes ni después. NO uses markdown.
             DATOS: Top: ${JSON.stringify(resumen.topSeller)}, Advice: ${JSON.stringify(topSellerAdvice)}, Critical: ${JSON.stringify(criticalItemsAdvice)}.
             
+            Estructura requerida:
             <div class="space-y-6 font-inter text-slate-700">
                 <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
                     <h2 class="text-2xl font-bold">🎯 Estrategia Logística Detallada</h2>
@@ -350,11 +347,29 @@ app.post('/api/consultar-ia', requireDB, async (req, res) => {
                 ${criticalItemsAdvice.length > 0 ? `<div class="space-y-3">${criticalItemsAdvice.map(i => `
                     <div class="bg-red-50 p-4 rounded-xl border border-red-100"><p class="font-bold text-red-700">${i.name}</p><p class="text-xs">Pedir: ${i.advice.suggestedRepurchaseQty} un. el ${i.advice.repurchaseDay}</p></div>
                 `).join('')}</div>` : '<div class="bg-green-50 p-4 rounded-xl text-green-700">Inventario saludable.</div>'}
+                <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
+                    <h3 class="text-indigo-900 font-bold text-lg mb-2 flex items-center gap-2">💡 Instrucción Estratégica</h3>
+                    <p class="text-slate-700 leading-relaxed text-sm">Implementa el Plan de Reposición. Compra 3 días antes del peak para asegurar disponibilidad.</p>
+                </div>
             </div>
         `;
 
         const result = await generateContentWithRetry(prompt);
-        let cleanHtml = result.response.text().replace(/```html/g, '').replace(/```/g, '').trim();
+        let rawText = result.response.text();
+        
+        // --- LIMPIEZA AGRESIVA DE TEXTO EXTRA ---
+        // Buscamos el primer div y el último cierre de div para extraer SOLO el HTML
+        const startIndex = rawText.indexOf('<div');
+        const endIndex = rawText.lastIndexOf('</div>');
+        
+        let cleanHtml = "";
+        if (startIndex !== -1 && endIndex !== -1) {
+            cleanHtml = rawText.substring(startIndex, endIndex + 6);
+        } else {
+            // Fallback: limpieza básica si no encuentra estructura exacta
+            cleanHtml = rawText.replace(/```html/g, '').replace(/```/g, '').trim();
+        }
+
         res.json({ html: cleanHtml });
 
     } catch (error) {
